@@ -1,0 +1,3369 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная страница - Multi-language</title>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+        onerror="if(!this.dataset.fallback){this.dataset.fallback='unpkg';this.src='https://unpkg.com/chart.js@4.4.1/dist/chart.umd.min.js';}else if(this.dataset.fallback==='unpkg'){this.dataset.fallback='local';this.src='./chart.umd.min.js';}">
+    </script>
+    <style>
+        /* ===== ОСНОВНЫЕ СТИЛИ ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0e0e0;
+            padding: 10px;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 15px;
+            width: 100%;
+            max-width: 1600px;
+            height: 95vh;
+        }
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            background-color: #cfcfcf;
+            border: 1px solid #999;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 100%;
+        }
+        .top-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .btn-top {
+            flex: 1;
+            padding: 15px;
+            background: linear-gradient(to bottom, #dcdcdc, #bfbfbf);
+            border: 1px solid #999;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+            cursor: pointer;
+            position: relative;
+        }
+        .btn-top:hover { background: #ccc; }
+        .btn-top:disabled { opacity: 0.5; cursor: not-allowed; }
+        .language-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to bottom, #f0f0f0, #d0d0d0);
+            border: 2px solid #999;
+            border-radius: 5px;
+            margin-top: 5px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .language-menu.show { display: block; }
+        .lang-option {
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #aaa;
+            font-weight: bold;
+            text-align: center;
+        }
+        .lang-option:hover { background-color: #4CAF50; color: white; }
+        .lang-option:last-child { border-bottom: none; }
+        .main-title {
+            font-size: 28px;
+            color: #222;
+            margin-bottom: 15px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .left-content {
+            flex: 1;
+            overflow-y: auto !important;
+            overflow-x: hidden;
+            padding: 0 20px 20px 20px;
+            min-height: 0;
+        }
+        .left-content::-webkit-scrollbar { width: 12px; display: block !important; }
+        .left-content::-webkit-scrollbar-track { background: #bfbfbf; border-radius: 6px; }
+        .left-content::-webkit-scrollbar-thumb { background: #888; border-radius: 6px; border: 2px solid #bfbfbf; }
+        .left-content::-webkit-scrollbar-thumb:hover { background: #666; }
+        .device-frame {
+            background-color: #bfbfbf;
+            border: 2px solid #888;
+            border-radius: 5px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+        .svg-decoration {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+            display: block !important;
+            visibility: visible !important;
+            background-color: #cfcfcf;
+            border-radius: 10px;
+        }
+        .svg-decoration svg { display: block; max-width: 100%; height: auto; }
+        .stop-btn {
+            padding: 15px 50px;
+            background: linear-gradient(to bottom, #ff4444, #cc0000);
+            border: 3px solid #990000;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            margin: 20px auto;
+            display: block;
+        }
+        .stop-btn:hover { background: linear-gradient(to bottom, #ff6666, #dd0000); transform: scale(1.05); }
+        .stop-btn:active { transform: scale(0.95); box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .led-container { width: 200px; height: 20px; margin: 0 auto 30px auto; position: relative; }
+        .led-light {
+            width: 100%;
+            height: 100%;
+            background-color: #333;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .led-light.on {
+            background-color: #ffff00;
+            box-shadow: 0 0 20px 5px rgba(255, 255, 200, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.5);
+            border: 1px solid #ccc;
+        }
+        .fan-uv-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 0 20px;
+            position: relative;
+        }
+        .fan-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .fan-svg { width: 150px; height: 150px; transition: transform 0.5s ease-out; }
+        .fan-svg.spinning { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        /* Тревожный индикатор */
+        .alarm-indicator {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: #ff0000;
+            border-radius: 50%;
+            display: none;
+            cursor: pointer;
+            animation: pulse 1s infinite;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        .alarm-indicator.show { display: block; }
+        .alarm-indicator svg {
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        @keyframes pulse {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.1); }
+        }
+        
+        .uv-lamp-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+            margin-right: 30px;
+        }
+        .uv-lamp-tube {
+            width: 30px;
+            height: 150px;
+            background-color: #444;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            border: 2px solid #666;
+        }
+        .uv-lamp-tube.on {
+            background: linear-gradient(to bottom, #a855f7, #7c3aed);
+            box-shadow: 0 0 30px 10px rgba(168, 85, 247, 0.6), 0 0 60px 20px rgba(124, 58, 237, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.3);
+            border: 2px solid #a855f7;
+        }
+        .uv-label { font-size: 14px; color: #333; font-weight: bold; }
+        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .control-group { display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        .status-btn-wrapper { width: 100%; position: relative; cursor: pointer; }
+        .status-btn-wrapper.disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+        .status-indicator {
+            height: 8px;
+            background-color: #555;
+            border-radius: 4px;
+            margin-bottom: 2px;
+            transition: background-color 0.3s;
+            width: 90%;
+            margin-left: 5%;
+        }
+        .status-indicator.active { background-color: #00ff00; box-shadow: 0 0 5px #00ff00; }
+        /* legacy class names left in HTML from earlier versions */
+        .status-indicator.status-active { background-color: #00ff00; box-shadow: 0 0 5px #00ff00; }
+        .status-indicator.status-stopped { background-color: #555; }
+        .status-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to bottom, #fff, #e0e0e0);
+            border: 1px solid #999;
+            border-radius: 4px;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+        }
+        .door-label { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 10px; }
+        .doors-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            position: relative;
+            width: 100%;
+            padding: 0 20px;
+        }
+        .door-section { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .door-icons-row { display: flex; gap: 10px; align-items: center; }
+        .door-icon-wrapper { cursor: pointer; transition: transform 0.2s; }
+        .door-icon-wrapper:hover { transform: scale(1.1); }
+        .icon-svg { width: 50px; height: 50px; }
+        .lock-svg { width: 40px; height: 40px; transition: all 0.3s; }
+        .lock-unlocked { stroke: #3498db; fill: #3498db; }
+        .lock-blocked { stroke: #e74c3c; fill: #e74c3c; }
+        .door-timer {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 2px solid #999;
+            font-weight: bold;
+            font-size: 14px;
+            display: none;
+            z-index: 10;
+            white-space: nowrap;
+        }
+        .door-timer.show { display: block; }
+        .door-timer.counting { background-color: #fff3cd; border-color: #ffc107; color: #856404; }
+        .door-timer.alarm { background-color: #ffcccc; border-color: #ff0000; color: #ff0000; }
+        .side-panel {
+            background-color: #e6e6e6;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: 100%;
+        }
+        .side-panel::-webkit-scrollbar { width: 12px; }
+        .side-panel::-webkit-scrollbar-track { background: #d0d0d0; border-radius: 6px; }
+        .side-panel::-webkit-scrollbar-thumb { background: #888; border-radius: 6px; border: 2px solid #d0d0d0; }
+        .side-panel::-webkit-scrollbar-thumb:hover { background: #666; }
+        .datetime-box {
+            background-color: #dcdcdc;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            flex-shrink: 0;
+        }
+        .admin-box { 
+            text-align: center; 
+            margin-top: 5px; 
+            flex-shrink: 0; 
+        }
+        .admin-name { 
+            font-weight: bold; 
+            font-size: 16px; 
+            margin-bottom: 5px;
+        }
+        
+        /* Исправлено: перепад давления теперь под кнопкой Управление пользователями */
+        .pressure-drop-position {
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-size: 18px;
+            color: #333;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .pressure-block { 
+            background-color: #f0f0f0; 
+            border-radius: 10px; 
+            padding: 15px; 
+            border: 1px solid #ccc;
+            margin-top: 5px;
+        }
+        .pressure-row {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .p-label { font-size: 14px; color: #555; line-height: 1.2; }
+        .p-value-box {
+            display: flex;
+            align-items: baseline;
+            background-color: #f9f9f9;
+            padding: 5px 10px;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            min-width: 80px;
+            justify-content: flex-end;
+        }
+        .p-val { font-size: 20px; font-weight: bold; color: #333; margin-right: 5px; }
+        .p-unit { font-size: 14px; color: #777; }
+        .side-buttons { display: flex; flex-direction: column; gap: 15px; align-items: center; flex-shrink: 0; }
+        .pill-btn-wrapper { width: 160px; cursor: pointer; text-align: center; }
+        .pill-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to bottom, #fff, #e0e0e0);
+            border: 2px solid #999;
+            border-radius: 25px;
+            font-weight: bold;
+            color: #333;
+            position: relative;
+            z-index: 2;
+        }
+        .center-settings {
+            background-color: #cfcfcf;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+        .center-label { font-size: 16px; margin-bottom: 10px; line-height: 1.3; font-weight: bold; }
+        .center-input {
+            width: 80px;
+            height: 40px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #888;
+            border-radius: 4px;
+            background: #fff;
+            margin-bottom: 10px;
+        }
+        .menu-list { display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+        .menu-item {
+            padding: 15px;
+            background-color: #c0c0c0;
+            border: 1px solid #999;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .menu-item:hover { background-color: #d0d0d0; }
+        .countdown-block {
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+        .countdown-title { text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+        .hidden { display: none !important; }
+        .settings-section { display: none; padding: 20px; background-color: #bfbfbf; border: 2px solid #888; border-radius: 5px; }
+        .settings-section.active { display: block; }
+        .settings-title { font-size: 24px; font-weight: bold; color: #222; margin-bottom: 20px; }
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #cfcfcf;
+            border-radius: 5px;
+        }
+        .settings-label { font-size: 14px; color: #333; flex: 1; padding-right: 20px; }
+        .settings-input {
+            width: 100px;
+            padding: 8px;
+            font-size: 16px;
+            text-align: center;
+            border: 2px solid #888;
+            border-radius: 5px;
+            background: #fff;
+        }
+        .toggle-btn {
+            padding: 8px 25px;
+            background: linear-gradient(to bottom, #fff, #e0e0e0);
+            border: 2px solid #999;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .toggle-btn.active { background: linear-gradient(to bottom, #4CAF50, #45a049); color: white; border-color: #2e7d32; }
+        .modbus-section { margin-top: 25px; padding: 20px; background-color: #cfcfcf; border-radius: 5px; text-align: center; }
+        .modbus-label { font-size: 15px; font-weight: bold; margin-bottom: 10px; }
+        .modbus-input {
+            width: 100%;
+            max-width: 350px;
+            padding: 10px;
+            font-size: 15px;
+            border: 2px solid #888;
+            border-radius: 5px;
+            background: #fff;
+        }
+        .settings-nav-buttons { display: flex; gap: 20px; margin-top: 25px; justify-content: center; }
+        .nav-btn {
+            padding: 12px 35px;
+            background: linear-gradient(to bottom, #dcdcdc, #bfbfbf);
+            border: 2px solid #999;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .nav-btn:hover { background: linear-gradient(to bottom, #ccc, #aaa); }
+        .param-settings-section { display: none; padding: 20px; background-color: #bfbfbf; border: 2px solid #888; border-radius: 5px; }
+        .param-settings-section.active { display: block; }
+        .param-title { font-size: 28px; font-weight: bold; color: #222; margin-bottom: 25px; }
+        .param-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; }
+        .param-label { font-size: 15px; color: #333; flex: 1; }
+        .param-input {
+            width: 100px;
+            padding: 8px;
+            font-size: 16px;
+            text-align: center;
+            border: 2px solid #888;
+            border-radius: 5px;
+            background: #fff;
+        }
+        .param-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
+        .param-btn {
+            padding: 12px 25px;
+            background: linear-gradient(to bottom, #dcdcdc, #bfbfbf);
+            border: 2px solid #999;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .param-btn:hover { background: linear-gradient(to bottom, #ccc, #aaa); }
+        .param-correction-section { display: none; padding: 20px; background-color: #bfbfbf; border: 2px solid #888; border-radius: 5px; }
+        .param-correction-section.active { display: block; }
+        .correction-title { font-size: 28px; font-weight: bold; color: #222; margin-bottom: 25px; }
+        .correction-header { text-align: right; font-size: 18px; font-weight: bold; margin-bottom: 20px; color: #333; }
+        .correction-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 10px; }
+        .correction-label { font-size: 15px; color: #333; flex: 1; }
+        .correction-input {
+            width: 100px;
+            padding: 8px;
+            font-size: 16px;
+            text-align: center;
+            border: 2px solid #888;
+            border-radius: 5px;
+            background: #fff;
+        }
+        .correction-buttons { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; align-items: flex-end; }
+        .correction-btn {
+            padding: 12px 35px;
+            background: linear-gradient(to bottom, #dcdcdc, #bfbfbf);
+            border: 2px solid #999;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            min-width: 200px;
+        }
+        .correction-btn:hover { background: linear-gradient(to bottom, #ccc, #aaa); }
+        
+        /* ===== СТИЛИ ДЛЯ СТРАНИЦЫ ТРЕВОГ ===== */
+        .alarm-section { display: none; padding: 20px; background-color: #bfbfbf; border: 2px solid #888; border-radius: 5px; }
+        .alarm-section.active { display: block; }
+        .alarm-title { font-size: 28px; font-weight: bold; color: #222; margin-bottom: 15px; }
+        .alarm-display {
+            background-color: #fff;
+            border: 2px solid #888;
+            border-radius: 5px;
+            min-height: 400px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+        }
+        .alarm-display::-webkit-scrollbar { width: 10px; }
+        .alarm-display::-webkit-scrollbar-track { background: #e0e0e0; border-radius: 5px; }
+        .alarm-display::-webkit-scrollbar-thumb { background: #aaa; border-radius: 5px; }
+        .alarm-display::-webkit-scrollbar-thumb:hover { background: #888; }
+        .alarm-item { 
+            padding: 10px; 
+            margin-bottom: 10px; 
+            background-color: #fff3cd; 
+            border-left: 4px solid #ffc107; 
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+        .alarm-item.door-open { 
+            background-color: #ffcccc; 
+            border-left-color: #ff0000; 
+        }
+        .alarm-item.emergency { 
+            background-color: #ffebee; 
+            border-left-color: #d32f2f; 
+        }
+        .alarm-item.warning { 
+            background-color: #fff8e1; 
+            border-left-color: #ffa000; 
+        }
+        .alarm-time { 
+            font-size: 12px; 
+            color: #666; 
+            margin-bottom: 5px; 
+            font-family: monospace;
+        }
+        .alarm-message { 
+            font-size: 14px; 
+            color: #333; 
+            font-weight: 500;
+        }
+        .alarm-cleared { 
+            text-align: center; 
+            color: #28a745; 
+            padding: 40px 20px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .alarm-buttons { display: flex; gap: 20px; justify-content: center; margin-top: 20px; }
+        .alarm-btn {
+            padding: 12px 35px;
+            background: linear-gradient(to bottom, #dcdcdc, #bfbfbf);
+            border: 2px solid #999;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .alarm-btn:hover { 
+            background: linear-gradient(to bottom, #ccc, #aaa);
+            transform: scale(1.02);
+        }
+        .alarm-btn.clear-alarm {
+            background: linear-gradient(to bottom, #ff4444, #cc0000);
+            color: white;
+            border-color: #990000;
+        }
+        .alarm-btn.clear-alarm:hover {
+            background: linear-gradient(to bottom, #ff6666, #dd0000);
+        }
+
+        /* ===== СТИЛИ ДЛЯ ЭМУЛЯТОРА ===== */
+        .emulator-section {
+            margin-top: 20px;
+            border: 2px solid #888;
+            border-radius: 8px;
+            background-color: #bfbfbf;
+            overflow: hidden;
+        }
+        
+        .emulator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(to bottom, #dcdcdc, #bfbfbf);
+            cursor: pointer;
+            border-bottom: 2px solid #888;
+        }
+        
+        .emulator-header h3 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+        
+        .emulator-toggle {
+            font-size: 24px;
+            color: #333;
+            transition: transform 0.3s;
+        }
+        
+        .emulator-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .emulator-content {
+            padding: 20px;
+            background-color: #cfcfcf;
+            transition: max-height 0.3s ease;
+            max-height: 1400px;
+            overflow: hidden;
+        }
+        
+        .emulator-content.collapsed {
+            max-height: 0;
+            padding: 0 20px;
+        }
+        
+        /* Уменьшенные графики для эмулятора */
+        .emulator-chart-container {
+            position: relative;
+            margin-bottom: 15px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            height: 220px;
+        }
+        
+        
+.emulator-chart-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 15px;
+    background-color: #f0f0f0;
+    border-radius: 5px 5px 0 0;
+    border-bottom: 1px solid #aaa;
+    height: 30px;
+}
+        
+        
+.emulator-chart-title {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+/* RU/EN/CN: отодвигаем кнопку вправо, не растягивая заголовок */
+.emulator-chart-header .stop-btn {
+    margin-left: auto;
+}
+        
+        .emulator-chart-canvas {
+            width: 100% !important;
+            height: 170px !important;
+            border: 1px solid #ccc;
+            border-top: none;
+            box-sizing: border-box;
+            border-radius: 0 0 5px 5px;
+            display: block;
+        }
+        
+        /* Настройки границ графиков */
+        .boundary-settings {
+            background: #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #aaa;
+        }
+        
+        .boundary-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .boundary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .boundary-room {
+            background: #cfcfcf;
+            border-radius: 5px;
+            padding: 12px;
+            border: 1px solid #999;
+        }
+        
+        .boundary-room-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #222;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .boundary-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        
+        .boundary-label {
+            min-width: 70px;
+            color: #555;
+        }
+        
+        .boundary-input {
+            width: 70px;
+            padding: 4px 6px;
+            border: 1px solid #888;
+            border-radius: 3px;
+            background: #fff;
+            text-align: right;
+            font-size: 12px;
+        }
+        
+        .boundary-color-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+        
+        .boundary-color-red { background-color: #ff4444; border: 1px solid #cc0000; }
+        .boundary-color-blue { background-color: #4444ff; border: 1px solid #0000cc; }
+        .boundary-color-gray { background-color: #666; border: 1px solid #333; }
+        
+        .emulator-controls-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .emulator-room-controls {
+            background: #e0e0e0;
+            border-radius: 5px;
+            padding: 10px;
+            border: 1px solid #aaa;
+        }
+        
+        .emulator-room-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .emulator-slider-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+        
+        .emulator-slider-label {
+            min-width: 45px;
+            font-size: 11px;
+        }
+        
+        .emulator-slider {
+            flex: 1;
+            height: 4px;
+        }
+        
+        .emulator-slider-value {
+            min-width: 40px;
+            text-align: right;
+            font-size: 11px;
+            color: #007bff;
+        }
+        
+        .emulator-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .emulator-btn {
+            padding: 8px 15px;
+            background: linear-gradient(to bottom, #dcdcdc, #bfbfbf);
+            border: 1px solid #888;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .emulator-btn:hover {
+            background: linear-gradient(to bottom, #ccc, #aaa);
+        }
+        
+        .emulator-btn.primary {
+            background: linear-gradient(to bottom, #007bff, #0056b3);
+            color: white;
+            border-color: #004085;
+        }
+        
+        .emulator-btn.primary:hover {
+            background: linear-gradient(to bottom, #0069d9, #004085);
+        }
+        
+        /* Увеличенный лог событий */
+        .emulator-log-container {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            font-size: 11px;
+        }
+        
+        .emulator-log-entry {
+            padding: 3px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .emulator-log-time {
+            font-weight: 600;
+            color: #666;
+            margin-right: 5px;
+        }
+        
+        .log-section {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 10px;
+            margin-top: 10px;
+        }
+        
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ccc;
+        }
+        
+        .log-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .log-controls {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .log-controls button {
+            padding: 3px 8px;
+            background: linear-gradient(to bottom, #dcdcdc, #bfbfbf);
+            border: 1px solid #888;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        
+        .log-badge {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .badge-normal {
+            background-color: #28a745;
+            color: white;
+        }
+    
+        /* ===== CORRECTION VISUAL INDICATION (UI only) =====
+           RU: Индикация скорректированных значений (только отображение)
+           EN: Visual indication for corrected values (display only)
+           CN: 修正值可视化提示（仅显示）
+        */
+        .pressure-row.corrected .p-value-box {
+            border-color: #2e7d32;
+        }
+        .pressure-row.corrected .p-val::after {
+            content: " ±";
+            font-size: 12px;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+        .correction-input.corrected {
+            border-color: #2e7d32;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ЛЕВАЯ ПАНЕЛЬ (ОСНОВНОЙ ИНТЕРФЕЙС) -->
+        <div class="left-panel">
+            <div style="padding: 20px; flex-shrink: 0;">
+                <div class="top-bar">
+                    <!-- Кнопка смены языка -->
+                    <button class="btn-top" id="langBtn" onclick="toggleLanguageMenu()">
+                        <span data-key="changeLanguage">Смена языка</span>
+                        <div class="language-menu" id="languageMenu">
+                            <div class="lang-option" onclick="changeLanguage('ru')">Русский</div>
+                            <div class="lang-option" onclick="changeLanguage('en')">English</div>
+                            <div class="lang-option" onclick="changeLanguage('zh')">繁體中文</div>
+                        </div>
+                    </button>
+                    <button class="btn-top" data-key="login">Вход</button>
+                    <button class="btn-top" data-key="logout">Выход</button>
+                </div>
+            </div>
+            <div class="left-content">
+                <!-- ГЛАВНАЯ СТРАНИЦА -->
+                <div id="mainPage">
+                    <div class="main-title" data-key="mainPage">Главная страница</div>
+                    
+                    <!-- Панель с вентилятором и УФ лампой -->
+                    <div class="device-frame">
+                        <div class="led-container"><div id="led-light" class="led-light"></div></div>
+                        <div class="fan-uv-container">
+                            <!-- Индикатор тревоги открытой двери -->
+                            <div class="alarm-indicator" id="doorOpenAlarm" onclick="showAlarms()">
+                                <svg viewBox="0 0 24 24" fill="white">
+                                    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                                </svg>
+                            </div>
+                            
+                            <div class="fan-wrapper">
+                                <svg id="main-fan" class="fan-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <g fill="#3498db" stroke="#2980b9" stroke-width="1">
+                                        <path d="M50 50 C 50 20, 30 10, 50 10 C 70 10, 50 20, 50 50 Z" transform="rotate(0 50 50)"/>
+                                        <path d="M50 50 C 50 20, 30 10, 50 10 C 70 10, 50 20, 50 50 Z" transform="rotate(120 50 50)"/>
+                                        <path d="M50 50 C 50 20, 30 10, 50 10 C 70 10, 50 20, 50 50 Z" transform="rotate(240 50 50)"/>
+                                    </g>
+                                    <circle cx="50" cy="50" r="8" fill="#2c3e50"/>
+                                </svg>
+                            </div>
+                            <div class="uv-lamp-wrapper">
+                                <div id="uv-lamp" class="uv-lamp-tube"></div>
+                                <div class="uv-label" data-key="uvLamp">УФ лампа</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Элементы управления обдувом и УФ -->
+                        <div class="controls-grid">
+                            <div class="control-group">
+                                <div class="status-btn-wrapper" id="blowWrapper" onclick="toggleStatus('indicator-blow', 'text-blow', 'blowOff', 'blowOn')">
+                                    <div id="indicator-blow" class="status-indicator"></div>
+                                    <div id="text-blow" class="status-btn" data-key="blowOff">Обдув выкл.</div>
+                                </div>
+                                <div class="door-label" data-key="door1">Дверь №1</div>
+                            </div>
+                            <div class="control-group">
+                                <div class="status-btn-wrapper" id="uvWrapper" onclick="toggleUV('indicator-uv', 'text-uv', 'uvOff', 'uvOn')">
+                                    <div id="indicator-uv" class="status-indicator"></div>
+                                    <div id="text-uv" class="status-btn" data-key="uvOff">УФ-стерилизация выкл.</div>
+                                </div>
+                                <div class="door-label" data-key="door2">Дверь №2</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Двери и блокировки -->
+                        <div class="doors-container">
+                            <div class="door-section">
+                                <div class="door-icons-row">
+                                    <div class="door-icon-wrapper" onclick="toggleDoor(1)">
+                                        <svg id="door1-icon" class="icon-svg" viewBox="0 0 50 60">
+                                            <g id="door1-closed">
+                                                <rect x="5" y="5" width="30" height="50" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="2"/>
+                                                <circle cx="30" cy="35" r="2" fill="#fff"/>
+                                            </g>
+                                            <g id="door1-open" class="hidden">
+                                                <path d="M5 5 L25 15 L25 55 L5 55 Z" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                                <circle cx="22" cy="35" r="2" fill="#fff"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <svg id="lock1" class="lock-svg lock-unlocked" viewBox="0 0 50 50">
+                                        <path id="lock1-shackle" d="M 10 25 A 15 15 0 0 1 40 25" fill="none" stroke-width="6" stroke-linecap="round" style="display: none;"/>
+                                        <rect x="12" y="22" width="26" height="20" rx="4" stroke-width="2"/>
+                                        <circle cx="25" cy="32" r="3" fill="#fff"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div id="doorTimer" class="door-timer"></div>
+                            <div class="door-section">
+                                <div class="door-icons-row">
+                                    <div class="door-icon-wrapper" onclick="toggleDoor(2)">
+                                        <svg id="door2-icon" class="icon-svg" viewBox="0 0 50 60">
+                                            <g id="door2-closed">
+                                                <rect x="5" y="5" width="30" height="50" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="2"/>
+                                                <circle cx="30" cy="35" r="2" fill="#fff"/>
+                                            </g>
+                                            <g id="door2-open" class="hidden">
+                                                <path d="M5 5 L25 15 L25 55 L5 55 Z" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                                                <circle cx="22" cy="35" r="2" fill="#fff"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <svg id="lock2" class="lock-svg lock-unlocked" viewBox="0 0 50 50">
+                                        <path id="lock2-shackle" d="M 10 25 A 15 15 0 0 1 40 25" fill="none" stroke-width="6" stroke-linecap="round" style="display: none;"/>
+                                        <rect x="12" y="22" width="26" height="20" rx="4" stroke-width="2"/>
+                                        <circle cx="25" cy="32" r="3" fill="#fff"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ТЕХНИЧЕСКАЯ ДИАГРАММА -->
+                    <div class="svg-decoration">
+                        <svg width="400" height="700" viewBox="0 0 400 700" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="20" y="20" width="360" height="660" fill="#eee" stroke="black" stroke-width="4"/>
+                            <rect x="40" y="40" width="320" height="120" fill="#f5f5f5" stroke="black" stroke-width="3"/>
+                            <circle cx="90" cy="100" r="18" fill="none" stroke="black" stroke-width="4"/>
+                            <circle cx="90" cy="130" r="4" fill="limegreen"/>
+                            <circle cx="140" cy="100" r="18" fill="none" stroke="black" stroke-width="4"/>
+                            <rect x="200" y="75" width="125" height="50" fill="none" stroke="black" stroke-width="2"/>
+                            <g fill="black">
+                                <rect x="205" y="80" width="15" height="40"/>
+                                <rect x="225" y="80" width="15" height="40"/>
+                                <rect x="245" y="80" width="15" height="40"/>
+                                <rect x="265" y="80" width="15" height="40"/>
+                                <rect x="285" y="80" width="15" height="40"/>
+                                <rect x="305" y="80" width="15" height="40"/>
+                            </g>
+                            <rect x="40" y="180" width="320" height="260" fill="white" stroke="black" stroke-width="3"/>
+                            <rect x="60" y="200" width="280" height="220" rx="25" fill="none" stroke="magenta" stroke-width="6"/>
+                            <rect x="30" y="290" width="20" height="40" fill="black"/>
+                            <rect x="350" y="290" width="20" height="40" fill="black"/>
+                            <rect x="40" y="460" width="320" height="200" fill="#f5f5f5" stroke="black" stroke-width="3"/>
+                            <path d="M 60 460 A 260 260 0 0 0 360 600" fill="none" stroke="black" stroke-width="3"/>
+                            <path d="M 306 460 A 180 140 0 0 0 360 520" fill="none" stroke="black" stroke-width="3"/>
+                            <rect x="355" y="530" width="8" height="70" fill="cyan"/>
+                            <polygon points="230,500 260,520 230,540" fill="limegreen" transform="rotate(20, 245, 520)"/>
+                            <line x1="230" y1="520" x2="190" y2="520" stroke="limegreen" stroke-width="6" transform="rotate(20, 245, 520)"/>
+                            <polygon points="360,560 390,575 360,590" fill="limegreen"/>
+                            <polygon points="360,520 390,535 360,550" fill="limegreen"/>
+                            <polygon points="325,95 355,80 325,65" fill="red" transform="rotate(-180, 340, 80)"/>
+                            <polygon points="325,135 355,120 325,105" fill="red" transform="rotate(-180, 340, 120)"/>
+                        </svg>
+                    </div>
+
+                    <!-- КНОПКА АВАРИЙНОГО СТОПА -->
+                    <div style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+                        <button class="stop-btn" onclick="emergencyStop()" data-key="emergencyStop">АВАРИЙНЫЙ СТОП</button>
+                    </div>
+
+                    <!-- ===== СЕКЦИЯ ЭМУЛЯТОРА ГРАФИКОВ ДАВЛЕНИЯ ===== -->
+                    <div class="emulator-section" id="emulatorSection">
+                        <!-- Заголовок эмулятора (кликабельный для сворачивания) -->
+                        <div class="emulator-header" onclick="toggleEmulator()">
+                            <h3 data-key="emulatorTitle">📊 Эмуляция графиков давления в помещениях</h3>
+                            <span class="emulator-toggle" id="emulatorToggle">▼</span>
+                        </div>
+                        
+                        <!-- Содержимое эмулятора -->
+                        <div class="emulator-content" id="emulatorContent">
+                            <!-- График помещения №1 -->
+                            <div class="emulator-chart-container">
+                                <div class="emulator-chart-header">
+                                    <span class="emulator-chart-title">
+                                        <span class="status-indicator" id="emulatorStatus1"></span>
+                                        <span data-key="room1">Помещение №1</span>
+                                    </span>
+                                    <!-- Кнопка паузы/пуска для графика 1 -->
+                                    <button class="stop-btn" style="padding: 2px 10px; font-size: 11px; width: auto;" id="emulatorStopBtn1" onclick="toggleEmulatorRoom(1)">
+                                        <span data-key="pause">⏸ Пауза</span>
+                                    </button>
+                                </div>
+                                <canvas id="pressureChart1" class="emulator-chart-canvas"></canvas>
+                            </div>
+                            
+                            <!-- График помещения №2 -->
+                            <div class="emulator-chart-container">
+                                <div class="emulator-chart-header">
+                                    <span class="emulator-chart-title">
+                                        <span class="status-indicator" id="emulatorStatus2"></span>
+                                        <span data-key="room2">Помещение №2</span>
+                                    </span>
+                                    <!-- Кнопка паузы/пуска для графика 2 -->
+                                    <button class="stop-btn" style="padding: 2px 10px; font-size: 11px; width: auto;" id="emulatorStopBtn2" onclick="toggleEmulatorRoom(2)">
+                                        <span data-key="pause">⏸ Пауза</span>
+                                    </button>
+                                </div>
+                                <canvas id="pressureChart2" class="emulator-chart-canvas"></canvas>
+                            </div>
+
+                            <!-- НАСТРОЙКИ ГРАНИЦ ГРАФИКОВ -->
+                            <div class="boundary-settings">
+                                <div class="boundary-title" data-key="boundarySettingsTitle">⚙️ Настройка границ графиков давления</div>
+                                <div class="boundary-grid">
+                                    <!-- Помещение 1 -->
+                                    <div class="boundary-room">
+                                        <div class="boundary-room-title" data-key="room1">Помещение №1</div>
+                                        <!-- Абсолютный минимум (серая граница) -->
+                                        <div class="boundary-row">
+                                            <span class="boundary-label" data-key="absoluteMin">Абсолютный мин:</span>
+                                            <input type="number" id="min1" class="boundary-input" value="0" onchange="updateEmulatorRoomSettings(1)">
+                                            <div class="boundary-color-indicator boundary-color-gray"></div>
+                                        </div>
+                                        <!-- Абсолютный максимум (серая граница) -->
+                                        <div class="boundary-row">
+                                            <span class="boundary-label" data-key="absoluteMax">Абсолютный макс:</span>
+                                            <input type="number" id="max1" class="boundary-input" value="50" onchange="updateEmulatorRoomSettings(1)">
+                                            <div class="boundary-color-indicator boundary-color-gray"></div>
+                                        </div>
+                                        <!-- Рабочий минимум (красная линия) -->
+                                        <div class="boundary-row">
+                                            <span class="boundary-label" data-key="workingMin">Рабочий мин:</span>
+                                            <input type="number" id="workMin1" class="boundary-input" value="10" onchange="updateEmulatorRoomSettings(1)">
+                                            <div class="boundary-color-indicator boundary-color-red"></div>
+                                        </div>
+                                        <!-- Рабочий максимум (синяя линия) -->
+                                        <div class="boundary-row">
+                                            <span class="boundary-label" data-key="workingMax">Рабочий макс:</span>
+                                            <input type="number" id="workMax1" class="boundary-input" value="40" onchange="updateEmulatorRoomSettings(1)">
+                                            <div class="boundary-color-indicator boundary-color-blue"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Помещение 2 -->
+                                    <div class="boundary-room">
+                                        <div class="boundary-room-title" data-key="room2">Помещение №2</div>
+                                        <!-- Абсолютный минимум (серая граница) -->
+                                        <div class="boundary-row">
+                                            <span class="boundary-label" data-key="absoluteMin">Абсолютный мин:</span>
+                                            <input type="number" id="min2" class="boundary-input" value="0" onchange="updateEmulatorRoomSettings(2)">
+                                            <div class="boundary-color-indicator boundary-color-gray"></div>
+                                        </div>
+                                        <!-- Абсолютный максимум (серая граница) -->
+                                        <div class="boundary-row">
+                                            <span class="boundary-label" data-key="absoluteMax">Абсолютный макс:</span>
+                                            <input type="number" id="max2" class="boundary-input" value="50" onchange="updateEmulatorRoomSettings(2)">
+                                            <div class="boundary-color-indicator boundary-color-gray"></div>
+                                        </div>
+                                        <!-- Рабочий минимум (красная линия) -->
+                                        <div class="boundary-row">
+                                            <span class="boundary-label" data-key="workingMin">Рабочий мин:</span>
+                                            <input type="number" id="workMin2" class="boundary-input" value="15" onchange="updateEmulatorRoomSettings(2)">
+                                            <div class="boundary-color-indicator boundary-color-red"></div>
+                                        </div>
+                                        <!-- Рабочий максимум (синяя линия) -->
+                                        <div class="boundary-row">
+                                            <span class="boundary-label" data-key="workingMax">Рабочий макс:</span>
+                                            <input type="number" id="workMax2" class="boundary-input" value="35" onchange="updateEmulatorRoomSettings(2)">
+                                            <div class="boundary-color-indicator boundary-color-blue"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Легенда цветов (пояснение) -->
+                                <div style="font-size: 11px; color: #666; margin-top: 10px; text-align: center;" data-key="colorLegend">
+                                    <span style="display: inline-block; width: 12px; height: 12px; background: #666; border-radius: 2px; margin-right: 5px;"></span> Абсолютные границы -
+                                    <span style="display: inline-block; width: 12px; height: 12px; background: #ff4444; border-radius: 2px; margin: 0 5px;"></span> Рабочий минимум -
+                                    <span style="display: inline-block; width: 12px; height: 12px; background: #4444ff; border-radius: 2px; margin: 0 5px;"></span> Рабочий максимум
+                                </div>
+                            </div>
+
+                            <!-- ПАРАМЕТРЫ ГЕНЕРАЦИИ ДАННЫХ -->
+                            <div class="emulator-controls-row">
+                                <!-- Параметры для помещения 1 -->
+                                <div class="emulator-room-controls">
+                                    <div class="emulator-room-title" data-key="room1Params">Помещение №1 - параметры генерации</div>
+                                    <!-- Скорость изменений -->
+                                    <div class="emulator-slider-row">
+                                        <span class="emulator-slider-label" data-key="speed">Скорость:</span>
+                                        <input type="range" class="emulator-slider" id="emulatorSpeed1" min="0.1" max="10" step="0.1" value="1" oninput="updateEmulatorSpeed(1, this.value)">
+                                        <span class="emulator-slider-value" id="emulatorSpeedValue1">1.0x</span>
+                                    </div>
+                                    <!-- Плавность (инерция) -->
+                                    <div class="emulator-slider-row">
+                                        <span class="emulator-slider-label" data-key="smoothness">Плавность:</span>
+                                        <input type="range" class="emulator-slider" id="emulatorSmooth1" min="0" max="0.9" step="0.05" value="0.5" oninput="updateEmulatorSmoothness(1, this.value)">
+                                        <span class="emulator-slider-value" id="emulatorSmoothValue1">0.50</span>
+                                    </div>
+                                    <!-- Вероятность выхода за границы -->
+                                    <div class="emulator-slider-row">
+                                        <span class="emulator-slider-label" data-key="overshoot">Выход:</span>
+                                        <input type="range" class="emulator-slider" id="emulatorOver1" min="0" max="0.5" step="0.05" value="0.2" oninput="updateEmulatorOvershoot(1, this.value)">
+                                        <span class="emulator-slider-value" id="emulatorOverValue1">0.20</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Параметры для помещения 2 -->
+                                <div class="emulator-room-controls">
+                                    <div class="emulator-room-title" data-key="room2Params">Помещение №2 - параметры генерации</div>
+                                    <!-- Скорость изменений -->
+                                    <div class="emulator-slider-row">
+                                        <span class="emulator-slider-label" data-key="speed">Скорость:</span>
+                                        <input type="range" class="emulator-slider" id="emulatorSpeed2" min="0.1" max="10" step="0.1" value="1" oninput="updateEmulatorSpeed(2, this.value)">
+                                        <span class="emulator-slider-value" id="emulatorSpeedValue2">1.0x</span>
+                                    </div>
+                                    <!-- Плавность (инерция) -->
+                                    <div class="emulator-slider-row">
+                                        <span class="emulator-slider-label" data-key="smoothness">Плавность:</span>
+                                        <input type="range" class="emulator-slider" id="emulatorSmooth2" min="0" max="0.9" step="0.05" value="0.5" oninput="updateEmulatorSmoothness(2, this.value)">
+                                        <span class="emulator-slider-value" id="emulatorSmoothValue2">0.50</span>
+                                    </div>
+                                    <!-- Вероятность выхода за границы -->
+                                    <div class="emulator-slider-row">
+                                        <span class="emulator-slider-label" data-key="overshoot">Выход:</span>
+                                        <input type="range" class="emulator-slider" id="emulatorOver2" min="0" max="0.5" step="0.05" value="0.2" oninput="updateEmulatorOvershoot(2, this.value)">
+                                        <span class="emulator-slider-value" id="emulatorOverValue2">0.20</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Кнопки управления эмулятором -->
+                            <div class="emulator-buttons">
+                                <button class="emulator-btn primary" id="emulatorStartBtn" onclick="startEmulator()" data-key="startEmulator">▶ Запустить эмуляцию</button>
+                                <button class="emulator-btn" onclick="exportEmulatorCSV(1)" data-key="export1">Экспорт 1 в CSV</button>
+                                <button class="emulator-btn" onclick="exportEmulatorCSV(2)" data-key="export2">Экспорт 2 в CSV</button>
+                            </div>
+
+                            <!-- ЖУРНАЛ СОБЫТИЙ ЭМУЛЯЦИИ -->
+                            <div class="log-section" style="margin-top: 15px;">
+                                <div class="log-header">
+                                    <div class="log-title">
+                                        <span data-key="eventLog">📋 Журнал событий эмуляции</span>
+                                        <span class="log-badge badge-normal" id="emulatorLogCount">0</span>
+                                    </div>
+                                    <div class="log-controls">
+                                        <button onclick="clearEmulatorLog()" data-key="clear">Очистить</button>
+                                        <button onclick="exportEmulatorLog()" data-key="export">Экспорт</button>
+                                    </div>
+                                </div>
+                                <div class="emulator-log-container" id="emulatorLogContainer">
+                                    <!-- Начальное сообщение (будет заменено при запуске) -->
+                                    <div class="emulator-log-entry">
+                                        <span class="emulator-log-time">--:--:--</span>
+                                        <span data-key="startPrompt">🔔 Запустите эмуляцию для начала мониторинга</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- СЕКЦИЯ НАСТРОЕК -->
+                <div id="settingsPage" class="settings-section">
+                    <div class="settings-title" data-key="settingsTitle">Настройка параметров</div>
+                    <div class="settings-row"><div class="settings-label" data-key="setting8">Установка верхнего предела разности давлений для помещения №1 (Па)</div><input type="text" id="settingWorkMax1" class="settings-input" value="40" onchange="syncWorkingLimitsFromSettings(1)"></div>
+<div class="settings-row"><div class="settings-label" data-key="setting9">Установка нижнего предела разности давлений для помещения №1 (Па)</div><input type="text" id="settingWorkMin1" class="settings-input" value="10" onchange="syncWorkingLimitsFromSettings(1)"></div>
+<div class="settings-row"><div class="settings-label" data-key="setting1">Установка верхнего предела разности давлений для помещения №2 (Па)</div><input type="text" id="settingWorkMax2" class="settings-input" value="35" onchange="syncWorkingLimitsFromSettings(2)"></div>
+                    <div class="settings-row"><div class="settings-label" data-key="setting2">Установка нижнего предела разности давлений для помещения №2 (Па)</div><input type="text" id="settingWorkMin2" class="settings-input" value="15" onchange="syncWorkingLimitsFromSettings(2)"></div>
+                    <div class="settings-row"><div class="settings-label" data-key="setting3">Лимит времени открытия двери (сек)</div><input type="text" id="doorOpenTimeoutInput" class="settings-input" value="3" onchange="saveDoorTimeoutSetting()"></div>
+                    <div class="settings-row"><div class="settings-label" data-key="setting4">Запускать ли стерилизацию автоматически после закрытия двери №1?</div><button class="toggle-btn" id="autoUV1" onclick="toggleAutoSetting('uvDoor1', this)" data-key="no">НЕТ</button></div>
+                    <div class="settings-row"><div class="settings-label" data-key="setting5">Запускать ли обдув автоматически после закрытия двери №1?</div><button class="toggle-btn" id="autoBlow1" onclick="toggleAutoSetting('blowDoor1', this)" data-key="no">НЕТ</button></div>
+                    <div class="settings-row"><div class="settings-label" data-key="setting6">Запускать ли стерилизацию автоматически после закрытия двери №2?</div><button class="toggle-btn" id="autoUV2" onclick="toggleAutoSetting('uvDoor2', this)" data-key="no">НЕТ</button></div>
+                    <div class="settings-row"><div class="settings-label" data-key="setting7">Запускать ли обдув автоматически после закрытия двери №2?</div><button class="toggle-btn" id="autoBlow2" onclick="toggleAutoSetting('blowDoor2', this)" data-key="no">НЕТ</button></div>
+                    <div class="modbus-section"><div class="modbus-label" data-key="modbusLabel">Адрес ведомого устройства Modbus TCP</div><input type="text" class="modbus-input" value=""></div>
+                    <div class="settings-nav-buttons">
+                        <button class="nav-btn" data-key="next" onclick="showParamSettings()">Далее</button>
+                        <button class="nav-btn" data-key="backToMain" onclick="showMainPage()">Назад на главную</button>
+                    </div>
+                </div>
+
+                <!-- СЕКЦИЯ PARAMETER SETTINGS -->
+                <div id="paramSettingsPage" class="param-settings-section">
+                    <div class="param-title" data-key="paramSettingsTitle">Настройка параметров</div>
+                    <div class="param-row"><div class="param-label" data-key="param1">Установка времени стерилизации (сек)</div><input type="text" id="sterilizationTimeInput" class="param-input" value="10" onchange="saveTimeSettings()"></div>
+                    <div class="param-row"><div class="param-label" data-key="param2">Установка времени воздушного душа (сек)</div><input type="text" id="airShowerTimeInput" class="param-input" value="10" onchange="saveTimeSettings()"></div>
+                    <div class="param-row"><div class="param-label" data-key="dpPriorityLabel">Установить приоритетную разность давления для поддержания давления в камере шлюза</div><div style="display:flex; gap:10px; justify-content:flex-end; min-width: 220px;"><button class="toggle-btn active" id="dpPriorityDP1" onclick="setDPPriority('dp1')" data-key="dp1">ΔP1</button><button class="toggle-btn" id="dpPriorityDP2" onclick="setDPPriority('dp2')" data-key="dp2">ΔP2</button></div></div>
+<div class="param-row"><div class="param-label" data-key="pressureAlarmDelayLabel">Установить время задержки срабатывания аварии при отклонении давления в камере шлюза (сек)</div><input type="text" id="pressureAlarmDelayInput" class="param-input" value="3" onchange="savePressureAlarmDelay()"></div>
+<div class="param-row"><div class="param-label" data-key="param3">Установка верхнего предела перепада давления высокой эффективности (Па)</div><input type="text" class="param-input" value="0"></div>
+                    <div class="param-row"><div class="param-label" data-key="param4">Установка нижнего предела перепада давления высокой эффективности (Па)</div><input type="text" class="param-input" value="0"></div>
+                    <div class="param-row"><div class="param-label" data-key="param5">Установка верхнего предела перепада давления от зоны высокого класса к камере (Па)</div><input type="text" class="param-input" value="0.0"></div>
+                    <div class="param-row"><div class="param-label" data-key="param6">Установка нижнего предела перепада давления от зоны высокого класса к камере (Па)</div><input type="text" class="param-input" value="0.0"></div>
+                    <div class="param-buttons">
+                        <button class="param-btn" data-key="next" onclick="showParamCorrection()">Next</button>
+                        <button class="param-btn" data-key="paramCorrection" onclick="showParamCorrection()">Parameter correction</button>
+                        <button class="param-btn" data-key="back" onclick="showSettings()">Back</button>
+                        <button class="param-btn" data-key="backToMain" onclick="showMainPage()">Return to homepage</button>
+                    </div>
+                </div>
+
+                <!-- СЕКЦИЯ PARAMETER CORRECTION -->
+                <div id="paramCorrectionPage" class="param-correction-section">
+                    <div class="correction-title" data-key="paramCorrectionTitle">Parameter correction</div>
+                    <div class="correction-header" data-key="correctionValue">Correction value</div>
+                    <div class="correction-row"><div class="correction-label" data-key="correction1">High-efficiency filter pressure difference (Pa)</div><input type="text" id="corrFilter" class="correction-input" value="+0"></div>
+                    <div class="correction-row"><div class="correction-label" data-key="correction2">High-grade zone to cavity pressure difference (Pa)</div><input type="text" id="corrDP1" class="correction-input" value="+0.0"></div>
+                    <div class="correction-row"><div class="correction-label" data-key="correction3">Cavity pressure difference to low-grade area (Pa)</div><input type="text" id="corrDP2" class="correction-input" value="+0.0"></div>
+                    <div class="correction-buttons">
+                        <button class="correction-btn" data-key="return" onclick="showParamSettings()">Return</button>
+                        <button class="correction-btn" data-key="backToMain" onclick="showMainPage()">Return to homepage</button>
+                    </div>
+                </div>
+
+                <!-- СЕКЦИЯ ТРЕВОГ (МНОГОЯЗЫЧНАЯ) -->
+                <div id="alarmPage" class="alarm-section">
+                    <div class="alarm-title" data-key="alarmTitle">Тревоги</div>
+                    <div class="alarm-display" id="alarmDisplay">
+                        <!-- Список тревог будет отображаться здесь -->
+                    </div>
+                    <div class="alarm-buttons">
+                        <button class="alarm-btn clear-alarm" onclick="clearAlarms()" data-key="clearAlarm">Очистить буфер тревог</button>
+                        <button class="alarm-btn" onclick="showMainPage()" data-key="backToMain">Назад на главную</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ПРАВАЯ ПАНЕЛЬ (ИСПРАВЛЕННАЯ) -->
+        <div class="side-panel">
+            <div class="datetime-box" id="datetime">26.01.2026 14:34:56</div>
+            <div class="admin-box">
+                <div class="admin-name">Admin</div>
+            </div>
+            <div class="side-buttons">
+                <div class="pill-btn-wrapper" onclick="toggleLight('indicator-light', 'text-light', 'lightOff', 'lightOn')">
+                    <div id="indicator-light" class="status-indicator"></div>
+                    <div id="text-light" class="pill-btn" data-key="lightOff">Свет выкл.</div>
+                </div>
+                <div class="pill-btn-wrapper" onclick="toggleMode('indicator-mode', 'text-mode', 'manualMode', 'autoMode')">
+                    <div id="indicator-mode" class="status-indicator"></div>
+                    <div id="text-mode" class="pill-btn" data-key="manualMode">Ручной режим</div>
+                </div>
+            </div>
+            <div class="center-settings">
+                <div class="center-label" data-key="pressureAutoMode">Режим авто настройка<br>дифференциального давления (Па)</div>
+                <input type="text" class="center-input" value="0" readonly>
+            </div>
+            <div class="menu-list">
+                <div class="menu-item" data-key="settings" onclick="showSettings()">Настройки</div>
+                <div class="menu-item" data-key="viewAlarms" onclick="showAlarms()">Просмотр тревог</div>
+                <div class="menu-item" data-key="userManagement">Управление пользователями</div>
+            </div>
+            
+            <!-- ИСПРАВЛЕНО: Перепад давления теперь здесь, под кнопкой Управление пользователями -->
+            <div class="pressure-drop-position" data-key="pressureDrop">Перепад давления</div>
+            
+            <div class="pressure-block">
+                <!-- Исправлено: HEPA теперь 60 Па -->
+                <div class="pressure-row"><span class="p-label">HEPA</span><div class="p-value-box"><span class="p-val">60</span><span class="p-unit">Па</span></div></div>
+                <div class="pressure-row"><span class="p-label" data-key="pressureRoom1">Перепад давления к<br>помещению №1</span><div class="p-value-box"><span class="p-val">0</span><span class="p-unit">Па</span></div></div>
+                <div class="pressure-row"><span class="p-label" data-key="pressureRoom2">Перепад давления к<br>помещению №2</span><div class="p-value-box"><span class="p-val">0</span><span class="p-unit">Па</span></div></div>
+            </div>
+            <div class="countdown-block">
+                <div class="countdown-title" data-key="countdown">Обратный отсчет</div>
+                <div class="pressure-row"><span class="p-label" data-key="uvSterilization">УФ-стерилизация</span><div class="p-value-box" style="min-width: 120px; justify-content: center;"><span class="p-val" style="font-size: 16px;"><span id="uvMinutes">0</span> <span data-key="min">мин</span> <span id="uvSeconds">0</span> <span data-key="sec">сек</span></span></div></div>
+                <div class="pressure-row"><span class="p-label" data-key="blowing">Обдув</span><div class="p-value-box" style="min-width: 120px; justify-content: center;"><span class="p-val" style="font-size: 16px;"><span id="blowMinutes">0</span> <span data-key="min">мин</span> <span id="blowSeconds">0</span> <span data-key="sec">сек</span></span></div></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Page initialization on load
+
+        
+        // ----- Константы и настройки -----
+        const DOOR_INTERLOCK_DELAY = 5000;           // Задержка блокировки дверей (мс)
+        let sterilizationTimeSeconds = 10;            // Время стерилизации по умолчанию (сек)
+        let airShowerTimeSeconds = 10;                 // Время обдува по умолчанию (сек)
+        let autoModeEnabled = false;                    // Флаг автоматического режима
+        let doorOpenTimeoutSeconds = 3;                 // Лимит времени открытия двери (сек)
+        
+        // Состояние дверей (открыта/закрыта, блокировка и т.д.)
+        let doorState = { 
+            door1: { isOpen: false, lastCloseTime: 0, isBlocked: false, openStartTime: 0, alarmTriggered: false }, 
+            door2: { isOpen: false, lastCloseTime: 0, isBlocked: false, openStartTime: 0, alarmTriggered: false } 
+        };
+        
+        // Таймеры
+        let doorTimerInterval = null;                   // Таймер для дверей
+        let uvTimerInterval = null;                      // Таймер для УФ
+        let blowTimerInterval = null;                    // Таймер для обдува
+        let uvRemainingSeconds = 0;                       // Оставшееся время УФ
+        let blowRemainingSeconds = 0;                     // Оставшееся время обдува
+        let doorOpenCheckInterval = null;                 // Интервал проверки открытых дверей
+        // Page initialization on load
+
+        let alarmList = [];  // Каждая запись: { time: "дата время", messageKey: "ключ", type: "door-open/emergency/warning" }
+        // Page initialization on load
+
+        const translations = {
+            ru: { 
+                // Основные элементы интерфейса
+                changeLanguage: 'Смена языка', 
+                login: 'Вход', 
+                logout: 'Выход', 
+                mainPage: 'Главная страница', 
+                uvLamp: 'УФ лампа', 
+                blowOff: 'Обдув выкл.', 
+                blowOn: 'Обдув вкл.', 
+                door1: 'Дверь №1', 
+                door2: 'Дверь №2', 
+                uvOff: 'УФ-стерилизация выкл.', 
+                uvOn: 'УФ-стерилизация вкл.', 
+                lightOff: 'Свет выкл.', 
+                lightOn: 'Свет вкл.', 
+                manualMode: 'Ручной режим', 
+                autoMode: 'Авто режим', 
+                pressureAutoMode: 'Режим авто настройка\nдифференциального давления (Па)', 
+                settings: 'Настройки', 
+                viewAlarms: 'Просмотр тревог', 
+                userManagement: 'Управление пользователями', 
+                pressureDrop: 'Перепад давления', 
+                pressureRoom1: 'Перепад давления к\nпомещению №1', 
+                pressureRoom2: 'Перепад давления к\nпомещению №2', 
+                countdown: 'Обратный отсчет', 
+                uvSterilization: 'УФ-стерилизация', 
+                blowing: 'Обдув', 
+                min: 'мин', 
+                sec: 'сек', 
+                waiting: 'Ожидание', 
+                doorOpen: 'Дверь открыта', 
+                doorOpenAlarm: 'Тревога: Дверь открыта слишком долго!', 
+                settingsTitle: 'Настройка параметров', 
+                setting1: 'Установка верхнего предела разности давлений для помещения №2 (Па)', 
+                setting2: 'Установка нижнего предела разности давлений для помещения №2 (Па)', 
+                setting3: 'Лимит времени открытия двери (сек)', 
+                setting4: 'Запускать ли стерилизацию автоматически после закрытия двери №1?', 
+                setting5: 'Запускать ли обдув автоматически после закрытия двери №1?', 
+                setting6: 'Запускать ли стерилизацию автоматически после закрытия двери №2?', 
+                setting7: 'Запускать ли обдув автоматически после закрытия двери №2?', 
+                setting8: 'Установка верхнего предела разности давлений для помещения №1 (Па)', 
+                setting9: 'Установка нижнего предела разности давлений для помещения №1 (Па)', 
+                dpPriorityLabel: 'Установить приоритетную разность давления для поддержания давления в камере шлюза',
+                dp1: 'ΔP1',
+                dp2: 'ΔP2',
+                pressureAlarmDelayLabel: 'Установить время задержки срабатывания аварии при отклонении давления в камере шлюза (сек)',
+                modbusLabel: 'Адрес ведомого устройства Modbus TCP', 
+                no: 'НЕТ', 
+                yes: 'ДА', 
+                next: 'Далее', 
+                back: 'Назад', 
+                backToMain: 'Назад на главную', 
+                paramSettingsTitle: 'Настройка параметров', 
+                param1: 'Установка времени стерилизации (сек)', 
+                param2: 'Установка времени воздушного душа (сек)', 
+                param3: 'Установка верхнего предела перепада давления высокой эффективности (Па)', 
+                param4: 'Установка нижнего предела перепада давления высокой эффективности (Па)', 
+                param5: 'Установка верхнего предела перепада давления от зоны высокого класса к камере (Па)', 
+                param6: 'Установка нижнего предела перепада давления от зоны высокого класса к камере (Па)', 
+                paramCorrection: 'Коррекция параметров', 
+                paramCorrectionTitle: 'Коррекция параметров', 
+                correctionValue: 'Корректирующее значение', 
+                correction1: 'Перепад давления фильтра высокой эффективности (Па)', 
+                correction2: 'Перепад давления от зоны высокого класса к камере (Па)', 
+                correction3: 'Перепад давления камеры к зоне низкого класса (Па)', 
+                return: 'Назад', 
+                alarmTitle: 'Тревоги', 
+                clearAlarm: 'Очистить буфер тревог', 
+                alarmBufferCleared: 'Очищен буфер тревог', 
+                sampleAlarm: 'Пример тревоги: Дверь №1 открыта слишком долго', 
+                emergencyStop: 'АВАРИЙНЫЙ СТОП',
+                
+                // Ключи для тревог
+                alarm1: 'Вторичная дверь не была закрыта в отведенное время',
+                alarm2: 'Перепад давления от зоны высокого класса к камере превышает установленное верхнее предельное значение',
+                alarm3: 'Перепад давления от зоны высокого класса к камере ниже нижнего предела',
+                alarm4: 'Перепад давления HEPA превышает установленное верхнее предельное значение',
+                alarm5: 'Перепад давления HEPA ниже нижнего предела',
+                alarm6: 'Зафиксирована аварийная остановка',
+                alarm7: 'Перепад давления камеры к зоне низкого класса ниже нижнего предела',
+                alarm8: 'Перепад давления камеры к зоне низкого класса превышает установленное верхнее предельное значение',
+                alarm9: 'Основная дверь не была закрыта в отведенное время',
+                
+                // Элементы эмулятора
+                emulatorTitle: '📊 Эмуляция графиков давления в помещениях',
+                room1: 'Помещение №1',
+                room2: 'Помещение №2',
+                pause: '⏸ Пауза',
+                play: '▶ Пуск',
+                boundarySettingsTitle: '⚙️ Настройка границ графиков давления',
+                absoluteMin: 'Абсолютный мин:',
+                absoluteMax: 'Абсолютный макс:',
+                workingMin: 'Рабочий мин:',
+                workingMax: 'Рабочий макс:',
+                colorLegend: 'Абсолютные границы - Рабочий минимум - Рабочий максимум',
+                room1Params: 'Помещение №1 - параметры генерации',
+                room2Params: 'Помещение №2 - параметры генерации',
+                speed: 'Скорость:',
+                smoothness: 'Плавность:',
+                overshoot: 'Выход:',
+                startEmulator: '▶ Запустить эмуляцию',
+                export1: 'Экспорт 1 в CSV',
+                export2: 'Экспорт 2 в CSV',
+                eventLog: '📋 Журнал событий эмуляции',
+                clear: 'Очистить',
+                export: 'Экспорт',
+                startPrompt: '🔔 Запустите эмуляцию для начала мониторинга',
+                returnedToNormalAfterExceed: 'Вернулся в норму после превышения',
+                returnedToNormalAfterDrop: 'Вернулся в норму после падения',
+                exceedWarning: '⚠️ Превышение рабочего максимума!',
+                belowWarning: '🔻 Давление ниже рабочего минимума!',
+                monitoringResumed: '▶ Мониторинг возобновлен',
+                monitoringPaused: '⏸ Мониторинг приостановлен',
+                boundariesChanged: 'Изменены рабочие границы',
+                emulationStarted: '🚀 Эмуляция запущена',
+                emulationStopped: '⏹ Эмуляция остановлена',
+                emulationStoppedByAlarm: '⏹ Эмуляция остановлена по тревоге',
+                exportedData: '📊 Экспорт данных в CSV'
+            },
+            en: { 
+                // Основные элементы интерфейса (английский)
+                changeLanguage: 'Language change', 
+                login: 'Log on', 
+                logout: 'Log off', 
+                mainPage: 'Main Page', 
+                uvLamp: 'UV Lamp', 
+                blowOff: 'Blow OFF', 
+                blowOn: 'Blow ON', 
+                door1: 'Door No.1', 
+                door2: 'Door No.2', 
+                uvOff: 'UV Sterilization OFF', 
+                uvOn: 'UV Sterilization ON', 
+                lightOff: 'Light OFF', 
+                lightOn: 'Light ON', 
+                manualMode: 'Manual Mode', 
+                autoMode: 'Auto Mode', 
+                pressureAutoMode: 'Auto adjustment mode\ndifferential pressure (Pa)', 
+                settings: 'Settings', 
+                viewAlarms: 'View Alarms', 
+                userManagement: 'User Management', 
+                pressureDrop: 'Pressure difference', 
+                pressureRoom1: 'High-grade zone pressure difference\nacross the cavity', 
+                pressureRoom2: 'Cavity pressure difference\nto low-grade area', 
+                countdown: 'Countdown', 
+                uvSterilization: 'Sterilization', 
+                blowing: 'Air shower', 
+                min: 'min', 
+                sec: 'sec', 
+                waiting: 'Waiting', 
+                doorOpen: 'Door open', 
+                doorOpenAlarm: 'Alarm: Door open too long!', 
+                settingsTitle: 'Parameter Settings', 
+                setting1: 'Setting upper pressure difference limit for Room No.2 (Pa)', 
+                setting2: 'Setting lower pressure difference limit for Room No.2 (Pa)', 
+                setting3: 'Door open time limit (sec)', 
+                setting4: 'Automatically start sterilization after closing Door No.1?', 
+                setting5: 'Automatically start blowing after closing Door No.1?', 
+                setting6: 'Automatically start sterilization after closing Door No.2?', 
+                setting7: 'Automatically start blowing after closing Door No.2?', 
+                setting8: 'Setting upper pressure difference limit for Room No.1 (Pa)', 
+                setting9: 'Setting lower pressure difference limit for Room No.1 (Pa)', 
+                dpPriorityLabel: 'Set the priority pressure difference to maintain pressure in the airlock chamber',
+                dp1: 'ΔP1',
+                dp2: 'ΔP2',
+                pressureAlarmDelayLabel: 'Set alarm activation delay time for pressure deviation in the airlock chamber (sec)',
+                modbusLabel: 'Modbus TCP Slave Device Address', 
+                no: 'NO', 
+                yes: 'YES', 
+                next: 'Next', 
+                back: 'Back', 
+                backToMain: 'Return to homepage', 
+                paramSettingsTitle: 'Parameter settings', 
+                param1: 'Sterilization time setting (sec)', 
+                param2: 'Air shower time setting (sec)', 
+                param3: 'High-efficiency pressure difference upper limit setting (Pa)', 
+                param4: 'High-efficiency pressure difference lower limit setting (Pa)', 
+                param5: 'Upper limit setting of High-grade zone to cavity pressure difference (Pa)', 
+                param6: 'Lower limit setting of High-grade zone to cavity pressure difference (Pa)', 
+                paramCorrection: 'Parameter correction', 
+                paramCorrectionTitle: 'Parameter correction', 
+                correctionValue: 'Correction value', 
+                correction1: 'High-efficiency filter pressure difference (Pa)', 
+                correction2: 'High-grade zone to cavity pressure difference (Pa)', 
+                correction3: 'Cavity pressure difference to low-grade area (Pa)', 
+                return: 'Return', 
+                alarmTitle: 'Alarm', 
+                clearAlarm: 'Clear alarm buffer', 
+                alarmBufferCleared: 'Alarm buffer cleared', 
+                sampleAlarm: 'Sample alarm: Door No.1 opened too long', 
+                emergencyStop: 'EMERGENCY STOP',
+                
+                // Ключи для тревог
+                alarm1: 'The secondary door has not been closed within the allotted time',
+                alarm2: 'High-grade zone to cavity pressure difference exceeds the upper limit set value',
+                alarm3: 'High-grade zone to cavity pressure difference is below the lower limit',
+                alarm4: 'The pressure difference of HEPA exceeds the upper limit set value',
+                alarm5: 'The pressure difference of HEPA is below the lower limit',
+                alarm6: 'Emergency stop has been captured',
+                alarm7: 'Cavity pressure difference to low-grade area is below the lower limit',
+                alarm8: 'Cavity pressure difference to low-grade area exceeds the upper limit set value',
+                alarm9: 'The main door has not been closed within the allotted time',
+                
+                // Элементы эмулятора (английский)
+                emulatorTitle: '📊 Pressure Graphs Emulation',
+                room1: 'Room No.1',
+                room2: 'Room No.2',
+                pause: '⏸ Pause',
+                play: '▶ Start',
+                boundarySettingsTitle: '⚙️ Pressure Graph Boundaries Settings',
+                absoluteMin: 'Absolute min:',
+                absoluteMax: 'Absolute max:',
+                workingMin: 'Working min:',
+                workingMax: 'Working max:',
+                colorLegend: 'Absolute boundaries - Working minimum - Working maximum',
+                room1Params: 'Room No.1 - generation parameters',
+                room2Params: 'Room No.2 - generation parameters',
+                speed: 'Speed:',
+                smoothness: 'Smoothness:',
+                overshoot: 'Overshoot:',
+                startEmulator: '▶ Start emulation',
+                export1: 'Export 1 to CSV',
+                export2: 'Export 2 to CSV',
+                eventLog: '📋 Emulation event log',
+                clear: 'Clear',
+                export: 'Export',
+                startPrompt: '🔔 Start emulation to begin monitoring',
+                returnedToNormalAfterExceed: 'Returned to normal after exceed',
+                returnedToNormalAfterDrop: 'Returned to normal after drop',
+                exceedWarning: '⚠️ Working maximum exceeded!',
+                belowWarning: '🔻 Pressure below working minimum!',
+                monitoringResumed: '▶ Monitoring resumed',
+                monitoringPaused: '⏸ Monitoring paused',
+                boundariesChanged: 'Working boundaries changed',
+                emulationStarted: '🚀 Emulation started',
+                emulationStopped: '⏹ Emulation stopped',
+                emulationStoppedByAlarm: '⏹ Emulation stopped by alarm',
+                exportedData: '📊 Data exported to CSV'
+            },
+            zh: { 
+                // Основные элементы интерфейса (китайский)
+                changeLanguage: '變更語言', 
+                login: '登入', 
+                logout: '登出', 
+                mainPage: '主頁面', 
+                uvLamp: '紫外線燈', 
+                blowOff: '鼓風 關', 
+                blowOn: '鼓風 開', 
+                door1: '門 №1', 
+                door2: '門 №2', 
+                uvOff: '紫外線滅菌 關', 
+                uvOn: '紫外線滅菌 開', 
+                lightOff: '燈光 關', 
+                lightOn: '燈光 開', 
+                manualMode: '手動模式', 
+                autoMode: '自動模式', 
+                pressureAutoMode: '自動設定模式\n差壓 (Pa)', 
+                settings: '設定', 
+                viewAlarms: '查看警報', 
+                userManagement: '用戶管理', 
+                pressureDrop: '壓差', 
+                pressureRoom1: '高級區跨腔壓差', 
+                pressureRoom2: '腔體與低級區壓差', 
+                countdown: '倒數計時', 
+                uvSterilization: '滅菌', 
+                blowing: '風淋', 
+                min: '分', 
+                sec: '秒', 
+                waiting: '等待', 
+                doorOpen: '門已打開', 
+                doorOpenAlarm: '警報：門開啟時間過長！', 
+                settingsTitle: '參數設定', 
+                setting1: '設定房間 №2 的壓差上限 (Pa)', 
+                setting2: '設定房間 №2 的壓差下限 (Pa)', 
+                setting3: '門開啟時間限制 (秒)', 
+                setting4: '關閉門 №1 後是否自動啟動滅菌？', 
+                setting5: '關閉門 №1 後是否自動啟動鼓風？', 
+                setting6: '關閉門 №2 後是否自動啟動滅菌？', 
+                setting7: '關閉門 №2 後是否自動啟動鼓風？', 
+                setting8: '設定房間 №1 的壓差上限 (Pa)', 
+                setting9: '設定房間 №1 的壓差下限 (Pa)', 
+                dpPriorityLabel: '設定維持閘室壓力的優先壓差',
+                dp1: 'ΔP1',
+                dp2: 'ΔP2',
+                pressureAlarmDelayLabel: '設定閘室壓力偏差警報延遲時間 (秒)',
+                modbusLabel: 'Modbus TCP 從站設備地址', 
+                no: '否', 
+                yes: '是', 
+                next: '下一步', 
+                back: '返回', 
+                backToMain: '返回主頁', 
+                paramSettingsTitle: '參數設定', 
+                param1: '滅菌時間設定 (秒)', 
+                param2: '風淋時間設定 (秒)', 
+                param3: '高效壓差上限設定 (Pa)', 
+                param4: '高效壓差下限設定 (Pa)', 
+                param5: '高級區至腔體壓差上限設定 (Pa)', 
+                param6: '高級區至腔體壓差下限設定 (Pa)', 
+                paramCorrection: '參數校正', 
+                paramCorrectionTitle: '參數校正', 
+                correctionValue: '校正值', 
+                correction1: '高效過濾器壓差 (Pa)', 
+                correction2: '高級區至腔體壓差 (Pa)', 
+                correction3: '腔體至低級區壓差 (Pa)', 
+                return: '返回', 
+                alarmTitle: '警報', 
+                clearAlarm: '清除警報緩衝', 
+                alarmBufferCleared: '警報緩衝已清除', 
+                sampleAlarm: '示例警報：門 №1 開啟時間過長', 
+                emergencyStop: '緊急停止',
+                
+                // Ключи для тревог
+                alarm1: '輔助門未在規定時間內關閉',
+                alarm2: '高級區至腔體壓差超過設定上限值',
+                alarm3: '高級區至腔體壓差低於下限',
+                alarm4: 'HEPA 壓差超過設定上限值',
+                alarm5: 'HEPA 壓差低於下限',
+                alarm6: '已觸發緊急停止',
+                alarm7: '腔體至低級區壓差低於下限',
+                alarm8: '腔體至低級區壓差超過設定上限值',
+                alarm9: '主門未在規定時間內關閉',
+                
+                // Элементы эмулятора (китайский)
+                emulatorTitle: '📊 壓力圖表模擬',
+                room1: '房間 №1',
+                room2: '房間 №2',
+                pause: '⏸ 暫停',
+                play: '▶ 開始',
+                boundarySettingsTitle: '⚙️ 壓力圖表邊界設置',
+                absoluteMin: '絕對最小:',
+                absoluteMax: '絕對最大:',
+                workingMin: '工作最小:',
+                workingMax: '工作最大:',
+                colorLegend: '絕對邊界 - 工作最小值 - 工作最大值',
+                room1Params: '房間 №1 - 生成參數',
+                room2Params: '房間 №2 - 生成參數',
+                speed: '速度:',
+                smoothness: '平滑度:',
+                overshoot: '超出:',
+                startEmulator: '▶ 開始模擬',
+                export1: '導出 1 到 CSV',
+                export2: '導出 2 到 CSV',
+                eventLog: '📋 模擬事件日誌',
+                clear: '清除',
+                export: '導出',
+                startPrompt: '🔔 開始模擬以監測',
+                returnedToNormalAfterExceed: '超出後恢復正常',
+                returnedToNormalAfterDrop: '下降後恢復正常',
+                exceedWarning: '⚠️ 超過工作最大值！',
+                belowWarning: '🔻 壓力低於工作最小值！',
+                monitoringResumed: '▶ 監測恢復',
+                monitoringPaused: '⏸ 監測暫停',
+                boundariesChanged: '工作邊界已更改',
+                emulationStarted: '🚀 模擬已啟動',
+                emulationStopped: '⏹ 模擬已停止',
+                emulationStoppedByAlarm: '⏹ 模擬因警報停止',
+                exportedData: '📊 數據導出到 CSV'
+            }
+        };
+        
+        let currentLang = 'ru';  // Текущий язык (по умолчанию русский)
+
+        // Настройки автозапуска (после закрытия дверей)
+        let autoStartSettings = {
+            uvDoor1: false,   // Автозапуск УФ после закрытия двери 1
+            blowDoor1: false,  // Автозапуск обдува после закрытия двери 1
+            uvDoor2: false,    // Автозапуск УФ после закрытия двери 2
+            blowDoor2: false   // Автозапуск обдува после закрытия двери 2
+        };/* =========================================================
+DISPLAY CORRECTIONS (UI only)
+КОРРЕКЦИИ ОТОБРАЖЕНИЯ (только UI)
+仅显示修正（仅UI）
+========================================================= */
+let filterCorrection = 0;     // RU: коррекция HEPA (Па) | EN: HEPA correction (Pa) | CN: HEPA 修正（Pa）
+let dpCorrection1 = 0;        // RU: коррекция ΔP1 (Па) | EN: ΔP1 correction (Pa) | CN: ΔP1 修正（Pa）
+let dpCorrection2 = 0;        // RU: коррекция ΔP2 (Па) | EN: ΔP2 correction (Pa) | CN: ΔP2 修正（Pa）
+
+
+// RU/EN/CN: ограничение диапазона коррекций (только отображение)
+// RU: диапазон коррекции: [-20; +20] Па
+// EN: correction range: [-20; +20] Pa
+// CN: 修正范围: [-20; +20] Pa
+const CORRECTION_MIN = -20;
+const CORRECTION_MAX = 20;
+
+function clampCorrection(n) {
+    if (!Number.isFinite(n)) return 0;
+    if (n < CORRECTION_MIN) return CORRECTION_MIN;
+    if (n > CORRECTION_MAX) return CORRECTION_MAX;
+    return n;
+}
+
+function formatSignedInt(n) {
+    const v = Math.round(n);
+    return (v >= 0 ? '+' : '') + String(v);
+}
+
+function setCorrectionInputState(inputEl, isCorrected) {
+    if (!inputEl) return;
+    inputEl.classList.toggle('corrected', !!isCorrected);
+}
+
+function setPressureRowCorrectedByKey(dataKey, isCorrected) {
+    const label = document.querySelector(`[data-key="${dataKey}"]`);
+    if (!label) return;
+    const row = label.closest('.pressure-row');
+    if (!row) return;
+    row.classList.toggle('corrected', !!isCorrected);
+}
+
+function setHepaRowCorrected(isCorrected) {
+    const hepaRow = document.querySelector('.pressure-block .pressure-row');
+    if (!hepaRow) return;
+    hepaRow.classList.toggle('corrected', !!isCorrected);
+}
+
+
+// RU: выбранный приоритет ΔP (пока только параметр, без логики)
+// EN: selected ΔP priority (parameter only for now)
+// CN: 选择的ΔP优先级（目前仅参数）
+let dpPriority = 'dp1';
+let pressureAlarmDelaySeconds = 3;
+
+function parseSignedNumber(value) {
+    const s = String(value || '').replace(',', '.').trim();
+    const n = parseFloat(s);
+    return Number.isFinite(n) ? n : 0;
+}
+
+function setDPPriority(priority) {
+    dpPriority = priority === 'dp2' ? 'dp2' : 'dp1';
+    const b1 = document.getElementById('dpPriorityDP1');
+    const b2 = document.getElementById('dpPriorityDP2');
+    if (b1 && b2) {
+        if (dpPriority === 'dp1') { b1.classList.add('active'); b2.classList.remove('active'); }
+        else { b2.classList.add('active'); b1.classList.remove('active'); }
+    }
+}
+
+function savePressureAlarmDelay() {
+    const el = document.getElementById('pressureAlarmDelayInput');
+    if (!el) return;
+    const v = parseInt(String(el.value).trim(), 10);
+    pressureAlarmDelaySeconds = Number.isFinite(v) && v >= 0 ? v : 0;
+    el.value = String(pressureAlarmDelaySeconds);
+}
+
+function bindCorrectionInputs() {
+    const filterEl = document.getElementById('corrFilter');
+    const dp1El = document.getElementById('corrDP1');
+    const dp2El = document.getElementById('corrDP2');
+
+    // RU: ставим HTML-ограничения, даже если input=text (не влияет на стили)
+    // EN: set HTML limits even for type=text (no visual change)
+    // CN: 设置HTML限制（不影响样式）
+    [filterEl, dp1El, dp2El].forEach(el => {
+        if (!el) return;
+        el.setAttribute('inputmode', 'numeric');
+        el.setAttribute('autocomplete', 'off');
+    });
+
+    function applyClampAndRefresh() {
+        // clamp + normalize values
+        filterCorrection = clampCorrection(parseSignedNumber(filterEl?.value));
+        dpCorrection1 = clampCorrection(parseSignedNumber(dp1El?.value));
+        dpCorrection2 = clampCorrection(parseSignedNumber(dp2El?.value));
+
+        if (filterEl) filterEl.value = formatSignedInt(filterCorrection);
+        if (dp1El) dp1El.value = formatSignedInt(dpCorrection1);
+        if (dp2El) dp2El.value = formatSignedInt(dpCorrection2);
+
+        // visual indication on inputs
+        setCorrectionInputState(filterEl, filterCorrection !== 0);
+        setCorrectionInputState(dp1El, dpCorrection1 !== 0);
+        setCorrectionInputState(dp2El, dpCorrection2 !== 0);
+
+        // visual indication on displayed rows
+        setHepaRowCorrected(filterCorrection !== 0);
+        setPressureRowCorrectedByKey('pressureRoom1', dpCorrection1 !== 0);
+        setPressureRowCorrectedByKey('pressureRoom2', dpCorrection2 !== 0);
+
+        updatePressurePanel();
+    }
+
+    if (filterEl) {
+        filterEl.addEventListener('input', applyClampAndRefresh);
+        filterEl.addEventListener('change', applyClampAndRefresh);
+    }
+    if (dp1El) {
+        dp1El.addEventListener('input', applyClampAndRefresh);
+        dp1El.addEventListener('change', applyClampAndRefresh);
+    }
+    if (dp2El) {
+        dp2El.addEventListener('input', applyClampAndRefresh);
+        dp2El.addEventListener('change', applyClampAndRefresh);
+    }
+
+    // initial sync
+    applyClampAndRefresh();
+}
+
+function getPressureValueElByKey(dataKey) {
+    const label = document.querySelector(`[data-key="${dataKey}"]`);
+    if (!label) return null;
+    const row = label.closest('.pressure-row');
+    if (!row) return null;
+    return row.querySelector('.p-val');
+}
+
+function updatePressurePanel() {
+    // RU: берём "реальные" значения из эмулятора и применяем коррекции только к отображению
+    // EN: take emulator "real" values and apply corrections to display only
+    // CN: 从模拟器获取“真实”值，仅对显示应用修正
+    const room1 = emulatorRooms[0];
+    const room2 = emulatorRooms[1];
+
+    const r1 = Number.isFinite(room1?.currentPressure) ? room1.currentPressure : 0;
+    const r2 = Number.isFinite(room2?.currentPressure) ? room2.currentPressure : 0;
+
+    // HEPA: базовое 60 Па + коррекция фильтра (как просил)
+    const hepaValEl = document.querySelector('.pressure-block .pressure-row .p-val'); // первая строка HEPA
+    if (hepaValEl) hepaValEl.textContent = String(Math.round(60 + filterCorrection));
+
+    const dp1El = getPressureValueElByKey('pressureRoom1');
+    const dp2El = getPressureValueElByKey('pressureRoom2');
+    if (dp1El) dp1El.textContent = String(Math.round(r1 + dpCorrection1));
+    if (dp2El) dp2El.textContent = String(Math.round(r2 + dpCorrection2));
+}
+
+function syncWorkingLimitsFromSettings(roomIndex) {
+    const wMinSetting = document.getElementById(`settingWorkMin${roomIndex}`);
+    const wMaxSetting = document.getElementById(`settingWorkMax${roomIndex}`);
+    const wMinBoundary = document.getElementById(`workMin${roomIndex}`);
+    const wMaxBoundary = document.getElementById(`workMax${roomIndex}`);
+
+    if (!wMinSetting || !wMaxSetting || !wMinBoundary || !wMaxBoundary) return;
+
+    wMinBoundary.value = String(parseSignedNumber(wMinSetting.value));
+    wMaxBoundary.value = String(parseSignedNumber(wMaxSetting.value));
+
+    updateEmulatorRoomSettings(roomIndex);
+}
+        // Page initialization on load
+
+        
+        // Добавление тревоги в список (храним ключ сообщения, а не текст)
+        function addAlarm(messageKey, type = 'general') {
+            const now = new Date();
+            const timeStr = now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU');
+            
+            // Добавляем в начало массива (последние сверху)
+            alarmList.unshift({ 
+                time: timeStr, 
+                messageKey: messageKey, 
+                type: type 
+            });
+            
+            // Ограничиваем до 100 записей
+            if (alarmList.length > 100) alarmList.pop();
+            
+            // Обновляем отображение если мы на странице тревог
+            if (document.getElementById('alarmPage').classList.contains('active')) {
+                renderAlarmList();
+            }
+        }
+        
+        // Очистка буфера тревог
+        function clearAlarms() { 
+            alarmList = [];
+            renderAlarmList();
+        }
+        
+        // Отображение списка тревог с учетом текущего языка
+        function renderAlarmList() {
+            const display = document.getElementById('alarmDisplay');
+            if (alarmList.length === 0) {
+                display.innerHTML = '<div class="alarm-cleared" data-key="alarmBufferCleared">' + 
+                    (translations[currentLang]?.alarmBufferCleared || 'Очищен буфер тревог') + '</div>';
+                return;
+            }
+            
+            display.innerHTML = alarmList.map(alarm => {
+                // Получаем переведенное сообщение по ключу
+                let message = alarm.messageKey;
+                if (translations[currentLang] && translations[currentLang][alarm.messageKey]) {
+                    message = translations[currentLang][alarm.messageKey];
+                }
+                
+                // Определяем класс для типа тревоги
+                let typeClass = '';
+                if (alarm.type === 'doorOpen') typeClass = 'door-open';
+                else if (alarm.type === 'emergency') typeClass = 'emergency';
+                else if (alarm.type === 'warning') typeClass = 'warning';
+                
+                return `
+                    <div class="alarm-item ${typeClass}">
+                        <div class="alarm-time">${alarm.time}</div>
+                        <div class="alarm-message">${message}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        // Page initialization on load
+
+        
+        // Параметры эмуляции
+        const sampleRate = 0.1;            // Базовый шаг времени (0.1 сек)
+        const windowSize = 10;               // Окно отображения (10 секунд = 0.1667 минут)
+        const windowSizeMinutes = windowSize / 60; // 10 секунд = 0.1667 минут
+        const SEC_TO_MIN = 1/60;               // Коэффициент перевода секунд в минуты
+
+        let emulatorIntervalId = null;        // ID интервала эмулятора
+        let emulatorEventLog = [];             // Лог событий эмулятора
+
+        // Данные помещений для эмулятора
+        const emulatorRooms = [
+            {
+                id: 'pressureChart1',
+                title: 'Помещение №1',
+                min: 0, max: 50,                 // Абсолютные границы
+                workMin: 10, workMax: 40,          // Рабочие границы
+                currentTime: 0,                     // Текущее время (сек)
+                data: [],                            // Массив данных для экспорта
+                isRunning: true,                      // Флаг работы
+                speed: 1.0,                           // Скорость изменений
+                smoothness: 0.5,                       // Плавность (инерция)
+                overshoot: 0.2,                         // Вероятность выхода за границы
+                lastPressure: null,                      // Последнее значение давления
+                targetPressure: null,                    // Целевое давление
+                lastStatus: 'normal',                     // Последний статус (normal/high/low)
+                statusStartTime: 0,                        // Время начала текущего статуса,
+                currentPressure: null
+            },
+            {
+                id: 'pressureChart2',
+                title: 'Помещение №2',
+                min: 0, max: 50,
+                workMin: 15, workMax: 35,
+                currentTime: 0,
+                data: [],
+                isRunning: true,
+                speed: 1.0,
+                smoothness: 0.5,
+                overshoot: 0.2,
+                lastPressure: null,
+                targetPressure: null,
+                lastStatus: 'normal',
+                statusStartTime: 0,
+                currentPressure: null
+            }
+        ];
+
+        // Функция добавления события в лог эмулятора (с переводом)
+        function addEmulatorLogEntry(roomIndex, type, messageKey, pressure = null) {
+            const room = emulatorRooms[roomIndex - 1];
+            if (!room) return;
+            
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            let icon = '';
+            switch(type) {
+                case 'high': icon = '⚠️'; break;
+                case 'low': icon = '🔻'; break;
+                default: icon = 'ℹ️';
+            }
+            
+            // Получаем переведенное сообщение или используем ключ как есть
+            let message = messageKey;
+            if (translations[currentLang] && translations[currentLang][messageKey]) {
+                message = translations[currentLang][messageKey];
+            }
+            
+            const pressureText = pressure !== null ? ` (${pressure.toFixed(1)} Па)` : '';
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'emulator-log-entry';
+            logEntry.innerHTML = `
+                <span class="emulator-log-time">${timeStr}</span>
+                <span>${icon} Пом.${roomIndex}: ${message}${pressureText}</span>
+            `;
+            
+            const logContainer = document.getElementById('emulatorLogContainer');
+            logContainer.appendChild(logEntry);
+            
+            // Удаляем первое информационное сообщение если оно есть
+            if (logContainer.children.length === 2 && logContainer.children[0].innerHTML.includes('startPrompt')) {
+                logContainer.removeChild(logContainer.children[0]);
+            }
+            
+            emulatorEventLog.push({
+                time: timeStr,
+                room: roomIndex,
+                type: type,
+                message: message,
+                pressure: pressure
+            });
+            
+            document.getElementById('emulatorLogCount').textContent = emulatorEventLog.length;
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            while (logContainer.children.length > 100) {
+                logContainer.removeChild(logContainer.firstChild);
+            }
+        }
+
+        // Очистка лога эмулятора
+        function clearEmulatorLog() {
+            const logContainer = document.getElementById('emulatorLogContainer');
+            logContainer.innerHTML = '';
+            emulatorEventLog = [];
+            document.getElementById('emulatorLogCount').textContent = '0';
+            
+            const infoEntry = document.createElement('div');
+            infoEntry.className = 'emulator-log-entry';
+            infoEntry.innerHTML = `
+                <span class="emulator-log-time">--:--:--</span>
+                <span data-key="startPrompt">🔔 Запустите эмуляцию для начала мониторинга</span>
+            `;
+            logContainer.appendChild(infoEntry);
+            // Обновляем перевод
+            const key = infoEntry.querySelector('[data-key]');
+            if (key && translations[currentLang] && translations[currentLang].startPrompt) {
+                key.textContent = translations[currentLang].startPrompt;
+            }
+        }
+
+        // Экспорт лога эмулятора в CSV
+        function exportEmulatorLog() {
+            if (emulatorEventLog.length === 0) {
+                alert('Лог пуст');
+                return;
+            }
+            
+            const csvContent = 'Время,Помещение,Тип,Сообщение,Давление (Па)\n' +
+                emulatorEventLog.map(entry => 
+                    `"${entry.time}","Помещение ${entry.room}","${entry.type}","${entry.message}",${entry.pressure ? entry.pressure.toFixed(2) : ''}`
+                ).join('\n');
+
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `emulator_events_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.csv`;
+            link.click();
+            
+            setTimeout(() => URL.revokeObjectURL(link.href), 100);
+        }
+
+        // Проверка статуса давления для эмулятора
+        function checkEmulatorPressureStatus(room, pressure, currentTimeSeconds) {
+            let newStatus = 'normal';
+            
+            if (pressure > room.workMax) {
+                newStatus = 'high';
+            } else if (pressure < room.workMin) {
+                newStatus = 'low';
+            }
+            
+            if (newStatus !== room.lastStatus) {
+                const timeInStatusSeconds = currentTimeSeconds - room.statusStartTime;
+                const timeInStatusMinutes = timeInStatusSeconds * SEC_TO_MIN;
+                
+                if (room.lastStatus === 'high') {
+                    addEmulatorLogEntry(emulatorRooms.indexOf(room) + 1, 'info', 
+                        'returnedToNormalAfterExceed', pressure);
+                } else if (room.lastStatus === 'low') {
+                    addEmulatorLogEntry(emulatorRooms.indexOf(room) + 1, 'info', 
+                        'returnedToNormalAfterDrop', pressure);
+                }
+                
+                if (newStatus === 'high') {
+                    addEmulatorLogEntry(emulatorRooms.indexOf(room) + 1, 'high', 
+                        'exceedWarning', pressure);
+                } else if (newStatus === 'low') {
+                    addEmulatorLogEntry(emulatorRooms.indexOf(room) + 1, 'low', 
+                        'belowWarning', pressure);
+                }
+                
+                room.lastStatus = newStatus;
+                room.statusStartTime = currentTimeSeconds;
+            }
+            
+            return newStatus;
+        }
+
+        // Инициализация графиков эмулятора
+// chart instances will be created lazily; the helper below
+        // (`ensureEmulatorChartsInitialized`) is responsible for filling
+        // this array when the DOM is ready and Chart.js is available.
+        let emulatorCharts = [];
+
+        // Обновление статуса эмулятора (пауза/пуск)
+        function updateEmulatorRoomStatus(roomIndex) {
+            const room = emulatorRooms[roomIndex - 1];
+            const statusEl = document.getElementById(`emulatorStatus${roomIndex}`);
+            const stopBtn = document.getElementById(`emulatorStopBtn${roomIndex}`);
+            
+            // keep the base class, just toggle the built-in "active" marker
+            if (room.isRunning) {
+                statusEl.classList.add('active');
+                statusEl.classList.remove('status-stopped');
+                stopBtn.style.backgroundColor = '#28a745';
+                // Обновляем текст кнопки с переводом
+                const pauseText = translations[currentLang]?.pause || '⏸ Пауза';
+                stopBtn.innerHTML = `<span data-key="pause">${pauseText}</span>`;
+            } else {
+                statusEl.classList.remove('active');
+                statusEl.classList.add('status-stopped');
+                stopBtn.style.backgroundColor = '#dc3545';
+                const playText = translations[currentLang]?.play || '▶ Пуск';
+                stopBtn.innerHTML = `<span data-key="play">${playText}</span>`;
+            }
+        }
+
+        // Управление паузой эмулятора
+        function toggleEmulatorRoom(roomIndex) {
+            const room = emulatorRooms[roomIndex - 1];
+            room.isRunning = !room.isRunning;
+            updateEmulatorRoomStatus(roomIndex);
+            
+            if (room.isRunning) {
+                addEmulatorLogEntry(roomIndex, 'info', 'monitoringResumed');
+            } else {
+                addEmulatorLogEntry(roomIndex, 'info', 'monitoringPaused');
+            }
+        }
+
+        // Обновление скорости эмулятора
+        function updateEmulatorSpeed(roomIndex, value) {
+            const room = emulatorRooms[roomIndex - 1];
+            room.speed = parseFloat(value);
+            document.getElementById(`emulatorSpeedValue${roomIndex}`).textContent = parseFloat(value).toFixed(1) + 'x';
+        }
+
+        // Обновление плавности эмулятора
+        function updateEmulatorSmoothness(roomIndex, value) {
+            const room = emulatorRooms[roomIndex - 1];
+            room.smoothness = parseFloat(value);
+            document.getElementById(`emulatorSmoothValue${roomIndex}`).textContent = parseFloat(value).toFixed(2);
+        }
+
+        // Обновление вероятности выхода за границы эмулятора
+        function updateEmulatorOvershoot(roomIndex, value) {
+            const room = emulatorRooms[roomIndex - 1];
+            room.overshoot = parseFloat(value);
+            document.getElementById(`emulatorOverValue${roomIndex}`).textContent = parseFloat(value).toFixed(2);
+        }
+
+        // Обновление настроек помещения эмулятора (границы)
+        function updateEmulatorRoomSettings(roomIndex) {
+            // make sure charts exist before manipulating them (safety for early input events)
+            if (!ensureEmulatorChartsInitialized()) {
+                // if charts could not be created just bail out – user will see an error later
+                return;
+            }
+            const room = emulatorRooms[roomIndex - 1];
+            const chart = emulatorCharts[roomIndex - 1];
+
+/* 
+===========================================================
+Pressure Boundary Validation
+Проверка границ давления
+压力边界校验
+===========================================================
+*/
+const absMinInput  = document.getElementById(`min${roomIndex}`);
+const absMaxInput  = document.getElementById(`max${roomIndex}`);
+const workMinInput = document.getElementById(`workMin${roomIndex}`);
+const workMaxInput = document.getElementById(`workMax${roomIndex}`);
+
+let absMin  = parseFloat(absMinInput.value);
+let absMax  = parseFloat(absMaxInput.value);
+let workMin = parseFloat(workMinInput.value);
+let workMax = parseFloat(workMaxInput.value);
+
+// RU: абс. диапазон должен быть корректным (min < max)
+// EN: absolute range must be valid (min < max)
+// CN: 绝对范围必须有效 (min < max)
+if (isFinite(absMin) && isFinite(absMax) && absMin >= absMax) {
+    absMax = absMin + 1;
+    absMaxInput.value = absMax;
+}
+
+// RU: рабочий диапазон не выходит за абсолютный
+// EN: working range must stay inside absolute
+// CN: 工作范围必须在绝对范围内
+if (isFinite(workMin) && isFinite(absMin) && workMin < absMin) {
+    workMin = absMin;
+    workMinInput.value = workMin;
+}
+if (isFinite(workMax) && isFinite(absMax) && workMax > absMax) {
+    workMax = absMax;
+    workMaxInput.value = workMax;
+}
+
+// RU: рабочий диапазон должен быть корректным (workMin < workMax)
+// EN: working range must be valid (workMin < workMax)
+// CN: 工作范围必须有效 (workMin < workMax)
+if (isFinite(workMin) && isFinite(workMax) && workMin >= workMax) {
+    workMax = workMin + 1;
+    workMaxInput.value = workMax;
+}
+
+            
+            const oldWorkMin = room.workMin;
+            const oldWorkMax = room.workMax;
+            
+            room.min = parseFloat(document.getElementById(`min${roomIndex}`).value) || 0;
+            room.max = parseFloat(document.getElementById(`max${roomIndex}`).value) || 50;
+            room.workMin = parseFloat(document.getElementById(`workMin${roomIndex}`).value) || 10;
+            room.workMax = parseFloat(document.getElementById(`workMax${roomIndex}`).value) || 40;
+
+            // RU/EN/CN: синхронизируем поля "Настройки параметров" с рабочими границами эмулятора
+            const sMin = document.getElementById(`settingWorkMin${roomIndex}`);
+            const sMax = document.getElementById(`settingWorkMax${roomIndex}`);
+            if (sMin) sMin.value = String(room.workMin);
+            if (sMax) sMax.value = String(room.workMax);
+
+
+            if (oldWorkMin !== room.workMin || oldWorkMax !== room.workMax) {
+                addEmulatorLogEntry(roomIndex, 'info', 
+                    'boundariesChanged', null);
+            }
+
+            chart.options.scales.y.min = room.min;
+            chart.options.scales.y.max = room.max;
+            
+            updateEmulatorMinMaxLines(room, chart, room.currentTime);
+            chart.update();
+        }
+
+        // Обновление линий рабочих границ эмулятора
+        function updateEmulatorMinMaxLines(room, chart, currentTimeSeconds) {
+            if (!chart) return;
+            
+            const t = currentTimeSeconds || room.currentTime || 0;
+            const tMinutes = t * SEC_TO_MIN;
+            const roundedTMinutes = Math.round(tMinutes * 100) / 100;
+            
+            const minLineData = [
+                { x: Math.max(0, tMinutes - windowSizeMinutes), y: room.workMin },
+                { x: roundedTMinutes, y: room.workMin }
+            ];
+            const maxLineData = [
+                { x: Math.max(0, tMinutes - windowSizeMinutes), y: room.workMax },
+                { x: roundedTMinutes, y: room.workMax }
+            ];
+            
+            chart.data.datasets[1].data = minLineData;
+            chart.data.datasets[2].data = maxLineData;
+        }
+
+        // Функция генерации нового значения давления для эмулятора
+        function generateEmulatorPressure(room) {
+            if (!room.isRunning) return null;
+            
+            if (room.lastPressure === null) {
+                room.lastPressure = (room.workMin + room.workMax) / 2;
+                room.targetPressure = room.lastPressure;
+                room.currentPressure = room.lastPressure;
+                room.statusStartTime = 0;
+            }
+            
+            if (room.targetPressure === null || Math.random() < 0.05 * room.speed) {
+                const shouldOvershoot = Math.random() < room.overshoot;
+                
+                if (shouldOvershoot) {
+                    const range = room.max - room.min;
+                    const workRange = room.workMax - room.workMin;
+                    
+                    if (Math.random() < 0.5) {
+                        room.targetPressure = room.workMax + Math.random() * (range - workRange) * 0.7;
+                    } else {
+                        room.targetPressure = room.workMin - Math.random() * (range - workRange) * 0.7;
+                    }
+                    
+                    room.targetPressure = Math.max(room.min, Math.min(room.max, room.targetPressure));
+                } else {
+                    room.targetPressure = Math.random() * (room.workMax - room.workMin) + room.workMin;
+                }
+            }
+            
+            const delta = room.targetPressure - room.lastPressure;
+            const step = delta * (0.05 * room.speed) * (1 - room.smoothness * 0.8);
+            
+            room.lastPressure += step;
+            
+            const noise = (Math.random() - 0.5) * 0.3 * room.speed;
+            let newPressure = room.lastPressure + noise;
+            
+            newPressure = Math.max(room.min, Math.min(room.max, newPressure));
+            
+            return newPressure;
+        }
+
+        // Запуск эмулятора
+        
+        /**
+         * RU: Гарантируем, что графики эмулятора инициализированы (Chart.js загружен, canvas найден).
+         * EN: Ensure emulator charts are initialized (Chart.js loaded, canvas exists).
+         * CN: 确保模拟图表已初始化（已加载 Chart.js，已找到画布）。
+         *
+         * Возвращает true если графики готовы, иначе false.
+         */
+        function markChartUnavailable() {
+            const message = currentLang === 'en'
+                ? 'Chart.js is unavailable. Emulator charts are disabled.'
+                : currentLang === 'zh'
+                    ? 'Chart.js 未載入，圖表模擬器已停用。'
+                    : 'Chart.js не загружен, эмулятор графиков отключен.';
+
+            const logContainer = document.getElementById('emulatorLogContainer');
+            if (logContainer && !logContainer.textContent.includes('Chart.js')) {
+                const infoEntry = document.createElement('div');
+                infoEntry.className = 'emulator-log-entry';
+                infoEntry.innerHTML = `
+                    <span class="emulator-log-time">--:--:--</span>
+                    <span>${message}</span>
+                `;
+                logContainer.prepend(infoEntry);
+            }
+
+            const startBtn = document.getElementById('emulatorStartBtn');
+            if (startBtn) {
+                startBtn.disabled = true;
+                startBtn.style.opacity = '0.6';
+                startBtn.style.cursor = 'not-allowed';
+                startBtn.title = message;
+            }
+        }
+
+        function ensureEmulatorChartsInitialized() {
+            try {
+                if (typeof Chart === 'undefined') {
+                    console.error('Chart.js is not loaded (Chart is undefined).');
+                    markChartUnavailable();
+                    return false;
+                }
+                // emulatorCharts может быть не создан, если в коде ранее была ошибка выполнения.
+                if (!window.emulatorCharts || !Array.isArray(window.emulatorCharts)) {
+                    console.warn('emulatorCharts is missing, initializing...');
+                    window.emulatorCharts = emulatorRooms.map((room) => {
+                        const canvas = document.getElementById(room.id);
+                        if (!canvas) return null;
+                        canvas.style.width = '100%';
+                        canvas.style.height = '170px';
+                        canvas.width = canvas.parentElement?.clientWidth || 800;
+                        canvas.height = 170;
+                        const ctx = canvas.getContext('2d');
+                        const borderColor = getRandomColor();
+                        return new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                datasets: [
+                                    { label: 'Давление (Па)', data: [], borderColor, backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.1 },
+                                    { label: 'Рабочий Min', data: [], borderColor: 'red', borderDash: [5,5], pointRadius: 0, fill: false, borderWidth: 1.5 },
+                                    { label: 'Рабочий Max', data: [], borderColor: 'blue', borderDash: [5,5], pointRadius: 0, fill: false, borderWidth: 1.5 }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                animation: false,
+                                scales: {
+                                    y: { min: room.min, max: room.max, title: { display: false }, grid: { color: 'rgba(0,0,0,0.1)' }, ticks: { font: { size: 9 } } },
+                                    x: { type: 'linear', title: { display: false }, min: 0, max: windowSizeMinutes, grid: { color: 'rgba(0,0,0,0.1)' },
+                                         ticks: { callback: (value) => value.toFixed(1), maxTicksLimit: 5, font: { size: 8 } } }
+                                },
+                                plugins: {
+                                    title: { display: false },
+                                    legend: { display: false },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: (context) => context.parsed.y.toFixed(1) + ' Па',
+                                            title: (context) => 'Время: ' + context[0].parsed.x.toFixed(2) + ' мин'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                    // reflect global array in local variable for legacy code paths
+                    emulatorCharts = window.emulatorCharts;
+                } else {
+                    // if charts already existed globally make sure local handle stays in sync
+                    emulatorCharts = window.emulatorCharts;
+                }
+                // проверяем что chart объекты есть
+                if (window.emulatorCharts.some(c => c == null)) {
+                    console.warn('Some emulator charts are null (missing canvas?).');
+                    // но всё равно позволяем стартовать, просто эти графики не будут обновляться
+                }
+                return true;
+            } catch (e) {
+                console.error('Failed to initialize emulator charts:', e);
+                markChartUnavailable();
+                return false;
+            }
+        }
+
+function startEmulator() {
+            if (!ensureEmulatorChartsInitialized()) {
+                console.warn('Emulator start skipped: Chart.js is unavailable.');
+                return;
+            }
+
+            clearEmulatorLog();
+            
+            emulatorRooms.forEach((room, index) => {
+                room.isRunning = true;
+                room.currentTime = 0;
+                room.data = [];
+                room.lastPressure = null;
+                room.targetPressure = null;
+                room.lastStatus = 'normal';
+                room.statusStartTime = 0;
+                
+                if (emulatorCharts[index]) {
+                    emulatorCharts[index].data.labels = [];
+                    emulatorCharts[index].data.datasets[0].data = [];
+                }
+                
+                updateEmulatorRoomStatus(index + 1);
+            });
+
+            addEmulatorLogEntry(1, 'info', 'emulationStarted');
+            addEmulatorLogEntry(2, 'info', 'emulationStarted');
+
+            if (emulatorIntervalId) {
+                clearInterval(emulatorIntervalId);
+            }
+            emulatorIntervalId = setInterval(generateEmulatorNextPoints, sampleRate * 1000);
+            document.getElementById('emulatorStartBtn').disabled = true;
+            document.getElementById('emulatorStartBtn').style.opacity = '0.5';
+        }
+
+        // Генерация данных эмулятора (вызывается по таймеру)
+        function generateEmulatorNextPoints() {
+            let anyRunning = false;
+            
+            emulatorRooms.forEach((room, i) => {
+                if (!room.isRunning) {
+                    updateEmulatorMinMaxLines(room, emulatorCharts[i], room.currentTime);
+                    return;
+                }
+                
+                anyRunning = true;
+                
+                const chart = emulatorCharts[i];
+                if (!chart) return;
+                
+                const tSeconds = Math.round((room.currentTime + sampleRate * room.speed) * 100) / 100;
+                room.currentTime = tSeconds;
+                
+                const tMinutes = tSeconds * SEC_TO_MIN;
+                const roundedTMinutes = Math.round(tMinutes * 100) / 100;
+
+                const pressure = generateEmulatorPressure(room);
+                if (pressure === null) return;
+
+                room.currentPressure = pressure;
+                updatePressurePanel();
+
+                checkEmulatorPressureStatus(room, pressure, tSeconds);
+
+                chart.data.labels.push(roundedTMinutes.toFixed(2));
+                chart.data.datasets[0].data.push({ x: roundedTMinutes, y: pressure });
+                
+                room.data.push({ t: tSeconds, pressure });
+
+                updateEmulatorMinMaxLines(room, chart, tSeconds);
+
+                const cutoffTimeSeconds = Math.round((tSeconds - windowSize) * 100) / 100;
+                const cutoffTimeMinutes = cutoffTimeSeconds * SEC_TO_MIN;
+                
+                while (chart.data.labels.length > 0 && parseFloat(chart.data.labels[0]) < cutoffTimeMinutes - 0.01) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                }
+
+                chart.options.scales.x.min = Math.max(0, cutoffTimeMinutes);
+                chart.options.scales.x.max = roundedTMinutes;
+                
+                chart.update();
+            });
+            
+            if (!anyRunning && emulatorIntervalId) {
+                clearInterval(emulatorIntervalId);
+                emulatorIntervalId = null;
+                document.getElementById('emulatorStartBtn').disabled = false;
+                document.getElementById('emulatorStartBtn').style.opacity = '1';
+                addEmulatorLogEntry(1, 'info', 'emulationStopped');
+            }
+        }
+
+        // Экспорт данных эмулятора в CSV для конкретного помещения
+        function exportEmulatorCSV(roomIndex) {
+            const room = emulatorRooms[roomIndex - 1];
+            if (!room || room.data.length === 0) {
+                alert('Нет данных для экспорта. Запустите эмуляцию.');
+                return;
+            }
+            
+            const csvContent = 'Время (мин),Давление (Па)\n' +
+                room.data.map(row => {
+                    const minutes = (row.t * SEC_TO_MIN).toFixed(2);
+                    return `${minutes},${row.pressure.toFixed(2)}`;
+                }).join('\n');
+
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `emulator_room_${roomIndex}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.csv`;
+            link.click();
+            
+            setTimeout(() => URL.revokeObjectURL(link.href), 100);
+            
+            addEmulatorLogEntry(roomIndex, 'info', 'exportedData', null);
+        }
+
+        // Генерация случайного цвета для графика
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) color += letters[Math.floor(Math.random() * 16)];
+            return color;
+        }
+
+        // Сворачивание/разворачивание эмулятора
+        function toggleEmulator() {
+            const content = document.getElementById('emulatorContent');
+            const toggle = document.getElementById('emulatorToggle');
+            content.classList.toggle('collapsed');
+            toggle.classList.toggle('collapsed');
+        }
+        // Page initialization on load
+
+        
+        // Функция переключения меню языков
+        function toggleLanguageMenu() { 
+            document.getElementById('languageMenu').classList.toggle('show'); 
+        }
+        
+        // Закрытие меню при клике вне его
+        document.addEventListener('click', function(e) { 
+            const btn = document.getElementById('langBtn'), menu = document.getElementById('languageMenu'); 
+            if (!btn.contains(e.target) && !menu.contains(e.target)) menu.classList.remove('show'); 
+        });
+        
+        // Смена языка
+        function changeLanguage(lang) { 
+            currentLang = lang; 
+            document.getElementById('languageMenu').classList.remove('show'); 
+            updateAllTexts(); 
+            updateUVTimerDisplay(); 
+            updateBlowTimerDisplay(); 
+            updateAutoButtons(); 
+            updateDoorTimerDisplay(); 
+            
+            // ИСПРАВЛЕНО: Обновляем список тревог при смене языка
+            renderAlarmList();
+        }
+        
+        // Обновление всех текстов на странице (рекурсивно по data-key атрибутам)
+        function updateAllTexts() { 
+            document.querySelectorAll('[data-key]').forEach(el => { 
+                const k = el.getAttribute('data-key'); 
+                if (translations[currentLang] && translations[currentLang][k]) { 
+                    // Для элементов с переносом строк используем innerHTML
+                    if (k.includes('pressure') || k.includes('setting') || k.includes('param') || k.includes('correction')) {
+                        el.innerHTML = translations[currentLang][k].replace(/\n/g, '<br>'); 
+                    } else {
+                        el.textContent = translations[currentLang][k];
+                    }
+                } 
+            }); 
+            
+            // Обновляем тексты кнопок с состояниями
+            updateButtonText('text-blow', 'blowOff', 'blowOn'); 
+            updateButtonText('text-uv', 'uvOff', 'uvOn'); 
+            updateButtonText('text-light', 'lightOff', 'lightOn'); 
+            updateButtonText('text-mode', 'manualMode', 'autoMode'); 
+            
+            // Обновляем кнопки автозапуска
+            updateButtonsLockState(); 
+            updateAutoButtons(); 
+            updateDoorTimerDisplay(); 
+            // Initialize emulator status labels.
+
+            updateEmulatorRoomStatus(2);
+            
+            // Обновляем текст на кнопке запуска эмулятора
+            const startBtn = document.getElementById('emulatorStartBtn');
+            if (startBtn) {
+                startBtn.textContent = translations[currentLang]?.startEmulator || '▶ Запустить эмуляцию';
+            }
+            
+            // Обновляем сообщение в логе эмулятора
+            const logContainer = document.getElementById('emulatorLogContainer');
+            if (logContainer && logContainer.children.length > 0) {
+                const firstEntry = logContainer.children[0];
+                const keyEl = firstEntry.querySelector('[data-key]');
+                if (keyEl && translations[currentLang] && translations[currentLang].startPrompt) {
+                    keyEl.textContent = translations[currentLang].startPrompt;
+                }
+            }
+        }
+        
+        // Вспомогательная функция для обновления текста конкретного элемента
+        function updateElementText(el) {
+            const k = el.getAttribute('data-key'); 
+            if (translations[currentLang] && translations[currentLang][k]) { 
+                el.textContent = translations[currentLang][k]; 
+            }
+        }
+        
+        // Обновление текста кнопок с состояниями (вкл/выкл)
+        function updateButtonText(id, off, on) { 
+            const el = document.getElementById(id); 
+            const ind = document.getElementById(id.replace('text', 'indicator')); 
+            if (ind && ind.classList.contains('active')) {
+                if (el) el.innerHTML = translations[currentLang][on]; 
+            } else if (el) {
+                el.innerHTML = translations[currentLang][off]; 
+            }
+        }
+        
+        // Функции навигации по страницам
+        function showSettings() { 
+            hideAllPages(); 
+            document.getElementById('settingsPage').classList.add('active'); 
+            document.querySelector('.left-content').scrollTop = 0; 
+            updateAllTexts(); 
+            updateAutoButtons(); 
+            loadDoorTimeoutSetting(); 
+        }
+        
+        function showParamSettings() { 
+            saveTimeSettings(); 
+            hideAllPages(); 
+            document.getElementById('paramSettingsPage').classList.add('active'); 
+            document.querySelector('.left-content').scrollTop = 0; 
+            updateAllTexts(); 
+        }
+        
+        function showParamCorrection() { 
+            hideAllPages(); 
+            document.getElementById('paramCorrectionPage').classList.add('active'); 
+            document.querySelector('.left-content').scrollTop = 0; 
+            updateAllTexts(); 
+        }
+        
+        function showAlarms() { 
+            hideAllPages(); 
+            document.getElementById('alarmPage').classList.add('active'); 
+            document.querySelector('.left-content').scrollTop = 0; 
+            updateAllTexts(); 
+            renderAlarmList(); 
+        }
+        
+        function showMainPage() { 
+            hideAllPages(); 
+            document.getElementById('mainPage').style.display = 'block'; 
+            document.querySelector('.left-content').scrollTop = 0; 
+            updateAllTexts(); 
+        }
+        
+        function hideAllPages() { 
+            document.getElementById('mainPage').style.display = 'none'; 
+            document.getElementById('settingsPage').classList.remove('active'); 
+            document.getElementById('paramSettingsPage').classList.remove('active'); 
+            document.getElementById('paramCorrectionPage').classList.remove('active'); 
+            document.getElementById('alarmPage').classList.remove('active'); 
+        }
+        
+        // Сохранение лимита времени открытия двери
+        function saveDoorTimeoutSetting() {
+            const input = document.getElementById('doorOpenTimeoutInput');
+            const val = parseInt(input.value);
+            doorOpenTimeoutSeconds = (val > 0) ? val : 3;
+            input.value = doorOpenTimeoutSeconds;
+        }
+        
+        // Загрузка лимита времени открытия двери
+        function loadDoorTimeoutSetting() {
+            const input = document.getElementById('doorOpenTimeoutInput');
+            if (input) {
+                input.value = doorOpenTimeoutSeconds;
+            }
+        }
+        
+        // Сохранение времени стерилизации и обдува
+        function saveTimeSettings() {
+            const stVal = parseInt(document.getElementById('sterilizationTimeInput').value);
+            const asVal = parseInt(document.getElementById('airShowerTimeInput').value);
+            sterilizationTimeSeconds = (stVal > 0) ? stVal : 10;
+            airShowerTimeSeconds = (asVal > 0) ? asVal : 10;
+            document.getElementById('sterilizationTimeInput').value = sterilizationTimeSeconds;
+            document.getElementById('airShowerTimeInput').value = airShowerTimeSeconds;
+        }
+        
+        // Обновление кнопок автозапуска
+        function updateAutoButtons() {
+            updateAutoButton('autoUV1', autoStartSettings.uvDoor1);
+            updateAutoButton('autoBlow1', autoStartSettings.blowDoor1);
+            updateAutoButton('autoUV2', autoStartSettings.uvDoor2);
+            updateAutoButton('autoBlow2', autoStartSettings.blowDoor2);
+        }
+        
+        // Обновление состояния конкретной кнопки автозапуска
+        function updateAutoButton(btnId, isActive) {
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                if (isActive) {
+                    btn.classList.add('active');
+                    btn.innerHTML = translations[currentLang].yes;
+                } else {
+                    btn.classList.remove('active');
+                    btn.innerHTML = translations[currentLang].no;
+                }
+            }
+        }
+        
+        // Переключение настройки автозапуска
+        function toggleAutoSetting(key, btn) {
+            autoStartSettings[key] = !autoStartSettings[key];
+            updateAutoButton(btn.id, autoStartSettings[key]);
+        }
+        
+        // Аварийный стоп
+        function emergencyStop() { 
+            if (uvTimerInterval) { clearInterval(uvTimerInterval); uvTimerInterval = null; } 
+            if (blowTimerInterval) { clearInterval(blowTimerInterval); blowTimerInterval = null; } 
+            const ui = document.getElementById('indicator-uv'), ut = document.getElementById('text-uv'), ul = document.getElementById('uv-lamp'); 
+            ui.classList.remove('active'); ut.innerHTML = translations[currentLang].uvOff; ul.classList.remove('on'); 
+            document.getElementById('main-fan').classList.remove('spinning'); 
+            const bi = document.getElementById('indicator-blow'), bt = document.getElementById('text-blow'); 
+            bi.classList.remove('active'); bt.innerHTML = translations[currentLang].blowOff; 
+            uvRemainingSeconds = 0; blowRemainingSeconds = 0; 
+            updateUVTimerDisplay(); updateBlowTimerDisplay(); 
+            
+            // Добавляем тревогу об аварийном стопе
+            addAlarm('alarm6', 'emergency');
+            
+            // Останавливаем эмулятор
+            if (emulatorIntervalId) {
+                clearInterval(emulatorIntervalId);
+                emulatorIntervalId = null;
+            }
+            emulatorRooms.forEach((room, index) => {
+                room.isRunning = false;
+                updateEmulatorRoomStatus(index + 1);
+            });
+            document.getElementById('emulatorStartBtn').disabled = false;
+            document.getElementById('emulatorStartBtn').style.opacity = '1';
+            addEmulatorLogEntry(1, 'info', 'emulationStoppedByAlarm');
+        }
+        
+        // Запуск таймера УФ
+        function startUVTimer() {
+            saveTimeSettings();
+            uvRemainingSeconds = sterilizationTimeSeconds;
+            updateUVTimerDisplay();
+            if (uvTimerInterval) clearInterval(uvTimerInterval);
+            uvTimerInterval = setInterval(() => {
+                uvRemainingSeconds--;
+                updateUVTimerDisplay();
+                if (uvRemainingSeconds <= 0) {
+                    clearInterval(uvTimerInterval);
+                    uvTimerInterval = null;
+                    turnOffUV();
+                }
+            }, 1000);
+        }
+        
+        // Обновление отображения таймера УФ
+        function updateUVTimerDisplay() {
+            const minutes = Math.floor(uvRemainingSeconds / 60);
+            const seconds = uvRemainingSeconds % 60;
+            document.getElementById('uvMinutes').textContent = minutes;
+            document.getElementById('uvSeconds').textContent = seconds;
+        }
+        
+        // Выключение УФ
+        function turnOffUV() { 
+            const i = document.getElementById('indicator-uv'), t = document.getElementById('text-uv'), l = document.getElementById('uv-lamp'); 
+            i.classList.remove('active'); 
+            t.innerText = translations[currentLang].uvOff; 
+            l.classList.remove('on'); 
+        }
+        
+        // Запуск таймера обдува
+        function startBlowTimer() {
+            saveTimeSettings();
+            blowRemainingSeconds = airShowerTimeSeconds;
+            updateBlowTimerDisplay();
+            if (blowTimerInterval) clearInterval(blowTimerInterval);
+            blowTimerInterval = setInterval(() => {
+                blowRemainingSeconds--;
+                updateBlowTimerDisplay();
+                if (blowRemainingSeconds <= 0) {
+                    clearInterval(blowTimerInterval);
+                    blowTimerInterval = null;
+                    turnOffBlow();
+                }
+            }, 1000);
+        }
+        
+        // Обновление отображения таймера обдува
+        function updateBlowTimerDisplay() {
+            const minutes = Math.floor(blowRemainingSeconds / 60);
+            const seconds = blowRemainingSeconds % 60;
+            document.getElementById('blowMinutes').textContent = minutes;
+            document.getElementById('blowSeconds').textContent = seconds;
+        }
+        
+        // Выключение обдува
+        function turnOffBlow() { 
+            const i = document.getElementById('indicator-blow'), t = document.getElementById('text-blow'), f = document.getElementById('main-fan'); 
+            i.classList.remove('active'); 
+            t.innerText = translations[currentLang].blowOff; 
+            f.classList.remove('spinning'); 
+        }
+        
+        // Блокировка кнопок в автоматическом режиме
+        function updateButtonsLockState() { 
+            const b = document.getElementById('blowWrapper'), u = document.getElementById('uvWrapper'); 
+            if (autoModeEnabled) { 
+                b.classList.add('disabled'); 
+                u.classList.add('disabled'); 
+            } else { 
+                b.classList.remove('disabled'); 
+                u.classList.remove('disabled'); 
+            } 
+        }
+        
+        // Запуск проверки открытых дверей
+        
+/**
+ * Запуск проверки открытых дверей.
+ * Start monitoring opened doors.
+ * 启动门开启监控。
+ */
+function startDoorOpenCheck() {
+    // RU: защита от повторного запуска (чтобы не плодить интервалы)
+    // EN: prevent multiple intervals
+    // CN: 防止重复创建定时器
+    if (doorOpenCheckInterval) return;
+
+    doorOpenCheckInterval = setInterval(() => {
+        const now = Date.now();
+        let anyDoorOpen = false;
+        let alarmTriggered = false;
+
+        ['door1', 'door2'].forEach(doorKey => {
+            const door = doorState[doorKey];
+            if (door.isOpen) {
+                anyDoorOpen = true;
+                const openDuration = Math.floor((now - door.openStartTime) / 1000);
+
+                if (openDuration >= doorOpenTimeoutSeconds && !door.alarmTriggered) {
+                    door.alarmTriggered = true;
+                    alarmTriggered = true;
+                    // ИСПРАВЛЕНО: Используем правильные ключи для перевода
+                    const alarmKey = doorKey === 'door1' ? 'alarm9' : 'alarm1';
+                    addAlarm(alarmKey, 'doorOpen');
+                }
+            }
+        });
+
+        const alarmIndicator = document.getElementById('doorOpenAlarm');
+        if (alarmTriggered) {
+            alarmIndicator.classList.add('show');
+        } else if (!anyDoorOpen) {
+            alarmIndicator.classList.remove('show');
+        }
+
+        if (anyDoorOpen) {
+            updateDoorTimerDisplay();
+        }
+    }, 100);
+}
+
+        // Обновление отображения таймера двери
+        function updateDoorTimerDisplay() {
+            const timerElement = document.getElementById('doorTimer');
+            const now = Date.now();
+            let openDuration = 0;
+            let isDoorOpen = false;
+            
+            ['door1', 'door2'].forEach(doorKey => {
+                const door = doorState[doorKey];
+                if (door.isOpen) {
+                    isDoorOpen = true;
+                    openDuration = Math.floor((now - door.openStartTime) / 1000);
+                }
+            });
+            
+            if (isDoorOpen) {
+                timerElement.classList.add('show');
+                timerElement.classList.remove('counting');
+                if (openDuration >= doorOpenTimeoutSeconds) {
+                    timerElement.classList.add('alarm');
+                } else {
+                    timerElement.classList.remove('alarm');
+                }
+                const text = translations[currentLang].doorOpen;
+                timerElement.textContent = `${text}: ${openDuration} ${translations[currentLang].sec}`;
+            } else {
+                timerElement.classList.remove('show', 'counting', 'alarm');
+            }
+        }
+        
+        // Переключение состояния двери
+        function toggleDoor(n) {
+            const k = `door${n}`, o = n === 1 ? 'door2' : 'door1', now = Date.now();
+            if (doorState[k].isBlocked) return;
+            if (!doorState[k].isOpen) {
+                if (doorState[o].isOpen) return;
+                if (now - doorState[o].lastCloseTime < DOOR_INTERLOCK_DELAY && doorState[o].lastCloseTime !== 0) return;
+                doorState[k].isOpen = true;
+                doorState[k].openStartTime = now;
+                doorState[k].alarmTriggered = false;
+                updateDoorVisual(n, true);
+                doorState[o].isBlocked = true;
+                updateLockVisual(o === 'door1' ? 1 : 2, true);
+                startDoorOpenCheck();
+            } else {
+                doorState[k].isOpen = false;
+                doorState[k].lastCloseTime = now;
+                doorState[k].alarmTriggered = false;
+                updateDoorVisual(n, false);
+                doorState[k].isBlocked = false;
+                updateLockVisual(n, false);
+                startInterlockTimer(o === 'door1' ? 1 : 2);
+                
+                if (!doorState.door1.isOpen && !doorState.door2.isOpen) {
+                    document.getElementById('doorOpenAlarm').classList.remove('show');
+                    if (doorOpenCheckInterval) {
+                        clearInterval(doorOpenCheckInterval);
+                        doorOpenCheckInterval = null;
+                    }
+                }
+                
+                if (!autoModeEnabled) {
+                    if (n === 1) {
+                        if (autoStartSettings.uvDoor1 && !document.getElementById('indicator-uv').classList.contains('active')) {
+                            autoStartUV();
+                        }
+                        if (autoStartSettings.blowDoor1 && !document.getElementById('indicator-blow').classList.contains('active')) {
+                            autoStartBlow();
+                        }
+                    } else if (n === 2) {
+                        if (autoStartSettings.uvDoor2 && !document.getElementById('indicator-uv').classList.contains('active')) {
+                            autoStartUV();
+                        }
+                        if (autoStartSettings.blowDoor2 && !document.getElementById('indicator-blow').classList.contains('active')) {
+                            autoStartBlow();
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Автоматический запуск УФ
+        function autoStartUV() {
+            const indicator = document.getElementById('indicator-uv');
+            const textElement = document.getElementById('text-uv');
+            const uvLamp = document.getElementById('uv-lamp');
+            indicator.classList.add('active');
+            textElement.innerHTML = translations[currentLang].uvOn;
+            uvLamp.classList.add('on');
+            startUVTimer();
+        }
+        
+        // Автоматический запуск обдува
+        function autoStartBlow() {
+            const indicator = document.getElementById('indicator-blow');
+            const textElement = document.getElementById('text-blow');
+            const fan = document.getElementById('main-fan');
+            indicator.classList.add('active');
+            textElement.innerHTML = translations[currentLang].blowOn;
+            fan.classList.add('spinning');
+            startBlowTimer();
+        }
+        
+        // Обновление визуального состояния двери
+        function updateDoorVisual(n, open) { 
+            const c = document.getElementById(`door${n}-closed`), o = document.getElementById(`door${n}-open`); 
+            if (open) { 
+                c.classList.add('hidden'); 
+                o.classList.remove('hidden'); 
+            } else { 
+                c.classList.remove('hidden'); 
+                o.classList.add('hidden'); 
+            } 
+        }
+        
+        // Обновление визуального состояния замка
+        function updateLockVisual(n, blocked) { 
+            const s = document.getElementById(`lock${n}`), h = document.getElementById(`lock${n}-shackle`); 
+            if (blocked) { 
+                s.classList.remove('lock-unlocked'); 
+                s.classList.add('lock-blocked'); 
+                h.setAttribute('d', 'M15 25 V 15 A 10 10 0 0 1 35 15 V 25'); 
+                h.style.display = 'block'; 
+            } else { 
+                s.classList.remove('lock-blocked'); 
+                s.classList.add('lock-unlocked'); 
+                h.setAttribute('d', 'M 10 25 A 15 15 0 0 1 40 25'); 
+                h.style.display = 'block'; 
+            } 
+        }
+        
+        // Запуск таймера блокировки двери
+        
+/**
+ * Запуск таймера блокировки двери.
+ * Start door interlock timer.
+ * 启动门互锁计时器。
+ */
+function startInterlockTimer(n) { 
+    const t = document.getElementById('doorTimer'); 
+    let r = Math.ceil(DOOR_INTERLOCK_DELAY / 1000); 
+
+    // RU: безопасно сбрасываем предыдущий таймер
+    // EN: safely clear previous timer
+    // CN: 安全清除之前的定时器
+    if (doorTimerInterval) { 
+        clearInterval(doorTimerInterval); 
+        doorTimerInterval = null; 
+    }
+
+    t.classList.add('show', 'counting'); 
+    updateTimerDisplay(r); 
+
+    doorTimerInterval = setInterval(() => { 
+        r--; 
+        if (r > 0) updateTimerDisplay(r); 
+        else { 
+            clearInterval(doorTimerInterval); 
+            doorTimerInterval = null; 
+            doorState[`door${n}`].isBlocked = false; 
+            updateLockVisual(n, false); 
+            t.classList.remove('show', 'counting'); 
+        } 
+    }, 1000); 
+}
+
+        // Обновление отображения таймера
+        function updateTimerDisplay(s) { 
+            const t = document.getElementById('doorTimer'); 
+            if (!t.classList.contains('show')) return; 
+            const w = translations[currentLang].waiting; 
+            const st = currentLang === 'zh' ? '秒' : currentLang === 'en' ? 'sec' : 'сек'; 
+            t.textContent = `${w}: ${s} ${st}`; 
+        }
+        
+        // Переключение статуса обдува
+        function toggleStatus(id, tid, off, on) { 
+            if (autoModeEnabled) return; 
+            const i = document.getElementById(id), t = document.getElementById(tid); 
+            if (i.classList.contains('active')) { 
+                i.classList.remove('active'); 
+                t.innerHTML = translations[currentLang][off]; 
+                if (blowTimerInterval) { 
+                    clearInterval(blowTimerInterval); 
+                    blowTimerInterval = null; 
+                } 
+                blowRemainingSeconds = 0; 
+                updateBlowTimerDisplay(); 
+            } else { 
+                i.classList.add('active'); 
+                t.innerHTML = translations[currentLang][on]; 
+                startBlowTimer(); 
+            } 
+            if (tid === 'text-blow') { 
+                const f = document.getElementById('main-fan'); 
+                if (i.classList.contains('active')) f.classList.add('spinning'); 
+                else f.classList.remove('spinning'); 
+            } 
+        }
+        
+        // Переключение статуса света
+        function toggleLight(id, tid, off, on) { 
+            const i = document.getElementById(id), t = document.getElementById(tid), l = document.getElementById('led-light'); 
+            if (i.classList.contains('active')) { 
+                i.classList.remove('active'); 
+                t.innerHTML = translations[currentLang][off]; 
+                l.classList.remove('on'); 
+            } else { 
+                i.classList.add('active'); 
+                t.innerHTML = translations[currentLang][on]; 
+                l.classList.add('on'); 
+            } 
+        }
+        
+        // Переключение статуса УФ
+        function toggleUV(id, tid, off, on) { 
+            if (autoModeEnabled) return; 
+            const i = document.getElementById(id), t = document.getElementById(tid), l = document.getElementById('uv-lamp'); 
+            if (i.classList.contains('active')) { 
+                i.classList.remove('active'); 
+                t.innerHTML = translations[currentLang][off]; 
+                l.classList.remove('on'); 
+                if (uvTimerInterval) { 
+                    clearInterval(uvTimerInterval); 
+                    uvTimerInterval = null; 
+                } 
+                uvRemainingSeconds = 0; 
+                updateUVTimerDisplay(); 
+            } else { 
+                i.classList.add('active'); 
+                t.innerHTML = translations[currentLang][on]; 
+                l.classList.add('on'); 
+                startUVTimer(); 
+            } 
+        }
+        
+        // Переключение режима (ручной/автоматический)
+        
+/**
+ * Переключение режима (ручной/автоматический).
+ * Toggle manual/auto mode.
+ * 切换手动/自动模式。
+ */
+function toggleMode(id, tid, m1, m2) { 
+    const i = document.getElementById(id), t = document.getElementById(tid); 
+
+    // RU: не сравниваем текст (innerHTML) — это ломается при переводах/форматировании
+    // EN: don't rely on innerHTML comparison (breaks with translations/formatting)
+    // CN: 不要依赖 innerHTML 比较（翻译/格式变化会导致错误）
+    autoModeEnabled = !autoModeEnabled;
+
+    if (autoModeEnabled) { 
+        t.innerHTML = translations[currentLang][m2]; 
+        i.classList.add('active'); 
+    } else { 
+        t.innerHTML = translations[currentLang][m1]; 
+        i.classList.remove('active'); 
+    } 
+    updateButtonsLockState(); 
+}
+
+        // Переключение настройки (вкл/выкл)
+        function toggleSetting(btn) { 
+            if (btn.classList.contains('active')) { 
+                btn.classList.remove('active'); 
+                btn.innerHTML = translations[currentLang].no; 
+            } else { 
+                btn.classList.add('active'); 
+                btn.innerHTML = translations[currentLang].yes; 
+            } 
+        }
+        // Update panel clock
+
+/**
+ * Update time on the panel.
+ */
+function updateTime() { 
+    const n = new Date(); 
+    // Locale depends on currently selected language.
+    const locale = currentLang === 'en' ? 'en-US' : (currentLang === 'zh' ? 'zh-CN' : 'ru-RU');
+
+    document.getElementById('datetime').innerText = `${n.toLocaleDateString(locale)} ${n.toLocaleTimeString(locale)}`; 
+}
+        // Page initialization on load
+
+        window.addEventListener('load', function() { 
+            currentLang = 'ru'; 
+            updateAllTexts(); 
+            setInterval(updateTime, 1000); 
+            updateTime(); 
+            updateUVTimerDisplay(); 
+            updateBlowTimerDisplay(); 
+            updateAutoButtons(); 
+            saveTimeSettings(); 
+            loadDoorTimeoutSetting(); 
+            
+            // make sure the charts exist before any emulator logic touches them
+            ensureEmulatorChartsInitialized();
+            // Initialize emulator status labels.
+            updateEmulatorRoomStatus(1);
+            updateEmulatorRoomStatus(2);
+
+            // Set default slider labels.
+            document.getElementById('emulatorSpeedValue1').textContent = '1.0x';
+            document.getElementById('emulatorSpeedValue2').textContent = '1.0x';
+            document.getElementById('emulatorSmoothValue1').textContent = '0.50';
+            document.getElementById('emulatorSmoothValue2').textContent = '0.50';
+            document.getElementById('emulatorOverValue1').textContent = '0.20';
+            document.getElementById('emulatorOverValue2').textContent = '0.20';
+            // Load initial chart boundary values.
+            document.getElementById('min1').value = emulatorRooms[0].min;
+            document.getElementById('max1').value = emulatorRooms[0].max;
+            document.getElementById('workMin1').value = emulatorRooms[0].workMin;
+            document.getElementById('workMax1').value = emulatorRooms[0].workMax;
+            document.getElementById('min2').value = emulatorRooms[1].min;
+            document.getElementById('max2').value = emulatorRooms[1].max;
+            document.getElementById('workMin2').value = emulatorRooms[1].workMin;
+            document.getElementById('workMax2').value = emulatorRooms[1].workMax;
+            
+            // Добавляем пример тревоги для демонстрации
+            // Demo alarm is intentionally disabled in production startup flow.
+    // Sync parameter settings fields with current emulator working limits.
+    ['1','2'].forEach((n, i) => {
+        const idx = i + 1;
+        const sMin = document.getElementById(`settingWorkMin${idx}`);
+        const sMax = document.getElementById(`settingWorkMax${idx}`);
+        if (sMin) sMin.value = String(emulatorRooms[i].workMin);
+        if (sMax) sMax.value = String(emulatorRooms[i].workMax);
+    });
+
+    bindCorrectionInputs();
+    savePressureAlarmDelay();
+    setDPPriority(dpPriority);
+    updatePressurePanel();
+});
+
+// Обработчик изменения размера окна для эмулятора (debounce)
+// RU: снижает нагрузку при перетягивании окна
+// EN: reduces CPU usage during resize
+// CN: 减少窗口拖动时的CPU占用
+let resizeTimeout = null;
+window.addEventListener('resize', () => {
+    if (resizeTimeout) clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        emulatorRooms.forEach((room, index) => {
+            const canvas = document.getElementById(room.id);
+            if (canvas && Array.isArray(emulatorCharts) && emulatorCharts[index]) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = 170;
+                emulatorCharts[index].resize();
+            }
+        });
+    }, 150);
+});
+</script>
+</body>
+</html>
