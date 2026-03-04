@@ -1,0 +1,40 @@
+# ===============================
+# Emulator Passbox Controller
+# Git ignore rules
+# ===============================
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Node (если когда-нибудь появится)
+node_modules/
+
+# Python cache (если будут скрипты)
+__pycache__/
+*.pyc
+
+# Build folders
+dist/
+build/
+
+# System cache
+.cache/
