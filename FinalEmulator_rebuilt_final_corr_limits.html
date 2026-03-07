@@ -1664,14 +1664,14 @@
                                         <!-- Рабочий минимум (красная линия) -->
                                         <div class="boundary-row">
                                             <span class="boundary-label" data-key="workingMin">Рабочий мин:</span>
-                                            <input type="number" id="workMin1" class="boundary-input" value="10"
+                                            <input type="number" id="workMin1" class="boundary-input" value="25"
                                                 onchange="updateEmulatorRoomSettings(1)">
                                             <div class="boundary-color-indicator boundary-color-red"></div>
                                         </div>
                                         <!-- Рабочий максимум (синяя линия) -->
                                         <div class="boundary-row">
                                             <span class="boundary-label" data-key="workingMax">Рабочий макс:</span>
-                                            <input type="number" id="workMax1" class="boundary-input" value="40"
+                                            <input type="number" id="workMax1" class="boundary-input" value="35"
                                                 onchange="updateEmulatorRoomSettings(1)">
                                             <div class="boundary-color-indicator boundary-color-blue"></div>
                                         </div>
@@ -1697,14 +1697,14 @@
                                         <!-- Рабочий минимум (красная линия) -->
                                         <div class="boundary-row">
                                             <span class="boundary-label" data-key="workingMin">Рабочий мин:</span>
-                                            <input type="number" id="workMin2" class="boundary-input" value="15"
+                                            <input type="number" id="workMin2" class="boundary-input" value="5"
                                                 onchange="updateEmulatorRoomSettings(2)">
                                             <div class="boundary-color-indicator boundary-color-red"></div>
                                         </div>
                                         <!-- Рабочий максимум (синяя линия) -->
                                         <div class="boundary-row">
                                             <span class="boundary-label" data-key="workingMax">Рабочий макс:</span>
-                                            <input type="number" id="workMax2" class="boundary-input" value="35"
+                                            <input type="number" id="workMax2" class="boundary-input" value="15"
                                                 onchange="updateEmulatorRoomSettings(2)">
                                             <div class="boundary-color-indicator boundary-color-blue"></div>
                                         </div>
@@ -1824,22 +1824,22 @@
                     <div class="settings-row">
                         <div class="settings-label" data-key="setting8">Установка верхнего предела разности давлений для
                             помещения №1 (Па)</div><input type="text" id="settingWorkMax1" class="settings-input"
-                            value="40" onchange="syncWorkingLimitsFromSettings(1)">
+                            value="35" onchange="syncWorkingLimitsFromSettings(1)">
                     </div>
                     <div class="settings-row">
                         <div class="settings-label" data-key="setting9">Установка нижнего предела разности давлений для
                             помещения №1 (Па)</div><input type="text" id="settingWorkMin1" class="settings-input"
-                            value="10" onchange="syncWorkingLimitsFromSettings(1)">
+                            value="25" onchange="syncWorkingLimitsFromSettings(1)">
                     </div>
                     <div class="settings-row">
                         <div class="settings-label" data-key="setting1">Установка верхнего предела разности давлений для
                             помещения №2 (Па)</div><input type="text" id="settingWorkMax2" class="settings-input"
-                            value="35" onchange="syncWorkingLimitsFromSettings(2)">
+                            value="15" onchange="syncWorkingLimitsFromSettings(2)">
                     </div>
                     <div class="settings-row">
                         <div class="settings-label" data-key="setting2">Установка нижнего предела разности давлений для
                             помещения №2 (Па)</div><input type="text" id="settingWorkMin2" class="settings-input"
-                            value="15" onchange="syncWorkingLimitsFromSettings(2)">
+                            value="5" onchange="syncWorkingLimitsFromSettings(2)">
                     </div>
                     <div class="settings-row">
                         <div class="settings-label" data-key="setting3">Лимит времени открытия двери (сек)</div><input
@@ -1979,9 +1979,10 @@
                 </div>
             </div>
             <div class="center-settings">
-                <div class="center-label" data-key="pressureAutoMode">Режим авто настройка<br>дифференциального давления
-                    (Па)</div>
-                <input type="text" class="center-input" value="0" readonly>
+                <div class="center-label" data-key="pressureAutoMode">Поддерживаемая разница дифференциального давления
+                </div>
+                <input type="number" id="setPointFanDPInput" class="center-input" value="-10" step="any"
+                    onchange="saveSetPointFanDP()">
             </div>
             <div class="menu-list">
                 <div class="menu-item" data-key="settings" onclick="showSettings()">Настройки</div>
@@ -2093,7 +2094,7 @@
                 lightOn: 'Свет вкл.',
                 manualMode: 'Ручной режим',
                 autoMode: 'Авто режим',
-                pressureAutoMode: 'Режим авто настройка\nдифференциального давления (Па)',
+                pressureAutoMode: 'Поддерживаемая разница дифференциального давления',
                 settings: 'Настройки',
                 viewAlarms: 'Просмотр тревог',
                 userManagement: 'Управление пользователями',
@@ -2212,7 +2213,7 @@
                 lightOn: 'Light ON',
                 manualMode: 'Manual Mode',
                 autoMode: 'Auto Mode',
-                pressureAutoMode: 'Auto adjustment mode\ndifferential pressure (Pa)',
+                pressureAutoMode: 'Maintained differential pressure difference',
                 settings: 'Settings',
                 viewAlarms: 'View Alarms',
                 userManagement: 'User Management',
@@ -2331,7 +2332,7 @@
                 lightOn: '灯光 开',
                 manualMode: '手动模式',
                 autoMode: '自动模式',
-                pressureAutoMode: '自动设定模式\n差压 (Pa)',
+                pressureAutoMode: '维持的差压差值',
                 settings: '设定',
                 viewAlarms: '查看警报',
                 userManagement: '用户管理',
@@ -2510,6 +2511,17 @@
            PRESSURE CONTROL PARAMETERS
            ========================= */
 
+        // Target pressure difference for fan control relative to selected priority room (ΔP1/ΔP2).
+        let SetPoint_Fan_dP = -10;
+        // Delay before fan control reaction to transient pressure deviation (seconds).
+        let SetPoint_Fan_dT = 3;
+        // Simulated pressure inside passbox chamber (Pa).
+        let Passbox_Pressure = 0;
+        // PID coefficients for future fan pressure regulation logic.
+        let PID_P = 1.0;
+        let PID_I = 0.0;
+        let PID_D = 0.0;
+
         // RU: выбранный приоритет ΔP (пока только параметр, без логики)
         // EN: selected ΔP priority (parameter only for now)
         // CN: 选择的ΔP优先级（目前仅参数）
@@ -2520,6 +2532,13 @@
             const s = String(value || '').replace(',', '.').trim();
             const n = parseFloat(s);
             return Number.isFinite(n) ? n : 0;
+        }
+
+        function saveSetPointFanDP() {
+            const el = document.getElementById('setPointFanDPInput');
+            if (!el) return;
+            SetPoint_Fan_dP = parseSignedNumber(el.value);
+            el.value = String(SetPoint_Fan_dP);
         }
         /* =========================
            PRESSURE PRIORITY CONTROLLER
@@ -2739,7 +2758,7 @@
                 id: 'pressureChart1',
                 title: 'Помещение №1',
                 min: 0, max: 50,                 // Абсолютные границы
-                workMin: 10, workMax: 40,          // Рабочие границы
+                workMin: 25, workMax: 35,          // Рабочие границы
                 currentTime: 0,                     // Текущее время (сек)
                 data: [],                            // Массив данных для экспорта
                 isRunning: true,                      // Флаг работы
@@ -2756,7 +2775,7 @@
                 id: 'pressureChart2',
                 title: 'Помещение №2',
                 min: 0, max: 50,
-                workMin: 15, workMax: 35,
+                workMin: 5, workMax: 15,
                 currentTime: 0,
                 data: [],
                 isRunning: true,
@@ -4182,7 +4201,11 @@
                 if (sMax) sMax.value = String(emulatorRooms[i].workMax);
             });
 
+            const setPointFanEl = document.getElementById('setPointFanDPInput');
+            if (setPointFanEl) setPointFanEl.value = String(SetPoint_Fan_dP);
+
             bindCorrectionInputs();
+            saveSetPointFanDP();
             savePressureAlarmDelay();
             setDPPriority(dpPriority);
             updatePressurePanel();
