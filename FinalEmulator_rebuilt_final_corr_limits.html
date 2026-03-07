@@ -1762,7 +1762,7 @@
                     <div id="fanPIDGraphModal" class="fan-pid-modal" onclick="closeFanPIDGraphModal(event)">
                         <div class="fan-pid-modal-content" onclick="event.stopPropagation()">
                             <div class="fan-pid-modal-header">
-                                <span data-key="pidGraphTitle">График ПИД: Давление в шлюзе</span>
+                                <span data-key="passboxPressureChartTitle">График давления в шлюзе</span>
                                 <button class="fan-pid-close" type="button" onclick="closeFanPIDGraphModal()">×</button>
                             </div>
                             <div class="fan-pid-canvas-wrap">
@@ -2084,6 +2084,12 @@
                             onchange="savePressureAlarmDelay()">
                     </div>
                     <div class="param-row">
+                        <div class="param-label" data-key="roomPressureAlarmDelayLabel">Установить время задержки
+                            срабатывания аварии при отклонении перепадов давлений в помещениях (сек)</div><input
+                            type="text" id="roomPressureAlarmDelayInput" class="param-input" value="3"
+                            onchange="saveRoomPressureAlarmDelay()">
+                    </div>
+                    <div class="param-row">
                         <div class="param-label" data-key="param5">Установка верхнего предела перепада давления от зоны
                             высокого класса к камере (Па)</div><input type="text" class="param-input" value="0.0">
                     </div>
@@ -2303,6 +2309,7 @@
                 dp1: 'ΔP1',
                 dp2: 'ΔP2',
                 pressureAlarmDelayLabel: 'Установить время задержки срабатывания аварии при отклонении давления в камере шлюза (сек)',
+                roomPressureAlarmDelayLabel: 'Установить время задержки срабатывания аварии при отклонении перепадов давлений в помещениях (сек)',
                 modbusLabel: 'Адрес ведомого устройства Modbus TCP',
                 no: 'НЕТ',
                 yes: 'ДА',
@@ -2339,6 +2346,10 @@
                 alarm7: 'Перепад давления камеры к зоне низкого класса ниже нижнего предела',
                 alarm8: 'Перепад давления камеры к зоне низкого класса превышает установленное верхнее предельное значение',
                 alarm9: 'Основная дверь не была закрыта в отведенное время',
+                alarmRoom1High: 'Перепад давления помещения №1 превышает верхний рабочий предел',
+                alarmRoom1Low: 'Перепад давления помещения №1 ниже рабочего предела',
+                alarmRoom2High: 'Перепад давления помещения №2 превышает верхний рабочий предел',
+                alarmRoom2Low: 'Перепад давления помещения №2 ниже рабочего предела',
 
                 // Элементы эмулятора
                 emulatorTitle: '📊 Эмуляция графиков давления в помещениях',
@@ -2381,9 +2392,11 @@
                 pidCoefD: 'Коеф. D',
                 pidGraphButton: 'График ПИД',
                 pidGraphTitle: 'График ПИД: Давление в шлюзе',
+                passboxPressureChartTitle: 'График давления в шлюзе',
                 fanSpeedTest: 'Тест скорости вентилятора',
                 passboxPressureLabel: 'Давление в шлюзе',
                 timeAxis: 'Время',
+                passboxPressureAxis: 'Давление в шлюзе',
                 pressureAxis: 'Давление в шлюзе',
                 pidGraphUnavailable: 'Chart.js недоступен для графика ПИД.'
             },
@@ -2433,6 +2446,7 @@
                 dp1: 'ΔP1',
                 dp2: 'ΔP2',
                 pressureAlarmDelayLabel: 'Set alarm activation delay time for pressure deviation in the airlock chamber (sec)',
+                roomPressureAlarmDelayLabel: 'Room pressure deviation alarm delay (sec)',
                 modbusLabel: 'Modbus TCP Slave Device Address',
                 no: 'NO',
                 yes: 'YES',
@@ -2469,6 +2483,10 @@
                 alarm7: 'Cavity pressure difference to low-grade area is below the lower limit',
                 alarm8: 'Cavity pressure difference to low-grade area exceeds the upper limit set value',
                 alarm9: 'The main door has not been closed within the allotted time',
+                alarmRoom1High: 'Room 1 pressure exceeds working maximum',
+                alarmRoom1Low: 'Room 1 pressure below working minimum',
+                alarmRoom2High: 'Room 2 pressure exceeds working maximum',
+                alarmRoom2Low: 'Room 2 pressure below working minimum',
 
                 // Элементы эмулятора (английский)
                 emulatorTitle: '📊 Pressure Graphs Emulation',
@@ -2511,9 +2529,11 @@
                 pidCoefD: 'Coef. D',
                 pidGraphButton: 'PID Graph',
                 pidGraphTitle: 'PID Graph: Passbox Pressure',
+                passboxPressureChartTitle: 'Passbox Pressure Chart',
                 fanSpeedTest: 'Fan Speed Test',
                 passboxPressureLabel: 'Passbox Pressure',
                 timeAxis: 'Time',
+                passboxPressureAxis: 'Passbox Pressure',
                 pressureAxis: 'Passbox Pressure',
                 pidGraphUnavailable: 'Chart.js is unavailable for PID Graph.'
             },
@@ -2563,6 +2583,7 @@
                 dp1: 'ΔP1',
                 dp2: 'ΔP2',
                 pressureAlarmDelayLabel: '设定闸室压力偏差警报延迟时间 (秒)',
+                roomPressureAlarmDelayLabel: '房间压差报警延迟时间（秒）',
                 modbusLabel: 'Modbus TCP 从站设备地址',
                 no: '否',
                 yes: '是',
@@ -2599,6 +2620,10 @@
                 alarm7: '腔体至低级区压差低于下限',
                 alarm8: '腔体至低级区压差超过设定上限值',
                 alarm9: '主门未在规定时间内关闭',
+                alarmRoom1High: '房间1压差超过工作上限',
+                alarmRoom1Low: '房间1压差低于工作下限',
+                alarmRoom2High: '房间2压差超过工作上限',
+                alarmRoom2Low: '房间2压差低于工作下限',
 
                 // Элементы эмулятора (китайский)
                 emulatorTitle: '📊 压力图表模拟',
@@ -2641,9 +2666,11 @@
                 pidCoefD: 'D 系数',
                 pidGraphButton: 'PID 图表',
                 pidGraphTitle: 'PID 图表：传递窗压力',
+                passboxPressureChartTitle: '传递窗压力图',
                 fanSpeedTest: '风扇速度测试',
                 passboxPressureLabel: '传递窗压力',
                 timeAxis: '时间',
+                passboxPressureAxis: '传递窗压力',
                 pressureAxis: '传递窗压力',
                 pidGraphUnavailable: 'PID 图表不可用：Chart.js 未加载。'
             }
@@ -2749,9 +2776,9 @@
         let fanSpeed = 0;
         let fanTargetPressure = 0;
         let fanSimulationIntervalId = null;
-        let fanPIDGraphChart = null;
-        let fanPIDGraphTimeSeconds = 0;
-        let fanPIDGraphData = [];
+        let passboxPressureChart = null;
+        let passboxPressureChartTimeSeconds = 0;
+        let passboxPressureData = [];
         let fanPidIntegral = 0;
         let fanPidPrevError = 0;
         let fanEmergencyLocked = false;
@@ -2762,6 +2789,13 @@
         // CN: 选择的ΔP优先级（目前仅参数）
         let dpPriority = 'dp1';
         let pressureAlarmDelaySeconds = 3;
+        let SetPoint_dP_AlarmTime = 3;
+        const roomPressureAlarmState = {
+            room1High: { startedAt: null, triggered: false },
+            room1Low: { startedAt: null, triggered: false },
+            room2High: { startedAt: null, triggered: false },
+            room2Low: { startedAt: null, triggered: false }
+        };
 
         function parseSignedNumber(value) {
             const s = String(value || '').replace(',', '.').trim();
@@ -2826,17 +2860,37 @@
         }
 
         function getPriorityPressure() {
-            const room = dpPriority === 'dp2' ? emulatorRooms[1] : emulatorRooms[0];
-            const pressure = room && Number.isFinite(room.currentPressure) ? room.currentPressure : 0;
-            return pressure;
+            const roomPressures = getRoomPressureState();
+            return dpPriority === 'dp2' ? roomPressures.room2 : roomPressures.room1;
+        }
+
+        function getRoomPressureState() {
+            const room1 = Number.isFinite(emulatorRooms?.[0]?.currentPressure) ? emulatorRooms[0].currentPressure : 0;
+            const room2 = Number.isFinite(emulatorRooms?.[1]?.currentPressure) ? emulatorRooms[1].currentPressure : 0;
+            const low = Math.min(room1, room2);
+            const high = Math.max(room1, room2);
+            return { room1, room2, low, high };
+        }
+
+        function clampPassboxPressureBetweenRooms() {
+            const state = getRoomPressureState();
+            const span = state.high - state.low;
+            if (span <= 0.1) {
+                Passbox_Pressure = (state.high + state.low) * 0.5;
+                return;
+            }
+            const eps = 0.05;
+            const minAllowed = state.low + eps;
+            const maxAllowed = state.high - eps;
+            Passbox_Pressure = Math.max(minAllowed, Math.min(maxAllowed, Passbox_Pressure));
         }
 
         function initializeFanTargetFromPriority() {
             const priorityPressure = getPriorityPressure();
             fanTargetPressure = priorityPressure + SetPoint_Fan_dP;
-            Passbox_Pressure = fanTargetPressure;
             fanPidIntegral = 0;
             fanPidPrevError = 0;
+            clampPassboxPressureBetweenRooms();
             updatePassboxPressureDisplay();
         }
 
@@ -2876,24 +2930,24 @@
         }
 
         function appendFanPIDGraphPoint() {
-            fanPIDGraphTimeSeconds = Math.round((fanPIDGraphTimeSeconds + sampleRate) * 100) / 100;
-            const t = fanPIDGraphTimeSeconds;
-            fanPIDGraphData.push({ x: t, y: Passbox_Pressure });
+            passboxPressureChartTimeSeconds = Math.round((passboxPressureChartTimeSeconds + sampleRate) * 100) / 100;
+            const t = passboxPressureChartTimeSeconds;
+            passboxPressureData.push({ x: t, y: Passbox_Pressure });
 
             const cutoff = t - 60;
-            while (fanPIDGraphData.length > 0 && fanPIDGraphData[0].x < cutoff) {
-                fanPIDGraphData.shift();
+            while (passboxPressureData.length > 0 && passboxPressureData[0].x < cutoff) {
+                passboxPressureData.shift();
             }
 
-            if (!fanPIDGraphChart) return;
-            fanPIDGraphChart.data.datasets[0].data = fanPIDGraphData.slice();
-            fanPIDGraphChart.options.scales.x.min = Math.max(0, cutoff);
-            fanPIDGraphChart.options.scales.x.max = t;
-            fanPIDGraphChart.update('none');
+            if (!passboxPressureChart) return;
+            passboxPressureChart.data.datasets[0].data = passboxPressureData.slice();
+            passboxPressureChart.options.scales.x.min = Math.max(0, cutoff);
+            passboxPressureChart.options.scales.x.max = t;
+            passboxPressureChart.update('none');
         }
 
         function ensureFanPIDGraphChart() {
-            if (fanPIDGraphChart) return true;
+            if (passboxPressureChart) return true;
             if (typeof Chart === 'undefined') return false;
 
             const canvas = document.getElementById('fanPIDChartCanvas');
@@ -2901,12 +2955,12 @@
             const ctx = canvas.getContext('2d');
             if (!ctx) return false;
 
-            fanPIDGraphChart = new Chart(ctx, {
+            passboxPressureChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     datasets: [{
-                        label: translations[currentLang]?.passboxPressureLabel || 'Passbox Pressure',
-                        data: fanPIDGraphData.slice(),
+                        label: translations[currentLang]?.passboxPressureAxis || 'Passbox Pressure',
+                        data: passboxPressureData.slice(),
                         borderColor: '#d81b60',
                         backgroundColor: 'rgba(216, 27, 96, 0.14)',
                         borderWidth: 2,
@@ -2925,7 +2979,7 @@
                             title: { display: true, text: translations[currentLang]?.timeAxis || 'Time' }
                         },
                         y: {
-                            title: { display: true, text: translations[currentLang]?.pressureAxis || 'Passbox Pressure' }
+                            title: { display: true, text: translations[currentLang]?.passboxPressureAxis || 'Passbox Pressure' }
                         }
                     }
                 }
@@ -2934,12 +2988,12 @@
         }
 
         function updateFanPIDGraphLocalization() {
-            if (!fanPIDGraphChart) return;
+            if (!passboxPressureChart) return;
             const t = translations[currentLang] || {};
-            fanPIDGraphChart.data.datasets[0].label = t.passboxPressureLabel || 'Passbox Pressure';
-            fanPIDGraphChart.options.scales.x.title.text = t.timeAxis || 'Time';
-            fanPIDGraphChart.options.scales.y.title.text = t.pressureAxis || 'Passbox Pressure';
-            fanPIDGraphChart.update('none');
+            passboxPressureChart.data.datasets[0].label = t.passboxPressureAxis || 'Passbox Pressure';
+            passboxPressureChart.options.scales.x.title.text = t.timeAxis || 'Time';
+            passboxPressureChart.options.scales.y.title.text = t.passboxPressureAxis || 'Passbox Pressure';
+            passboxPressureChart.update('none');
         }
 
         function openFanPIDGraphModal() {
@@ -2952,8 +3006,8 @@
                 return;
             }
             updateFanPIDGraphLocalization();
-            fanPIDGraphChart.resize();
-            fanPIDGraphChart.update('none');
+            passboxPressureChart.resize();
+            passboxPressureChart.update('none');
         }
 
         function closeFanPIDGraphModal(event) {
@@ -2967,13 +3021,16 @@
         }
 
         function simulateFanTick() {
+            if (!isRoomEmulatorRunning()) return;
             if (autoModeEnabled && !fanRunning && !fanEmergencyLocked) {
                 startFanControl();
             }
 
             if (!autoModeEnabled && !fanRunning) {
-                const driftTarget = getPriorityPressure();
-                Passbox_Pressure += (driftTarget - Passbox_Pressure) * 0.04;
+                const roomState = getRoomPressureState();
+                const naturalPressure = (roomState.room1 + roomState.room2) * 0.5;
+                Passbox_Pressure += (naturalPressure - Passbox_Pressure) * 0.03;
+                clampPassboxPressureBetweenRooms();
                 updatePassboxPressureDisplay();
                 appendFanPIDGraphPoint();
                 updateFanAnimationBySpeed();
@@ -2988,7 +3045,7 @@
             if (autoModeEnabled) {
                 const desiredFanSpeed = Math.max(
                     0,
-                    Math.min(100, FAN_SPEED_NEUTRAL + pressureError * PID_P * 0.45)
+                    Math.min(100, FAN_SPEED_NEUTRAL + pressureError * PID_P * 0.8)
                 );
                 fanSpeed += (desiredFanSpeed - fanSpeed) * 0.12;
             } else {
@@ -2997,9 +3054,13 @@
 
             fanSpeed = Math.max(0, Math.min(100, fanSpeed));
 
-            const fanPressureDelta = (fanSpeed - FAN_SPEED_NEUTRAL) * 0.01;
-            const roomCoupling = (getPriorityPressure() - Passbox_Pressure) * 0.015;
-            Passbox_Pressure += fanPressureDelta + roomCoupling;
+            const dt = sampleRate;
+            const fanPressureGain = 0.2;
+            const dampingFactor = 0.65;
+            const fanDrive = ((fanSpeed - FAN_SPEED_NEUTRAL) / 50) * fanPressureGain;
+            const pressureLoss = (Passbox_Pressure - fanTargetPressure) * dampingFactor;
+            Passbox_Pressure += (fanDrive - pressureLoss) * dt;
+            clampPassboxPressureBetweenRooms();
 
             updatePassboxPressureDisplay();
             updateFanAnimationBySpeed();
@@ -3007,8 +3068,8 @@
         }
 
         function startFanSimulationLoop() {
-            if (fanSimulationIntervalId) return;
-            fanSimulationIntervalId = setInterval(simulateFanTick, sampleRate * 1000);
+            // Passbox pressure simulation is integrated into the main emulator loop.
+            fanSimulationIntervalId = null;
         }
         /* =========================
            PRESSURE PRIORITY CONTROLLER
@@ -3032,6 +3093,60 @@
             const v = parseInt(String(el.value).trim(), 10);
             pressureAlarmDelaySeconds = Number.isFinite(v) && v >= 0 ? v : 0;
             el.value = String(pressureAlarmDelaySeconds);
+        }
+
+        function saveRoomPressureAlarmDelay() {
+            const el = document.getElementById('roomPressureAlarmDelayInput');
+            if (!el) return;
+            const v = parseInt(String(el.value).trim(), 10);
+            SetPoint_dP_AlarmTime = Number.isFinite(v) && v >= 0 ? v : 0;
+            el.value = String(SetPoint_dP_AlarmTime);
+        }
+
+        function resetRoomPressureAlarmMonitoring() {
+            Object.values(roomPressureAlarmState).forEach(state => {
+                state.startedAt = null;
+                state.triggered = false;
+            });
+        }
+
+        function updateRoomPressureAlarmCondition(stateKey, isOutOfRange, alarmKey, nowMs) {
+            const state = roomPressureAlarmState[stateKey];
+            if (!state) return;
+
+            if (!isOutOfRange) {
+                state.startedAt = null;
+                state.triggered = false;
+                return;
+            }
+
+            if (state.startedAt === null) {
+                state.startedAt = nowMs;
+            }
+
+            if (state.triggered) return;
+
+            const elapsedSeconds = (nowMs - state.startedAt) / 1000;
+            if (elapsedSeconds >= SetPoint_dP_AlarmTime) {
+                addAlarm(alarmKey, 'warning');
+                state.triggered = true;
+            }
+        }
+
+        function monitorRoomPressureAlarms() {
+            const room1 = emulatorRooms?.[0];
+            const room2 = emulatorRooms?.[1];
+            if (!room1 || !room2) return;
+
+            const room1Pressure = room1.currentPressure;
+            const room2Pressure = room2.currentPressure;
+            if (!Number.isFinite(room1Pressure) || !Number.isFinite(room2Pressure)) return;
+
+            const nowMs = Date.now();
+            updateRoomPressureAlarmCondition('room1High', room1Pressure > room1.workMax, 'alarmRoom1High', nowMs);
+            updateRoomPressureAlarmCondition('room1Low', room1Pressure < room1.workMin, 'alarmRoom1Low', nowMs);
+            updateRoomPressureAlarmCondition('room2High', room2Pressure > room2.workMax, 'alarmRoom2High', nowMs);
+            updateRoomPressureAlarmCondition('room2Low', room2Pressure < room2.workMin, 'alarmRoom2Low', nowMs);
         }
         /* =========================
            UI BINDINGS
@@ -3889,6 +4004,16 @@
 
                 updateEmulatorRoomStatus(index + 1);
             });
+            resetRoomPressureAlarmMonitoring();
+
+            passboxPressureChartTimeSeconds = 0;
+            passboxPressureData = [];
+            if (passboxPressureChart && passboxPressureChart.data && passboxPressureChart.data.datasets[0]) {
+                passboxPressureChart.data.datasets[0].data = [];
+                passboxPressureChart.options.scales.x.min = 0;
+                passboxPressureChart.options.scales.x.max = 60;
+                passboxPressureChart.update('none');
+            }
 
             addEmulatorLogEntry(1, 'info', 'emulationStarted');
             addEmulatorLogEntry(2, 'info', 'emulationStarted');
@@ -3954,6 +4079,11 @@
 
                 chart.update();
             });
+
+            if (anyRunning) {
+                monitorRoomPressureAlarms();
+                simulateFanTick();
+            }
 
             if (!anyRunning && emulatorIntervalId) {
                 clearInterval(emulatorIntervalId);
@@ -4212,6 +4342,7 @@
             fanRunning = false;
             fanSpeed = 0;
             fanEmergencyLocked = true;
+            resetRoomPressureAlarmMonitoring();
             updateFanAnimationBySpeed();
             uvRemainingSeconds = 0; blowRemainingSeconds = 0;
             updateUVTimerDisplay(); updateBlowTimerDisplay();
@@ -4421,21 +4552,19 @@
                     }
                 }
 
-                if (!autoModeEnabled) {
-                    if (n === 1) {
-                        if (autoStartSettings.uvDoor1 && !document.getElementById('indicator-uv').classList.contains('active')) {
-                            autoStartUV();
-                        }
-                        if (autoStartSettings.blowDoor1 && !document.getElementById('indicator-blow').classList.contains('active')) {
-                            autoStartBlow();
-                        }
-                    } else if (n === 2) {
-                        if (autoStartSettings.uvDoor2 && !document.getElementById('indicator-uv').classList.contains('active')) {
-                            autoStartUV();
-                        }
-                        if (autoStartSettings.blowDoor2 && !document.getElementById('indicator-blow').classList.contains('active')) {
-                            autoStartBlow();
-                        }
+                if (n === 1) {
+                    if (autoStartSettings.uvDoor1 && !document.getElementById('indicator-uv').classList.contains('active')) {
+                        autoStartUV();
+                    }
+                    if (!autoModeEnabled && autoStartSettings.blowDoor1 && !document.getElementById('indicator-blow').classList.contains('active')) {
+                        autoStartBlow();
+                    }
+                } else if (n === 2) {
+                    if (autoStartSettings.uvDoor2 && !document.getElementById('indicator-uv').classList.contains('active')) {
+                        autoStartUV();
+                    }
+                    if (!autoModeEnabled && autoStartSettings.blowDoor2 && !document.getElementById('indicator-blow').classList.contains('active')) {
+                        autoStartBlow();
                     }
                 }
             }
@@ -4724,6 +4853,7 @@
             saveSetPointFanDP();
             saveFanPIDParams();
             savePressureAlarmDelay();
+            saveRoomPressureAlarmDelay();
             setDPPriority(dpPriority);
             updatePressurePanel();
             updatePassboxPressureDisplay();
