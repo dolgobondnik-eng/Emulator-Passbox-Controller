@@ -1742,6 +1742,27 @@
                                     <input id="pidDInput" type="number" step="any" onchange="saveFanPIDParams()">
                                 </div>
                                 <div class="fan-sim-row">
+                                    <label for="passboxLeakRateInput" data-key="leakRateLabel">Утечка</label>
+                                    <input id="passboxLeakRateInput" type="number" step="0.001" min="0"
+                                        onchange="saveLeakParams()" oninput="saveLeakParams()">
+                                </div>
+                                <div class="fan-sim-row">
+                                    <label for="doorLeakMultiplierInput" data-key="doorLeakMultiplierLabel">Множитель
+                                        двери</label>
+                                    <input id="doorLeakMultiplierInput" type="number" step="1" min="1"
+                                        onchange="saveLeakParams()" oninput="saveLeakParams()">
+                                </div>
+                                <div class="fan-sim-row">
+                                    <label data-key="leakValueLabel">Утечка</label>
+                                    <span id="passboxLeakValueText">Leak = 0.0 Pa</span>
+                                </div>
+                                <div class="fan-sim-row">
+                                    <label data-key="passboxCalcLabel">Расчет давления шлюза</label>
+                                </div>
+                                <div class="fan-sim-row">
+                                    <div id="passboxCalcText">PassboxPressure (0.0 Pa)<br>= Room1Pressure (0.0 Pa) + SetPoint_Fan_dP (0.0 Pa) - Leak (0.0 Pa)</div>
+                                </div>
+                                <div class="fan-sim-row">
                                     <button class="pid-graph-btn" type="button" onclick="openFanPIDGraphModal()"
                                         data-key="pidGraphButton">График ПИД</button>
                                 </div>
@@ -2388,6 +2409,10 @@
                 emulationStoppedByAlarm: '⏹ Эмуляция остановлена по тревоге',
                 exportedData: '📊 Экспорт данных в CSV',
                 fanSimulatorTitle: 'Имитатор вентилятора',
+                leakRateLabel: 'Утечка',
+                doorLeakMultiplierLabel: 'Множитель двери',
+                leakValueLabel: 'Утечка',
+                passboxCalcLabel: 'Расчет давления шлюза',
                 pidCoefP: 'Коеф. P',
                 pidCoefI: 'Коеф. I',
                 pidCoefD: 'Коеф. D',
@@ -2526,6 +2551,10 @@
                 emulationStoppedByAlarm: '⏹ Emulation stopped by alarm',
                 exportedData: '📊 Data exported to CSV',
                 fanSimulatorTitle: 'Fan Simulator',
+                leakRateLabel: 'Leak',
+                doorLeakMultiplierLabel: 'Door Multiplier',
+                leakValueLabel: 'Leak',
+                passboxCalcLabel: 'Passbox pressure calculation',
                 pidCoefP: 'Coef. P',
                 pidCoefI: 'Coef. I',
                 pidCoefD: 'Coef. D',
@@ -2664,6 +2693,10 @@
                 emulationStoppedByAlarm: '⏹ 模拟因警报停止',
                 exportedData: '📊 数据导出到 CSV',
                 fanSimulatorTitle: '风扇模拟器',
+                leakRateLabel: '泄漏',
+                doorLeakMultiplierLabel: '门泄漏倍数',
+                leakValueLabel: '泄漏',
+                passboxCalcLabel: '传递窗压力计算',
                 pidCoefP: 'P 系数',
                 pidCoefI: 'I 系数',
                 pidCoefD: 'D 系数',
@@ -2819,6 +2852,7 @@
             SetPoint_Fan_dP = parseSignedNumber(el.value);
             el.value = String(SetPoint_Fan_dP);
             if (fanRunning) initializeFanTargetFromPriority();
+            updatePassboxDiagnostics(calculateCurrentLeakPa());
         }
 
         function saveFanPIDParams() {
@@ -2837,6 +2871,25 @@
                 PID_D = parseSignedNumber(dEl.value);
                 dEl.value = String(PID_D);
             }
+        }
+
+        function saveLeakParams() {
+            const leakRateEl = document.getElementById('passboxLeakRateInput');
+            const doorMultiplierEl = document.getElementById('doorLeakMultiplierInput');
+
+            if (leakRateEl) {
+                const v = parseSignedNumber(leakRateEl.value);
+                Passbox_LeakRate = Math.max(0, v);
+                leakRateEl.value = Passbox_LeakRate.toFixed(3);
+            }
+
+            if (doorMultiplierEl) {
+                const v = parseSignedNumber(doorMultiplierEl.value);
+                DoorLeakMultiplier = Math.max(1, Math.round(v));
+                doorMultiplierEl.value = String(DoorLeakMultiplier);
+            }
+
+            updatePassboxDiagnostics(calculateCurrentLeakPa());
         }
 
         function updateFanSpeedTest(value) {
@@ -2879,6 +2932,34 @@
             return Passbox_LeakRate * (doorOpen ? DoorLeakMultiplier : 1);
         }
 
+        function calculateCurrentLeakPa() {
+            return Passbox_Pressure * getPassboxLeakRate();
+        }
+
+        function updatePassboxDiagnostics(currentLeakPa) {
+            const leakValueEl = document.getElementById('passboxLeakValueText');
+            const calcEl = document.getElementById('passboxCalcText');
+            const t = translations[currentLang] || {};
+            const leakLabel = t.leakValueLabel || 'Leak';
+
+            if (leakValueEl) {
+                leakValueEl.textContent = `${leakLabel} = ${currentLeakPa.toFixed(1)} Pa`;
+            }
+
+            if (!calcEl) return;
+
+            const roomState = getRoomPressureState();
+            const priorityIsDp2 = dpPriority === 'dp2';
+            const priorityRoomPressure = priorityIsDp2 ? roomState.room2 : roomState.room1;
+            const roomLabel = priorityIsDp2 ? 'Room2Pressure' : 'Room1Pressure';
+
+            calcEl.innerHTML =
+                `PassboxPressure (${Passbox_Pressure.toFixed(1)} Pa)<br>` +
+                `= ${roomLabel} (${priorityRoomPressure.toFixed(1)} Pa) + ` +
+                `SetPoint_Fan_dP (${SetPoint_Fan_dP.toFixed(1)} Pa) - ` +
+                `Leak (${currentLeakPa.toFixed(1)} Pa)`;
+        }
+
         function applyPassboxLeak(dt) {
             const roomState = getRoomPressureState();
             const ambientPressure = (roomState.room1 + roomState.room2) * 0.5;
@@ -2892,7 +2973,7 @@
             passboxPressureAlarmActive = false;
         }
 
-        function updatePassboxPressureAlarm(dt, pressureError) {
+        function updatePassboxPressureAlarm(dt, pressureError, currentLeakPa) {
             const absError = Math.abs(pressureError);
             if (absError > PASSBOX_PRESSURE_TOLERANCE) {
                 passboxPressureAlarmTimer += dt;
@@ -2910,6 +2991,7 @@
                 'targetPassboxPressure=', targetPassboxPressure.toFixed(3),
                 'Passbox_Pressure=', Passbox_Pressure.toFixed(3),
                 'pressureError=', pressureError.toFixed(3),
+                'currentLeakPa=', currentLeakPa.toFixed(3),
                 'passboxPressureAlarmTimer=', passboxPressureAlarmTimer.toFixed(3),
                 'passboxPressureAlarmActive=', passboxPressureAlarmActive
             );
@@ -2949,6 +3031,7 @@
         function updatePassboxPressureDisplay() {
             const display = document.getElementById('passboxPressureValue');
             if (display) display.textContent = `${Passbox_Pressure.toFixed(1)} Pa`;
+            updatePassboxDiagnostics(calculateCurrentLeakPa());
         }
 
         function updateFanAnimationBySpeed() {
@@ -3121,9 +3204,10 @@
 
             // 4) calculate pressure error after actual pressure update
             const pressureError = targetPassboxPressure - Passbox_Pressure;
+            const currentLeakPa = calculateCurrentLeakPa();
             fanPidPrevError = pressureError;
             // 5-6) update timer and trigger alarm if needed
-            updatePassboxPressureAlarm(dt, pressureError);
+            updatePassboxPressureAlarm(dt, pressureError, currentLeakPa);
 
             updatePassboxPressureDisplay();
             updateFanAnimationBySpeed();
@@ -3146,6 +3230,7 @@
                 else { b2.classList.add('active'); b1.classList.remove('active'); }
             }
             if (fanRunning) initializeFanTargetFromPriority();
+            updatePassboxDiagnostics(calculateCurrentLeakPa());
         }
         /* =========================
            PRESSURE ALARM SETTINGS
@@ -3527,27 +3612,6 @@
            ===================================================== */
 
         const UI = {
-
-            updatePressurePanel() {
-                updatePressurePanel();
-            },
-
-            updateRoomStatus(roomIndex) {
-                updateEmulatorRoomStatus(roomIndex);
-            },
-
-            updateBoundaries(room, chart, time) {
-                updateEmulatorMinMaxLines(room, chart, time);
-            }
-
-        };
-
-        /* =====================================================
-           MODULE: UI
-           Interface updates
-           ===================================================== */
-
-        const UIModule = {
 
             updatePressurePanel() {
                 updatePressurePanel();
@@ -4272,6 +4336,7 @@
                     keyEl.textContent = translations[currentLang].startPrompt;
                 }
             }
+            updatePassboxDiagnostics(calculateCurrentLeakPa());
         }
 
         // Вспомогательная функция для обновления текста конкретного элемента
@@ -4909,15 +4974,20 @@
             const pidPInput = document.getElementById('pidPInput');
             const pidIInput = document.getElementById('pidIInput');
             const pidDInput = document.getElementById('pidDInput');
+            const leakRateInput = document.getElementById('passboxLeakRateInput');
+            const doorLeakMultiplierInput = document.getElementById('doorLeakMultiplierInput');
             if (pidPInput) pidPInput.value = String(PID_P);
             if (pidIInput) pidIInput.value = String(PID_I);
             if (pidDInput) pidDInput.value = String(PID_D);
+            if (leakRateInput) leakRateInput.value = Passbox_LeakRate.toFixed(3);
+            if (doorLeakMultiplierInput) doorLeakMultiplierInput.value = String(DoorLeakMultiplier);
             updateFanSpeedTest(0);
             updateFanSpeedTestAvailability();
 
             bindCorrectionInputs();
             saveSetPointFanDP();
             saveFanPIDParams();
+            saveLeakParams();
             savePressureAlarmDelay();
             saveRoomPressureAlarmDelay();
             setDPPriority(dpPriority);
