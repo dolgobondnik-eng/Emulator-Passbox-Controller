@@ -190,6 +190,8 @@
             border-radius: 8px;
             padding: 8px;
             font-size: 12px;
+            align-self: center;
+            margin-top: 20px;
         }
 
         .fan-sim-title {
@@ -221,6 +223,11 @@
 
         .fan-speed-test {
             width: 100%;
+        }
+
+        .fan-speed-test:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
         }
 
         .fan-speed-test-value {
@@ -1694,11 +1701,11 @@
                                     stroke-width="3" />
                                 <rect x="60" y="200" width="280" height="220" rx="25" fill="none" stroke="magenta"
                                     stroke-width="6" />
-                                <rect x="108" y="282" width="184" height="34" rx="6" fill="#f3a1d7" stroke="#b03a89"
+                                <rect x="94" y="268" width="212" height="54" rx="6" fill="#f3a1d7" stroke="#b03a89"
                                     stroke-width="2" />
-                                <text x="200" y="296" text-anchor="middle" font-size="11" font-weight="700"
-                                    fill="#4a1440">Passbox_Pressure</text>
-                                <text id="passboxPressureValue" x="200" y="308" text-anchor="middle" font-size="12"
+                                <text x="200" y="292" text-anchor="middle" font-size="22" font-weight="700"
+                                    fill="#4a1440" data-key="passboxPressureLabel">Давление в шлюзе</text>
+                                <text id="passboxPressureValue" x="200" y="312" text-anchor="middle" font-size="12"
                                     font-weight="700" fill="#4a1440">0.0 Pa</text>
                                 <rect x="30" y="290" width="20" height="40" fill="black" />
                                 <rect x="350" y="290" width="20" height="40" fill="black" />
@@ -1721,25 +1728,27 @@
                             </svg>
 
                             <div class="fan-sim-controls">
-                                <div class="fan-sim-title">Fan Simulator</div>
+                                <div class="fan-sim-title" data-key="fanSimulatorTitle">Имитатор вентилятора</div>
                                 <div class="fan-sim-row">
-                                    <label for="pidPInput">Коеф. P</label>
+                                    <label for="pidPInput" data-key="pidCoefP">Коеф. P</label>
                                     <input id="pidPInput" type="number" step="any" onchange="saveFanPIDParams()">
                                 </div>
                                 <div class="fan-sim-row">
-                                    <label for="pidIInput">Коеф. I</label>
+                                    <label for="pidIInput" data-key="pidCoefI">Коеф. I</label>
                                     <input id="pidIInput" type="number" step="any" onchange="saveFanPIDParams()">
                                 </div>
                                 <div class="fan-sim-row">
-                                    <label for="pidDInput">Коеф. D</label>
+                                    <label for="pidDInput" data-key="pidCoefD">Коеф. D</label>
                                     <input id="pidDInput" type="number" step="any" onchange="saveFanPIDParams()">
                                 </div>
                                 <div class="fan-sim-row">
-                                    <button class="pid-graph-btn" type="button" onclick="openFanPIDGraphModal()">PID
-                                        Graph</button>
+                                    <button class="pid-graph-btn" type="button" onclick="openFanPIDGraphModal()"
+                                        data-key="pidGraphButton">График ПИД</button>
                                 </div>
                                 <div class="fan-sim-row">
-                                    <label for="fanSpeedTestSlider" style="min-width: 90px;">Fan Speed Test</label>
+                                    <label for="fanSpeedTestSlider" style="min-width: 90px;"
+                                        data-key="fanSpeedTest">Тест
+                                        скорости вентилятора</label>
                                 </div>
                                 <div class="fan-sim-row">
                                     <input id="fanSpeedTestSlider" class="fan-speed-test" type="range" min="0" max="100"
@@ -1753,7 +1762,7 @@
                     <div id="fanPIDGraphModal" class="fan-pid-modal" onclick="closeFanPIDGraphModal(event)">
                         <div class="fan-pid-modal-content" onclick="event.stopPropagation()">
                             <div class="fan-pid-modal-header">
-                                <span>PID Graph: Passbox_Pressure</span>
+                                <span data-key="pidGraphTitle">График ПИД: Давление в шлюзе</span>
                                 <button class="fan-pid-close" type="button" onclick="closeFanPIDGraphModal()">×</button>
                             </div>
                             <div class="fan-pid-canvas-wrap">
@@ -1821,14 +1830,14 @@
                                         <!-- Абсолютный минимум (серая граница) -->
                                         <div class="boundary-row">
                                             <span class="boundary-label" data-key="absoluteMin">Абсолютный мин:</span>
-                                            <input type="number" id="min1" class="boundary-input" value="0"
+                                            <input type="number" id="min1" class="boundary-input" value="20"
                                                 onchange="updateEmulatorRoomSettings(1)">
                                             <div class="boundary-color-indicator boundary-color-gray"></div>
                                         </div>
                                         <!-- Абсолютный максимум (серая граница) -->
                                         <div class="boundary-row">
                                             <span class="boundary-label" data-key="absoluteMax">Абсолютный макс:</span>
-                                            <input type="number" id="max1" class="boundary-input" value="50"
+                                            <input type="number" id="max1" class="boundary-input" value="40"
                                                 onchange="updateEmulatorRoomSettings(1)">
                                             <div class="boundary-color-indicator boundary-color-gray"></div>
                                         </div>
@@ -1861,7 +1870,7 @@
                                         <!-- Абсолютный максимум (серая граница) -->
                                         <div class="boundary-row">
                                             <span class="boundary-label" data-key="absoluteMax">Абсолютный макс:</span>
-                                            <input type="number" id="max2" class="boundary-input" value="50"
+                                            <input type="number" id="max2" class="boundary-input" value="25"
                                                 onchange="updateEmulatorRoomSettings(2)">
                                             <div class="boundary-color-indicator boundary-color-gray"></div>
                                         </div>
@@ -2365,7 +2374,18 @@
                 emulationStarted: '🚀 Эмуляция запущена',
                 emulationStopped: '⏹ Эмуляция остановлена',
                 emulationStoppedByAlarm: '⏹ Эмуляция остановлена по тревоге',
-                exportedData: '📊 Экспорт данных в CSV'
+                exportedData: '📊 Экспорт данных в CSV',
+                fanSimulatorTitle: 'Имитатор вентилятора',
+                pidCoefP: 'Коеф. P',
+                pidCoefI: 'Коеф. I',
+                pidCoefD: 'Коеф. D',
+                pidGraphButton: 'График ПИД',
+                pidGraphTitle: 'График ПИД: Давление в шлюзе',
+                fanSpeedTest: 'Тест скорости вентилятора',
+                passboxPressureLabel: 'Давление в шлюзе',
+                timeAxis: 'Время',
+                pressureAxis: 'Давление в шлюзе',
+                pidGraphUnavailable: 'Chart.js недоступен для графика ПИД.'
             },
             en: {
                 // Основные элементы интерфейса (английский)
@@ -2484,7 +2504,18 @@
                 emulationStarted: '🚀 Emulation started',
                 emulationStopped: '⏹ Emulation stopped',
                 emulationStoppedByAlarm: '⏹ Emulation stopped by alarm',
-                exportedData: '📊 Data exported to CSV'
+                exportedData: '📊 Data exported to CSV',
+                fanSimulatorTitle: 'Fan Simulator',
+                pidCoefP: 'Coef. P',
+                pidCoefI: 'Coef. I',
+                pidCoefD: 'Coef. D',
+                pidGraphButton: 'PID Graph',
+                pidGraphTitle: 'PID Graph: Passbox Pressure',
+                fanSpeedTest: 'Fan Speed Test',
+                passboxPressureLabel: 'Passbox Pressure',
+                timeAxis: 'Time',
+                pressureAxis: 'Passbox Pressure',
+                pidGraphUnavailable: 'Chart.js is unavailable for PID Graph.'
             },
             zh: {
                 // Основные элементы интерфейса (китайский)
@@ -2603,7 +2634,18 @@
                 emulationStarted: '🚀 模拟已启动',
                 emulationStopped: '⏹ 模拟已停止',
                 emulationStoppedByAlarm: '⏹ 模拟因警报停止',
-                exportedData: '📊 数据导出到 CSV'
+                exportedData: '📊 数据导出到 CSV',
+                fanSimulatorTitle: '风扇模拟器',
+                pidCoefP: 'P 系数',
+                pidCoefI: 'I 系数',
+                pidCoefD: 'D 系数',
+                pidGraphButton: 'PID 图表',
+                pidGraphTitle: 'PID 图表：传递窗压力',
+                fanSpeedTest: '风扇速度测试',
+                passboxPressureLabel: '传递窗压力',
+                timeAxis: '时间',
+                pressureAxis: '传递窗压力',
+                pidGraphUnavailable: 'PID 图表不可用：Chart.js 未加载。'
             }
         };
         /* =========================
@@ -2713,6 +2755,7 @@
         let fanPidIntegral = 0;
         let fanPidPrevError = 0;
         let fanEmergencyLocked = false;
+        const FAN_SPEED_NEUTRAL = 50;
 
         // RU: выбранный приоритет ΔP (пока только параметр, без логики)
         // EN: selected ΔP priority (parameter only for now)
@@ -2759,18 +2802,27 @@
             const n = Math.max(0, Math.min(100, parseSignedNumber(value)));
             slider.value = String(Math.round(n));
             if (valEl) valEl.textContent = String(Math.round(n));
+            if (!autoModeEnabled) {
+                fanSpeed = n;
+                updateFanAnimationBySpeed();
+            }
         }
 
-        function getFanSpeedOverrideValue() {
+        function getManualFanSpeedValue() {
             const slider = document.getElementById('fanSpeedTestSlider');
-            if (!slider) return null;
+            if (!slider) return fanSpeed;
             const n = Math.max(0, Math.min(100, parseSignedNumber(slider.value)));
-            return n > 0 ? n : null; // 0 = PID mode, >0 = test override
+            return n;
         }
 
         function getEffectiveFanSpeed() {
-            const testOverride = getFanSpeedOverrideValue();
-            return testOverride !== null ? testOverride : fanSpeed;
+            return autoModeEnabled ? fanSpeed : getManualFanSpeedValue();
+        }
+
+        function updateFanSpeedTestAvailability() {
+            const slider = document.getElementById('fanSpeedTestSlider');
+            if (!slider) return;
+            slider.disabled = !!autoModeEnabled;
         }
 
         function getPriorityPressure() {
@@ -2812,7 +2864,7 @@
             if (!fanRunning) {
                 fanRunning = true;
                 initializeFanTargetFromPriority();
-                fanSpeed = 8;
+                fanSpeed = autoModeEnabled ? FAN_SPEED_NEUTRAL : getManualFanSpeedValue();
             }
         }
 
@@ -2853,7 +2905,7 @@
                 type: 'line',
                 data: {
                     datasets: [{
-                        label: 'Passbox_Pressure',
+                        label: translations[currentLang]?.passboxPressureLabel || 'Passbox Pressure',
                         data: fanPIDGraphData.slice(),
                         borderColor: '#d81b60',
                         backgroundColor: 'rgba(216, 27, 96, 0.14)',
@@ -2870,15 +2922,24 @@
                     scales: {
                         x: {
                             type: 'linear',
-                            title: { display: true, text: 'time (s)' }
+                            title: { display: true, text: translations[currentLang]?.timeAxis || 'Time' }
                         },
                         y: {
-                            title: { display: true, text: 'Passbox_Pressure (Pa)' }
+                            title: { display: true, text: translations[currentLang]?.pressureAxis || 'Passbox Pressure' }
                         }
                     }
                 }
             });
             return true;
+        }
+
+        function updateFanPIDGraphLocalization() {
+            if (!fanPIDGraphChart) return;
+            const t = translations[currentLang] || {};
+            fanPIDGraphChart.data.datasets[0].label = t.passboxPressureLabel || 'Passbox Pressure';
+            fanPIDGraphChart.options.scales.x.title.text = t.timeAxis || 'Time';
+            fanPIDGraphChart.options.scales.y.title.text = t.pressureAxis || 'Passbox Pressure';
+            fanPIDGraphChart.update('none');
         }
 
         function openFanPIDGraphModal() {
@@ -2887,9 +2948,10 @@
             modal.classList.add('show');
             if (!ensureFanPIDGraphChart()) {
                 modal.classList.remove('show');
-                alert('Chart.js is unavailable for PID Graph.');
+                alert(translations[currentLang]?.pidGraphUnavailable || 'Chart.js is unavailable for PID Graph.');
                 return;
             }
+            updateFanPIDGraphLocalization();
             fanPIDGraphChart.resize();
             fanPIDGraphChart.update('none');
         }
@@ -2898,6 +2960,10 @@
             if (event && event.target && event.target.id && event.target.id !== 'fanPIDGraphModal') return;
             const modal = document.getElementById('fanPIDGraphModal');
             if (modal) modal.classList.remove('show');
+        }
+
+        function isRoomEmulatorRunning() {
+            return emulatorIntervalId !== null;
         }
 
         function simulateFanTick() {
@@ -2918,12 +2984,22 @@
 
             const pressureError = fanTargetPressure - Passbox_Pressure;
             fanPidPrevError = pressureError;
-            fanSpeed += pressureError * PID_P;
-            fanSpeed = Math.max(0, Math.min(100, fanSpeed));
-            if (getFanSpeedOverrideValue() === null) fanSpeed = Math.max(8, fanSpeed);
 
-            const response = 0.02 + getEffectiveFanSpeed() / 1800;
-            Passbox_Pressure += pressureError * response;
+            if (autoModeEnabled) {
+                const desiredFanSpeed = Math.max(
+                    0,
+                    Math.min(100, FAN_SPEED_NEUTRAL + pressureError * PID_P * 0.45)
+                );
+                fanSpeed += (desiredFanSpeed - fanSpeed) * 0.12;
+            } else {
+                fanSpeed = getManualFanSpeedValue();
+            }
+
+            fanSpeed = Math.max(0, Math.min(100, fanSpeed));
+
+            const fanPressureDelta = (fanSpeed - FAN_SPEED_NEUTRAL) * 0.01;
+            const roomCoupling = (getPriorityPressure() - Passbox_Pressure) * 0.015;
+            Passbox_Pressure += fanPressureDelta + roomCoupling;
 
             updatePassboxPressureDisplay();
             updateFanAnimationBySpeed();
@@ -3139,6 +3215,10 @@
         const windowSize = 10;               // Окно отображения (10 секунд = 0.1667 минут)
         const windowSizeMinutes = windowSize / 60; // 10 секунд = 0.1667 минут
         const SEC_TO_MIN = 1 / 60;               // Коэффициент перевода секунд в минуты
+        const ROOM_CHART_LINE_STYLES = [
+            { color: 'rgb(150, 0, 255)', width: 3 },
+            { color: 'rgb(0, 180, 80)', width: 3 }
+        ];
         /* =========================
            EMULATOR STATE
            ========================= */
@@ -3152,7 +3232,7 @@
             {
                 id: 'pressureChart1',
                 title: 'Помещение №1',
-                min: 0, max: 50,                 // Абсолютные границы
+                min: 20, max: 40,                 // Абсолютные границы
                 workMin: 25, workMax: 35,          // Рабочие границы
                 currentTime: 0,                     // Текущее время (сек)
                 data: [],                            // Массив данных для экспорта
@@ -3169,7 +3249,7 @@
             {
                 id: 'pressureChart2',
                 title: 'Помещение №2',
-                min: 0, max: 50,
+                min: 0, max: 25,
                 workMin: 5, workMax: 15,
                 currentTime: 0,
                 data: [],
@@ -3718,7 +3798,7 @@
                 // emulatorCharts может быть не создан, если в коде ранее была ошибка выполнения.
                 if (!window.emulatorCharts || !Array.isArray(window.emulatorCharts)) {
                     console.warn('emulatorCharts is missing, initializing...');
-                    window.emulatorCharts = emulatorRooms.map((room) => {
+                    window.emulatorCharts = emulatorRooms.map((room, roomIdx) => {
                         const canvas = document.getElementById(room.id);
                         if (!canvas) return null;
                         canvas.style.width = '100%';
@@ -3726,12 +3806,12 @@
                         canvas.width = canvas.parentElement?.clientWidth || 800;
                         canvas.height = 170;
                         const ctx = canvas.getContext('2d');
-                        const borderColor = getRandomColor();
+                        const lineStyle = ROOM_CHART_LINE_STYLES[roomIdx] || ROOM_CHART_LINE_STYLES[0];
                         return new Chart(ctx, {
                             type: 'line',
                             data: {
                                 datasets: [
-                                    { label: 'Давление (Па)', data: [], borderColor, backgroundColor: 'rgba(0,0,0,0)', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.1 },
+                                    { label: 'Давление (Па)', data: [], borderColor: lineStyle.color, backgroundColor: 'rgba(0,0,0,0)', borderWidth: lineStyle.width, pointRadius: 0, fill: false, tension: 0.1 },
                                     { label: 'Рабочий Min', data: [], borderColor: 'red', borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 1.5 },
                                     { label: 'Рабочий Max', data: [], borderColor: 'blue', borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 1.5 }
                                 ]
@@ -3766,6 +3846,12 @@
                     // if charts already existed globally make sure local handle stays in sync
                     emulatorCharts = window.emulatorCharts;
                 }
+                window.emulatorCharts.forEach((chart, idx) => {
+                    if (!chart || !chart.data || !Array.isArray(chart.data.datasets) || !chart.data.datasets[0]) return;
+                    const lineStyle = ROOM_CHART_LINE_STYLES[idx] || ROOM_CHART_LINE_STYLES[0];
+                    chart.data.datasets[0].borderColor = lineStyle.color;
+                    chart.data.datasets[0].borderWidth = lineStyle.width;
+                });
                 // проверяем что chart объекты есть
                 if (window.emulatorCharts.some(c => c == null)) {
                     console.warn('Some emulator charts are null (missing canvas?).');
@@ -3952,7 +4038,8 @@
                 const k = el.getAttribute('data-key');
                 if (translations[currentLang] && translations[currentLang][k]) {
                     // Для элементов с переносом строк используем innerHTML
-                    if (k.includes('pressure') || k.includes('setting') || k.includes('param') || k.includes('correction')) {
+                    const isSvgElement = el instanceof SVGElement;
+                    if (!isSvgElement && (k.includes('pressure') || k.includes('setting') || k.includes('param') || k.includes('correction'))) {
                         el.innerHTML = translations[currentLang][k].replace(/\n/g, '<br>');
                     } else {
                         el.textContent = translations[currentLang][k];
@@ -3970,6 +4057,7 @@
             updateButtonsLockState();
             updateAutoButtons();
             updateDoorTimerDisplay();
+            updateFanPIDGraphLocalization();
             // Initialize emulator status labels.
 
             updateEmulatorRoomStatus(2);
@@ -4536,6 +4624,7 @@
                 const blowText = document.getElementById('text-blow');
                 if (blowIndicator) blowIndicator.classList.add('active');
                 if (blowText) blowText.innerHTML = translations[currentLang].blowOn;
+                if (!isRoomEmulatorRunning()) startEmulator();
             } else {
                 t.innerHTML = translations[currentLang][m1];
                 i.classList.remove('active');
@@ -4547,6 +4636,7 @@
                 fanSpeed = 0;
             }
             updateButtonsLockState();
+            updateFanSpeedTestAvailability();
             updateFanAnimationBySpeed();
         }
 
@@ -4628,6 +4718,7 @@
             if (pidIInput) pidIInput.value = String(PID_I);
             if (pidDInput) pidDInput.value = String(PID_D);
             updateFanSpeedTest(0);
+            updateFanSpeedTestAvailability();
 
             bindCorrectionInputs();
             saveSetPointFanDP();
