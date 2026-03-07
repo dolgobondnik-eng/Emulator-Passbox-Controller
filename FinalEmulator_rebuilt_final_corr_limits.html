@@ -2350,6 +2350,7 @@
                 alarmRoom1Low: 'Перепад давления помещения №1 ниже рабочего предела',
                 alarmRoom2High: 'Перепад давления помещения №2 превышает верхний рабочий предел',
                 alarmRoom2Low: 'Перепад давления помещения №2 ниже рабочего предела',
+                passboxPressureNotReached: 'Давление в камере шлюза не достигло заданного значения за установленное время',
 
                 // Элементы эмулятора
                 emulatorTitle: '📊 Эмуляция графиков давления в помещениях',
@@ -2487,6 +2488,7 @@
                 alarmRoom1Low: 'Room 1 pressure below working minimum',
                 alarmRoom2High: 'Room 2 pressure exceeds working maximum',
                 alarmRoom2Low: 'Room 2 pressure below working minimum',
+                passboxPressureNotReached: 'Passbox pressure did not reach the target value within the allowed time',
 
                 // Элементы эмулятора (английский)
                 emulatorTitle: '📊 Pressure Graphs Emulation',
@@ -2624,6 +2626,7 @@
                 alarmRoom1Low: '房间1压差低于工作下限',
                 alarmRoom2High: '房间2压差超过工作上限',
                 alarmRoom2Low: '房间2压差低于工作下限',
+                passboxPressureNotReached: '传递窗压力未在规定时间内达到设定值',
 
                 // Элементы эмулятора (китайский)
                 emulatorTitle: '📊 压力图表模拟',
@@ -2757,6 +2760,13 @@
         let SetPoint_Fan_dT = 3;
         // Simulated pressure inside passbox chamber (Pa).
         let Passbox_Pressure = 0;
+        // Passbox leak model parameters.
+        let Passbox_LeakRate = 0.02;
+        let DoorLeakMultiplier = 8;
+        const PASSBOX_PRESSURE_TOLERANCE = 1.0;
+        let targetPassboxPressure = 0;
+        let passboxPressureAlarmTimer = 0;
+        let passboxPressureAlarmActive = false;
         // PID coefficients for future fan pressure regulation logic.
         let PID_P = 1.0;
         let PID_I = 0.0;
@@ -2864,6 +2874,47 @@
             return dpPriority === 'dp2' ? roomPressures.room2 : roomPressures.room1;
         }
 
+        function getPassboxLeakRate() {
+            const doorOpen = !!doorState?.door1?.isOpen || !!doorState?.door2?.isOpen;
+            return Passbox_LeakRate * (doorOpen ? DoorLeakMultiplier : 1);
+        }
+
+        function applyPassboxLeak(dt) {
+            const roomState = getRoomPressureState();
+            const ambientPressure = (roomState.room1 + roomState.room2) * 0.5;
+            const leakRate = Math.max(0, getPassboxLeakRate());
+            const decayFactor = Math.exp(-leakRate * Math.max(0, dt));
+            Passbox_Pressure = ambientPressure + (Passbox_Pressure - ambientPressure) * decayFactor;
+        }
+
+        function resetPassboxPressureAlarmMonitoring() {
+            passboxPressureAlarmTimer = 0;
+            passboxPressureAlarmActive = false;
+        }
+
+        function updatePassboxPressureAlarm(dt, pressureError) {
+            const absError = Math.abs(pressureError);
+            if (absError > PASSBOX_PRESSURE_TOLERANCE) {
+                passboxPressureAlarmTimer += dt;
+                if (passboxPressureAlarmTimer >= SetPoint_Fan_dT && !passboxPressureAlarmActive) {
+                    addAlarm('passboxPressureNotReached', 'warning');
+                    passboxPressureAlarmActive = true;
+                }
+            } else {
+                passboxPressureAlarmTimer = 0;
+                passboxPressureAlarmActive = false;
+            }
+
+            console.log(
+                '[PASSBOX_ALARM_DEBUG]',
+                'targetPassboxPressure=', targetPassboxPressure.toFixed(3),
+                'Passbox_Pressure=', Passbox_Pressure.toFixed(3),
+                'pressureError=', pressureError.toFixed(3),
+                'passboxPressureAlarmTimer=', passboxPressureAlarmTimer.toFixed(3),
+                'passboxPressureAlarmActive=', passboxPressureAlarmActive
+            );
+        }
+
         function getRoomPressureState() {
             const room1 = Number.isFinite(emulatorRooms?.[0]?.currentPressure) ? emulatorRooms[0].currentPressure : 0;
             const room2 = Number.isFinite(emulatorRooms?.[1]?.currentPressure) ? emulatorRooms[1].currentPressure : 0;
@@ -2887,7 +2938,8 @@
 
         function initializeFanTargetFromPriority() {
             const priorityPressure = getPriorityPressure();
-            fanTargetPressure = priorityPressure + SetPoint_Fan_dP;
+            targetPassboxPressure = priorityPressure + SetPoint_Fan_dP;
+            fanTargetPressure = targetPassboxPressure;
             fanPidIntegral = 0;
             fanPidPrevError = 0;
             clampPassboxPressureBetweenRooms();
@@ -3025,27 +3077,31 @@
             if (autoModeEnabled && !fanRunning && !fanEmergencyLocked) {
                 startFanControl();
             }
+            const dt = sampleRate;
 
             if (!autoModeEnabled && !fanRunning) {
                 const roomState = getRoomPressureState();
                 const naturalPressure = (roomState.room1 + roomState.room2) * 0.5;
                 Passbox_Pressure += (naturalPressure - Passbox_Pressure) * 0.03;
+                applyPassboxLeak(dt);
                 clampPassboxPressureBetweenRooms();
+                resetPassboxPressureAlarmMonitoring();
                 updatePassboxPressureDisplay();
                 appendFanPIDGraphPoint();
                 updateFanAnimationBySpeed();
                 return;
             }
 
-            fanTargetPressure = getPriorityPressure() + SetPoint_Fan_dP;
+            // 1) calculate targetPassboxPressure
+            targetPassboxPressure = getPriorityPressure() + SetPoint_Fan_dP;
+            fanTargetPressure = targetPassboxPressure;
 
-            const pressureError = fanTargetPressure - Passbox_Pressure;
-            fanPidPrevError = pressureError;
-
+            // 2) update fanSpeed
+            const controlError = targetPassboxPressure - Passbox_Pressure;
             if (autoModeEnabled) {
                 const desiredFanSpeed = Math.max(
                     0,
-                    Math.min(100, FAN_SPEED_NEUTRAL + pressureError * PID_P * 0.8)
+                    Math.min(100, FAN_SPEED_NEUTRAL + controlError * PID_P * 0.8)
                 );
                 fanSpeed += (desiredFanSpeed - fanSpeed) * 0.12;
             } else {
@@ -3054,13 +3110,20 @@
 
             fanSpeed = Math.max(0, Math.min(100, fanSpeed));
 
-            const dt = sampleRate;
+            // 3) update Passbox_Pressure including leak effects
             const fanPressureGain = 0.2;
             const dampingFactor = 0.65;
             const fanDrive = ((fanSpeed - FAN_SPEED_NEUTRAL) / 50) * fanPressureGain;
-            const pressureLoss = (Passbox_Pressure - fanTargetPressure) * dampingFactor;
+            const pressureLoss = (Passbox_Pressure - targetPassboxPressure) * dampingFactor;
             Passbox_Pressure += (fanDrive - pressureLoss) * dt;
+            applyPassboxLeak(dt);
             clampPassboxPressureBetweenRooms();
+
+            // 4) calculate pressure error after actual pressure update
+            const pressureError = targetPassboxPressure - Passbox_Pressure;
+            fanPidPrevError = pressureError;
+            // 5-6) update timer and trigger alarm if needed
+            updatePassboxPressureAlarm(dt, pressureError);
 
             updatePassboxPressureDisplay();
             updateFanAnimationBySpeed();
@@ -3092,6 +3155,7 @@
             if (!el) return;
             const v = parseInt(String(el.value).trim(), 10);
             pressureAlarmDelaySeconds = Number.isFinite(v) && v >= 0 ? v : 0;
+            SetPoint_Fan_dT = pressureAlarmDelaySeconds;
             el.value = String(pressureAlarmDelaySeconds);
         }
 
@@ -4005,6 +4069,7 @@
                 updateEmulatorRoomStatus(index + 1);
             });
             resetRoomPressureAlarmMonitoring();
+            resetPassboxPressureAlarmMonitoring();
 
             passboxPressureChartTimeSeconds = 0;
             passboxPressureData = [];
@@ -4343,6 +4408,7 @@
             fanSpeed = 0;
             fanEmergencyLocked = true;
             resetRoomPressureAlarmMonitoring();
+            resetPassboxPressureAlarmMonitoring();
             updateFanAnimationBySpeed();
             uvRemainingSeconds = 0; blowRemainingSeconds = 0;
             updateUVTimerDisplay(); updateBlowTimerDisplay();
