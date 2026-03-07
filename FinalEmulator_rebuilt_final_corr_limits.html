@@ -797,29 +797,33 @@
 
         .param-settings-section {
             display: none;
-            padding: 20px;
+            padding: 16px;
             background-color: #bfbfbf;
             border: 2px solid #888;
             border-radius: 5px;
         }
 
         .param-settings-section.active {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .param-title {
             font-size: 28px;
             font-weight: bold;
             color: #222;
-            margin-bottom: 25px;
+            margin-bottom: 12px;
         }
 
         .param-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding: 10px;
+            margin-bottom: 0;
+            padding: 8px 10px;
+            background-color: #cfcfcf;
+            border-radius: 5px;
         }
 
         .param-label {
@@ -841,8 +845,8 @@
         .param-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 25px;
+            gap: 12px;
+            margin-top: 10px;
         }
 
         .param-btn {
@@ -1898,14 +1902,6 @@
                             срабатывания аварии при отклонении давления в камере шлюза (сек)</div><input type="text"
                             id="pressureAlarmDelayInput" class="param-input" value="3"
                             onchange="savePressureAlarmDelay()">
-                    </div>
-                    <div class="param-row">
-                        <div class="param-label" data-key="param3">Установка верхнего предела перепада давления высокой
-                            эффективности (Па)</div><input type="text" class="param-input" value="0">
-                    </div>
-                    <div class="param-row">
-                        <div class="param-label" data-key="param4">Установка нижнего предела перепада давления высокой
-                            эффективности (Па)</div><input type="text" class="param-input" value="0">
                     </div>
                     <div class="param-row">
                         <div class="param-label" data-key="param5">Установка верхнего предела перепада давления от зоны
