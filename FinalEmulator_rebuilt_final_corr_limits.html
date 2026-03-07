@@ -163,7 +163,7 @@
 
         .svg-decoration {
             width: 100%;
-            max-width: 400px;
+            max-width: 640px;
             margin: 20px auto;
             display: block !important;
             visibility: visible !important;
@@ -175,6 +175,124 @@
             display: block;
             max-width: 100%;
             height: auto;
+        }
+
+        .svg-decoration-layout {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .fan-sim-controls {
+            width: 200px;
+            background: #f2f2f2;
+            border: 1px solid #a9a9a9;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .fan-sim-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .fan-sim-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .fan-sim-row label {
+            min-width: 52px;
+            color: #333;
+        }
+
+        .fan-sim-row input[type="number"] {
+            width: 100%;
+            padding: 4px 6px;
+            border: 1px solid #888;
+            border-radius: 4px;
+            background: #fff;
+            color: #222;
+        }
+
+        .fan-speed-test {
+            width: 100%;
+        }
+
+        .fan-speed-test-value {
+            min-width: 28px;
+            text-align: right;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .pid-graph-btn {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #666;
+            border-radius: 5px;
+            background: linear-gradient(to bottom, #f8f8f8, #d8d8d8);
+            cursor: pointer;
+            font-weight: 600;
+            color: #222;
+        }
+
+        .pid-graph-btn:hover {
+            background: linear-gradient(to bottom, #ffffff, #e2e2e2);
+        }
+
+        .fan-pid-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .fan-pid-modal.show {
+            display: flex;
+        }
+
+        .fan-pid-modal-content {
+            width: min(92vw, 820px);
+            background: #f1f1f1;
+            border: 2px solid #8a8a8a;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .fan-pid-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #222;
+            font-weight: 700;
+        }
+
+        .fan-pid-close {
+            border: 1px solid #666;
+            background: #fff;
+            border-radius: 4px;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .fan-pid-canvas-wrap {
+            height: 300px;
+            background: #fff;
+            border: 1px solid #bbb;
+            border-radius: 6px;
+            padding: 4px;
         }
 
         .stop-btn {
@@ -1553,42 +1671,95 @@
 
                     <!-- ТЕХНИЧЕСКАЯ ДИАГРАММА -->
                     <div class="svg-decoration">
-                        <svg width="400" height="700" viewBox="0 0 400 700" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="20" y="20" width="360" height="660" fill="#eee" stroke="black" stroke-width="4" />
-                            <rect x="40" y="40" width="320" height="120" fill="#f5f5f5" stroke="black"
-                                stroke-width="3" />
-                            <circle cx="90" cy="100" r="18" fill="none" stroke="black" stroke-width="4" />
-                            <circle cx="90" cy="130" r="4" fill="limegreen" />
-                            <circle cx="140" cy="100" r="18" fill="none" stroke="black" stroke-width="4" />
-                            <rect x="200" y="75" width="125" height="50" fill="none" stroke="black" stroke-width="2" />
-                            <g fill="black">
-                                <rect x="205" y="80" width="15" height="40" />
-                                <rect x="225" y="80" width="15" height="40" />
-                                <rect x="245" y="80" width="15" height="40" />
-                                <rect x="265" y="80" width="15" height="40" />
-                                <rect x="285" y="80" width="15" height="40" />
-                                <rect x="305" y="80" width="15" height="40" />
-                            </g>
-                            <rect x="40" y="180" width="320" height="260" fill="white" stroke="black"
-                                stroke-width="3" />
-                            <rect x="60" y="200" width="280" height="220" rx="25" fill="none" stroke="magenta"
-                                stroke-width="6" />
-                            <rect x="30" y="290" width="20" height="40" fill="black" />
-                            <rect x="350" y="290" width="20" height="40" fill="black" />
-                            <rect x="40" y="460" width="320" height="200" fill="#f5f5f5" stroke="black"
-                                stroke-width="3" />
-                            <path d="M 60 460 A 260 260 0 0 0 360 600" fill="none" stroke="black" stroke-width="3" />
-                            <path d="M 306 460 A 180 140 0 0 0 360 520" fill="none" stroke="black" stroke-width="3" />
-                            <rect x="355" y="530" width="8" height="70" fill="cyan" />
-                            <polygon points="230,500 260,520 230,540" fill="limegreen"
-                                transform="rotate(20, 245, 520)" />
-                            <line x1="230" y1="520" x2="190" y2="520" stroke="limegreen" stroke-width="6"
-                                transform="rotate(20, 245, 520)" />
-                            <polygon points="360,560 390,575 360,590" fill="limegreen" />
-                            <polygon points="360,520 390,535 360,550" fill="limegreen" />
-                            <polygon points="325,95 355,80 325,65" fill="red" transform="rotate(-180, 340, 80)" />
-                            <polygon points="325,135 355,120 325,105" fill="red" transform="rotate(-180, 340, 120)" />
-                        </svg>
+                        <div class="svg-decoration-layout">
+                            <svg width="400" height="700" viewBox="0 0 400 700" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="20" y="20" width="360" height="660" fill="#eee" stroke="black"
+                                    stroke-width="4" />
+                                <rect x="40" y="40" width="320" height="120" fill="#f5f5f5" stroke="black"
+                                    stroke-width="3" />
+                                <circle cx="90" cy="100" r="18" fill="none" stroke="black" stroke-width="4" />
+                                <circle cx="90" cy="130" r="4" fill="limegreen" />
+                                <circle cx="140" cy="100" r="18" fill="none" stroke="black" stroke-width="4" />
+                                <rect x="200" y="75" width="125" height="50" fill="none" stroke="black"
+                                    stroke-width="2" />
+                                <g fill="black">
+                                    <rect x="205" y="80" width="15" height="40" />
+                                    <rect x="225" y="80" width="15" height="40" />
+                                    <rect x="245" y="80" width="15" height="40" />
+                                    <rect x="265" y="80" width="15" height="40" />
+                                    <rect x="285" y="80" width="15" height="40" />
+                                    <rect x="305" y="80" width="15" height="40" />
+                                </g>
+                                <rect x="40" y="180" width="320" height="260" fill="white" stroke="black"
+                                    stroke-width="3" />
+                                <rect x="60" y="200" width="280" height="220" rx="25" fill="none" stroke="magenta"
+                                    stroke-width="6" />
+                                <rect x="108" y="282" width="184" height="34" rx="6" fill="#f3a1d7" stroke="#b03a89"
+                                    stroke-width="2" />
+                                <text x="200" y="296" text-anchor="middle" font-size="11" font-weight="700"
+                                    fill="#4a1440">Passbox_Pressure</text>
+                                <text id="passboxPressureValue" x="200" y="308" text-anchor="middle" font-size="12"
+                                    font-weight="700" fill="#4a1440">0.0 Pa</text>
+                                <rect x="30" y="290" width="20" height="40" fill="black" />
+                                <rect x="350" y="290" width="20" height="40" fill="black" />
+                                <rect x="40" y="460" width="320" height="200" fill="#f5f5f5" stroke="black"
+                                    stroke-width="3" />
+                                <path d="M 60 460 A 260 260 0 0 0 360 600" fill="none" stroke="black"
+                                    stroke-width="3" />
+                                <path d="M 306 460 A 180 140 0 0 0 360 520" fill="none" stroke="black"
+                                    stroke-width="3" />
+                                <rect x="355" y="530" width="8" height="70" fill="cyan" />
+                                <polygon points="230,500 260,520 230,540" fill="limegreen"
+                                    transform="rotate(20, 245, 520)" />
+                                <line x1="230" y1="520" x2="190" y2="520" stroke="limegreen" stroke-width="6"
+                                    transform="rotate(20, 245, 520)" />
+                                <polygon points="360,560 390,575 360,590" fill="limegreen" />
+                                <polygon points="360,520 390,535 360,550" fill="limegreen" />
+                                <polygon points="325,95 355,80 325,65" fill="red" transform="rotate(-180, 340, 80)" />
+                                <polygon points="325,135 355,120 325,105" fill="red"
+                                    transform="rotate(-180, 340, 120)" />
+                            </svg>
+
+                            <div class="fan-sim-controls">
+                                <div class="fan-sim-title">Fan Simulator</div>
+                                <div class="fan-sim-row">
+                                    <label for="pidPInput">Коеф. P</label>
+                                    <input id="pidPInput" type="number" step="any" onchange="saveFanPIDParams()">
+                                </div>
+                                <div class="fan-sim-row">
+                                    <label for="pidIInput">Коеф. I</label>
+                                    <input id="pidIInput" type="number" step="any" onchange="saveFanPIDParams()">
+                                </div>
+                                <div class="fan-sim-row">
+                                    <label for="pidDInput">Коеф. D</label>
+                                    <input id="pidDInput" type="number" step="any" onchange="saveFanPIDParams()">
+                                </div>
+                                <div class="fan-sim-row">
+                                    <button class="pid-graph-btn" type="button" onclick="openFanPIDGraphModal()">PID
+                                        Graph</button>
+                                </div>
+                                <div class="fan-sim-row">
+                                    <label for="fanSpeedTestSlider" style="min-width: 90px;">Fan Speed Test</label>
+                                </div>
+                                <div class="fan-sim-row">
+                                    <input id="fanSpeedTestSlider" class="fan-speed-test" type="range" min="0" max="100"
+                                        step="1" value="0" oninput="updateFanSpeedTest(this.value)">
+                                    <span id="fanSpeedTestValue" class="fan-speed-test-value">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="fanPIDGraphModal" class="fan-pid-modal" onclick="closeFanPIDGraphModal(event)">
+                        <div class="fan-pid-modal-content" onclick="event.stopPropagation()">
+                            <div class="fan-pid-modal-header">
+                                <span>PID Graph: Passbox_Pressure</span>
+                                <button class="fan-pid-close" type="button" onclick="closeFanPIDGraphModal()">×</button>
+                            </div>
+                            <div class="fan-pid-canvas-wrap">
+                                <canvas id="fanPIDChartCanvas"></canvas>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- КНОПКА АВАРИЙНОГО СТОПА -->
@@ -2522,6 +2693,27 @@
         let PID_I = 0.0;
         let PID_D = 0.0;
 
+        /* =========================
+           FAN SIMULATOR / Имитатор работы вентилятора / 风扇模拟器
+           RU: Этот блок имитирует работу вентилятора камеры шлюза.
+               Он моделирует регулирование давления внутри камеры
+               с помощью упрощенной модели ПИД-регулятора.
+           EN: This block simulates the operation of the passbox chamber fan.
+               It models pressure regulation inside the chamber using a simplified PID control simulation.
+           CN: 该模块模拟传递窗内部风扇的工作，
+               并使用简化的 PID 控制模型来模拟腔体压力调节。
+           ========================= */
+        let fanRunning = false;
+        let fanSpeed = 0;
+        let fanTargetPressure = 0;
+        let fanSimulationIntervalId = null;
+        let fanPIDGraphChart = null;
+        let fanPIDGraphTimeSeconds = 0;
+        let fanPIDGraphData = [];
+        let fanPidIntegral = 0;
+        let fanPidPrevError = 0;
+        let fanEmergencyLocked = false;
+
         // RU: выбранный приоритет ΔP (пока только параметр, без логики)
         // EN: selected ΔP priority (parameter only for now)
         // CN: 选择的ΔP优先级（目前仅参数）
@@ -2539,6 +2731,208 @@
             if (!el) return;
             SetPoint_Fan_dP = parseSignedNumber(el.value);
             el.value = String(SetPoint_Fan_dP);
+            if (fanRunning) initializeFanTargetFromPriority();
+        }
+
+        function saveFanPIDParams() {
+            const pEl = document.getElementById('pidPInput');
+            const iEl = document.getElementById('pidIInput');
+            const dEl = document.getElementById('pidDInput');
+            if (pEl) {
+                PID_P = parseSignedNumber(pEl.value);
+                pEl.value = String(PID_P);
+            }
+            if (iEl) {
+                PID_I = parseSignedNumber(iEl.value);
+                iEl.value = String(PID_I);
+            }
+            if (dEl) {
+                PID_D = parseSignedNumber(dEl.value);
+                dEl.value = String(PID_D);
+            }
+        }
+
+        function updateFanSpeedTest(value) {
+            const slider = document.getElementById('fanSpeedTestSlider');
+            const valEl = document.getElementById('fanSpeedTestValue');
+            if (!slider) return;
+            const n = Math.max(0, Math.min(100, parseSignedNumber(value)));
+            slider.value = String(Math.round(n));
+            if (valEl) valEl.textContent = String(Math.round(n));
+        }
+
+        function getFanSpeedOverrideValue() {
+            const slider = document.getElementById('fanSpeedTestSlider');
+            if (!slider) return null;
+            const n = Math.max(0, Math.min(100, parseSignedNumber(slider.value)));
+            return n > 0 ? n : null; // 0 = PID mode, >0 = test override
+        }
+
+        function getEffectiveFanSpeed() {
+            const testOverride = getFanSpeedOverrideValue();
+            return testOverride !== null ? testOverride : fanSpeed;
+        }
+
+        function getPriorityPressure() {
+            const room = dpPriority === 'dp2' ? emulatorRooms[1] : emulatorRooms[0];
+            const pressure = room && Number.isFinite(room.currentPressure) ? room.currentPressure : 0;
+            return pressure;
+        }
+
+        function initializeFanTargetFromPriority() {
+            const priorityPressure = getPriorityPressure();
+            fanTargetPressure = priorityPressure + SetPoint_Fan_dP;
+            Passbox_Pressure = fanTargetPressure;
+            fanPidIntegral = 0;
+            fanPidPrevError = 0;
+            updatePassboxPressureDisplay();
+        }
+
+        function updatePassboxPressureDisplay() {
+            const display = document.getElementById('passboxPressureValue');
+            if (display) display.textContent = `${Passbox_Pressure.toFixed(1)} Pa`;
+        }
+
+        function updateFanAnimationBySpeed() {
+            const fan = document.getElementById('main-fan');
+            if (!fan) return;
+            const speed = fanRunning ? getEffectiveFanSpeed() : 0;
+            if (speed <= 0) {
+                fan.classList.remove('spinning');
+                fan.style.animationDuration = '';
+                return;
+            }
+            fan.classList.add('spinning');
+            const duration = Math.max(0.15, 2.2 - speed * 0.02);
+            fan.style.animationDuration = `${duration.toFixed(2)}s`;
+        }
+
+        function startFanControl() {
+            fanEmergencyLocked = false;
+            if (!fanRunning) {
+                fanRunning = true;
+                initializeFanTargetFromPriority();
+                fanSpeed = 8;
+            }
+        }
+
+        function stopFanControl() {
+            if (autoModeEnabled) return;
+            fanRunning = false;
+            fanSpeed = 0;
+            updateFanAnimationBySpeed();
+        }
+
+        function appendFanPIDGraphPoint() {
+            fanPIDGraphTimeSeconds = Math.round((fanPIDGraphTimeSeconds + sampleRate) * 100) / 100;
+            const t = fanPIDGraphTimeSeconds;
+            fanPIDGraphData.push({ x: t, y: Passbox_Pressure });
+
+            const cutoff = t - 60;
+            while (fanPIDGraphData.length > 0 && fanPIDGraphData[0].x < cutoff) {
+                fanPIDGraphData.shift();
+            }
+
+            if (!fanPIDGraphChart) return;
+            fanPIDGraphChart.data.datasets[0].data = fanPIDGraphData.slice();
+            fanPIDGraphChart.options.scales.x.min = Math.max(0, cutoff);
+            fanPIDGraphChart.options.scales.x.max = t;
+            fanPIDGraphChart.update('none');
+        }
+
+        function ensureFanPIDGraphChart() {
+            if (fanPIDGraphChart) return true;
+            if (typeof Chart === 'undefined') return false;
+
+            const canvas = document.getElementById('fanPIDChartCanvas');
+            if (!canvas) return false;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return false;
+
+            fanPIDGraphChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Passbox_Pressure',
+                        data: fanPIDGraphData.slice(),
+                        borderColor: '#d81b60',
+                        backgroundColor: 'rgba(216, 27, 96, 0.14)',
+                        borderWidth: 2,
+                        tension: 0.35,
+                        pointRadius: 0,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: 'time (s)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Passbox_Pressure (Pa)' }
+                        }
+                    }
+                }
+            });
+            return true;
+        }
+
+        function openFanPIDGraphModal() {
+            const modal = document.getElementById('fanPIDGraphModal');
+            if (!modal) return;
+            modal.classList.add('show');
+            if (!ensureFanPIDGraphChart()) {
+                modal.classList.remove('show');
+                alert('Chart.js is unavailable for PID Graph.');
+                return;
+            }
+            fanPIDGraphChart.resize();
+            fanPIDGraphChart.update('none');
+        }
+
+        function closeFanPIDGraphModal(event) {
+            if (event && event.target && event.target.id && event.target.id !== 'fanPIDGraphModal') return;
+            const modal = document.getElementById('fanPIDGraphModal');
+            if (modal) modal.classList.remove('show');
+        }
+
+        function simulateFanTick() {
+            if (autoModeEnabled && !fanRunning && !fanEmergencyLocked) {
+                startFanControl();
+            }
+
+            if (!autoModeEnabled && !fanRunning) {
+                const driftTarget = getPriorityPressure();
+                Passbox_Pressure += (driftTarget - Passbox_Pressure) * 0.04;
+                updatePassboxPressureDisplay();
+                appendFanPIDGraphPoint();
+                updateFanAnimationBySpeed();
+                return;
+            }
+
+            fanTargetPressure = getPriorityPressure() + SetPoint_Fan_dP;
+
+            const pressureError = fanTargetPressure - Passbox_Pressure;
+            fanPidPrevError = pressureError;
+            fanSpeed += pressureError * PID_P;
+            fanSpeed = Math.max(0, Math.min(100, fanSpeed));
+            if (getFanSpeedOverrideValue() === null) fanSpeed = Math.max(8, fanSpeed);
+
+            const response = 0.02 + getEffectiveFanSpeed() / 1800;
+            Passbox_Pressure += pressureError * response;
+
+            updatePassboxPressureDisplay();
+            updateFanAnimationBySpeed();
+            appendFanPIDGraphPoint();
+        }
+
+        function startFanSimulationLoop() {
+            if (fanSimulationIntervalId) return;
+            fanSimulationIntervalId = setInterval(simulateFanTick, sampleRate * 1000);
         }
         /* =========================
            PRESSURE PRIORITY CONTROLLER
@@ -2551,6 +2945,7 @@
                 if (dpPriority === 'dp1') { b1.classList.add('active'); b2.classList.remove('active'); }
                 else { b2.classList.add('active'); b1.classList.remove('active'); }
             }
+            if (fanRunning) initializeFanTargetFromPriority();
         }
         /* =========================
            PRESSURE ALARM SETTINGS
@@ -3726,6 +4121,10 @@
             document.getElementById('main-fan').classList.remove('spinning');
             const bi = document.getElementById('indicator-blow'), bt = document.getElementById('text-blow');
             bi.classList.remove('active'); bt.innerHTML = translations[currentLang].blowOff;
+            fanRunning = false;
+            fanSpeed = 0;
+            fanEmergencyLocked = true;
+            updateFanAnimationBySpeed();
             uvRemainingSeconds = 0; blowRemainingSeconds = 0;
             updateUVTimerDisplay(); updateBlowTimerDisplay();
 
@@ -3782,6 +4181,7 @@
         // Запуск таймера обдува
         function startBlowTimer() {
             saveTimeSettings();
+            startFanControl();
             blowRemainingSeconds = airShowerTimeSeconds;
             updateBlowTimerDisplay();
             if (blowTimerInterval) clearInterval(blowTimerInterval);
@@ -3810,6 +4210,7 @@
             i.classList.remove('active');
             t.innerText = translations[currentLang].blowOff;
             f.classList.remove('spinning');
+            stopFanControl();
         }
 
         // Блокировка кнопок в автоматическом режиме
@@ -3972,6 +4373,7 @@
             textElement.innerHTML = translations[currentLang].blowOn;
             fan.classList.add('spinning');
             startBlowTimer();
+            updateFanAnimationBySpeed();
         }
 
         // Обновление визуального состояния двери
@@ -4059,6 +4461,7 @@
                 }
                 blowRemainingSeconds = 0;
                 updateBlowTimerDisplay();
+                if (tid === 'text-blow') stopFanControl();
             } else {
                 i.classList.add('active');
                 t.innerHTML = translations[currentLang][on];
@@ -4068,6 +4471,7 @@
                 const f = document.getElementById('main-fan');
                 if (i.classList.contains('active')) f.classList.add('spinning');
                 else f.classList.remove('spinning');
+                updateFanAnimationBySpeed();
             }
         }
 
@@ -4125,11 +4529,25 @@
             if (autoModeEnabled) {
                 t.innerHTML = translations[currentLang][m2];
                 i.classList.add('active');
+                fanEmergencyLocked = false;
+                fanRunning = true;
+                initializeFanTargetFromPriority();
+                const blowIndicator = document.getElementById('indicator-blow');
+                const blowText = document.getElementById('text-blow');
+                if (blowIndicator) blowIndicator.classList.add('active');
+                if (blowText) blowText.innerHTML = translations[currentLang].blowOn;
             } else {
                 t.innerHTML = translations[currentLang][m1];
                 i.classList.remove('active');
+                const blowIndicator = document.getElementById('indicator-blow');
+                const blowText = document.getElementById('text-blow');
+                if (blowIndicator) blowIndicator.classList.remove('active');
+                if (blowText) blowText.innerHTML = translations[currentLang].blowOff;
+                fanRunning = false;
+                fanSpeed = 0;
             }
             updateButtonsLockState();
+            updateFanAnimationBySpeed();
         }
 
         // Переключение настройки (вкл/выкл)
@@ -4203,12 +4621,22 @@
 
             const setPointFanEl = document.getElementById('setPointFanDPInput');
             if (setPointFanEl) setPointFanEl.value = String(SetPoint_Fan_dP);
+            const pidPInput = document.getElementById('pidPInput');
+            const pidIInput = document.getElementById('pidIInput');
+            const pidDInput = document.getElementById('pidDInput');
+            if (pidPInput) pidPInput.value = String(PID_P);
+            if (pidIInput) pidIInput.value = String(PID_I);
+            if (pidDInput) pidDInput.value = String(PID_D);
+            updateFanSpeedTest(0);
 
             bindCorrectionInputs();
             saveSetPointFanDP();
+            saveFanPIDParams();
             savePressureAlarmDelay();
             setDPPriority(dpPriority);
             updatePressurePanel();
+            updatePassboxPressureDisplay();
+            startFanSimulationLoop();
         });
 
         // Обработчик изменения размера окна для эмулятора (debounce)
