@@ -566,32 +566,6 @@
             transition: all 0.3s;
         }
 
-        .door-lock-icon {
-            width: 24px;
-            height: 24px;
-        }
-
-        .lock-body,
-        .lock-shackle,
-        .lock-key {
-            fill: #2F8CCF;
-            stroke: #2F8CCF;
-        }
-
-        .lock-shackle {
-            fill: none;
-            stroke-width: 2.4;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            transition: transform 0.3s ease;
-            transform-origin: 16px 8px;
-        }
-
-        .lock-open .lock-shackle {
-            transform: rotate(-25deg);
-            transform-origin: 16px 8px;
-        }
-
         .lock-unlocked {
             stroke: #3498db;
             fill: #3498db;
@@ -1666,12 +1640,11 @@
                                             </g>
                                         </svg>
                                     </div>
-                                    <svg id="lock1" class="lock-svg door-lock-icon lock-unlocked lock-open"
-                                        viewBox="0 0 32 32">
-                                        <path id="lock1-shackle" class="lock-shackle" d="M10 14V10a6 6 0 0 1 12 0v4" />
-                                        <rect class="lock-body" x="8" y="14" width="16" height="12" rx="2" />
-                                        <circle class="lock-key" cx="16" cy="20" r="1.8" />
-                                        <rect class="lock-key" x="15.4" y="20.5" width="1.2" height="3.5" rx="0.6" />
+                                    <svg id="lock1" class="lock-svg lock-unlocked" viewBox="0 0 50 50">
+                                        <path id="lock1-shackle" d="M 10 25 A 15 15 0 0 1 40 25" fill="none"
+                                            stroke-width="6" stroke-linecap="round" style="display: none;" />
+                                        <rect x="12" y="22" width="26" height="20" rx="4" stroke-width="2" />
+                                        <circle cx="25" cy="32" r="3" fill="#fff" />
                                     </svg>
                                 </div>
                             </div>
@@ -1692,12 +1665,11 @@
                                             </g>
                                         </svg>
                                     </div>
-                                    <svg id="lock2" class="lock-svg door-lock-icon lock-unlocked lock-open"
-                                        viewBox="0 0 32 32">
-                                        <path id="lock2-shackle" class="lock-shackle" d="M10 14V10a6 6 0 0 1 12 0v4" />
-                                        <rect class="lock-body" x="8" y="14" width="16" height="12" rx="2" />
-                                        <circle class="lock-key" cx="16" cy="20" r="1.8" />
-                                        <rect class="lock-key" x="15.4" y="20.5" width="1.2" height="3.5" rx="0.6" />
+                                    <svg id="lock2" class="lock-svg lock-unlocked" viewBox="0 0 50 50">
+                                        <path id="lock2-shackle" d="M 10 25 A 15 15 0 0 1 40 25" fill="none"
+                                            stroke-width="6" stroke-linecap="round" style="display: none;" />
+                                        <rect x="12" y="22" width="26" height="20" rx="4" stroke-width="2" />
+                                        <circle cx="25" cy="32" r="3" fill="#fff" />
                                     </svg>
                                 </div>
                             </div>
@@ -4633,24 +4605,20 @@
             }
         }
 
-        function updateDoorLockIcon(doorId, isLocked) {
-            const lockIcon = document.getElementById(`lock${doorId}`);
-            if (!lockIcon) return;
-            lockIcon.classList.toggle('lock-open', !isLocked);
-        }
-
         // Обновление визуального состояния замка
         function updateLockVisual(n, blocked) {
-            const s = document.getElementById(`lock${n}`);
-            if (!s) return;
+            const s = document.getElementById(`lock${n}`), h = document.getElementById(`lock${n}-shackle`);
             if (blocked) {
                 s.classList.remove('lock-unlocked');
                 s.classList.add('lock-blocked');
+                h.setAttribute('d', 'M15 25 V 15 A 10 10 0 0 1 35 15 V 25');
+                h.style.display = 'block';
             } else {
                 s.classList.remove('lock-blocked');
                 s.classList.add('lock-unlocked');
+                h.setAttribute('d', 'M 10 25 A 15 15 0 0 1 40 25');
+                h.style.display = 'block';
             }
-            updateDoorLockIcon(n, blocked);
         }
 
         // Запуск таймера блокировки двери
