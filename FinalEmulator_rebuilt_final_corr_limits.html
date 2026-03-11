@@ -2133,15 +2133,15 @@
                     <div class="correction-header" data-key="correctionValue">Correction value</div>
                     <div class="correction-row">
                         <div class="correction-label" data-key="correction1">High-efficiency filter pressure difference
-                            (Pa)</div><input type="text" id="corrFilter" class="correction-input" value="+0">
+                            (Pa)</div><input type="number" min="-20" max="20" step="1" id="corrFilter" class="correction-input" value="+0">
                     </div>
                     <div class="correction-row">
                         <div class="correction-label" data-key="correction2">High-grade zone to cavity pressure
-                            difference (Pa)</div><input type="text" id="corrDP1" class="correction-input" value="+0.0">
+                            difference (Pa)</div><input type="number" min="-20" max="20" step="1" id="corrDP1" class="correction-input" value="+0.0">
                     </div>
                     <div class="correction-row">
                         <div class="correction-label" data-key="correction3">Cavity pressure difference to low-grade
-                            area (Pa)</div><input type="text" id="corrDP2" class="correction-input" value="+0.0">
+                            area (Pa)</div><input type="number" min="-20" max="20" step="1" id="corrDP2" class="correction-input" value="+0.0">
                     </div>
                     <div class="correction-buttons">
                         <button class="correction-btn" data-key="return" onclick="showParamSettings()">Return</button>
@@ -3344,13 +3344,16 @@
             const dp1El = document.getElementById('corrDP1');
             const dp2El = document.getElementById('corrDP2');
 
-            // RU: ставим HTML-ограничения, даже если input=text (не влияет на стили)
-            // EN: set HTML limits even for type=text (no visual change)
-            // CN: 设置HTML限制（不影响样式）
+            // RU: синхронизируем HTML-ограничения для полей коррекции без изменения макета
+            // EN: keep correction input limits in sync without affecting layout
+            // CN: 同步修正输入范围限制且不影响布局
             [filterEl, dp1El, dp2El].forEach(el => {
                 if (!el) return;
                 el.setAttribute('inputmode', 'numeric');
                 el.setAttribute('autocomplete', 'off');
+                el.setAttribute('min', String(CORRECTION_MIN));
+                el.setAttribute('max', String(CORRECTION_MAX));
+                el.setAttribute('step', '1');
             });
 
             function applyClampAndRefresh() {
