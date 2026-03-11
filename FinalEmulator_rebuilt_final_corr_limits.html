@@ -706,6 +706,7 @@
             border: 1px solid #eee;
             min-width: 80px;
             justify-content: flex-end;
+            white-space: nowrap;
         }
 
         .p-val {
@@ -718,6 +719,16 @@
         .p-unit {
             font-size: 14px;
             color: #777;
+        }
+
+        .correction-positive {
+            color: #d32f2f;
+            fill: #d32f2f;
+        }
+
+        .correction-negative {
+            color: #2e7d32;
+            fill: #2e7d32;
         }
 
         .side-buttons {
@@ -2133,15 +2144,18 @@
                     <div class="correction-header" data-key="correctionValue">Correction value</div>
                     <div class="correction-row">
                         <div class="correction-label" data-key="correction1">High-efficiency filter pressure difference
-                            (Pa)</div><input type="text" id="corrFilter" class="correction-input" value="+0">
+                            (Pa)</div><input type="number" min="-20" max="20" step="1" id="corrFilter"
+                            class="correction-input" value="0">
                     </div>
                     <div class="correction-row">
                         <div class="correction-label" data-key="correction2">High-grade zone to cavity pressure
-                            difference (Pa)</div><input type="text" id="corrDP1" class="correction-input" value="+0.0">
+                            difference (Pa)</div><input type="number" min="-20" max="20" step="1" id="corrDP1"
+                            class="correction-input" value="0">
                     </div>
                     <div class="correction-row">
                         <div class="correction-label" data-key="correction3">Cavity pressure difference to low-grade
-                            area (Pa)</div><input type="text" id="corrDP2" class="correction-input" value="+0.0">
+                            area (Pa)</div><input type="number" min="-20" max="20" step="1" id="corrDP2"
+                            class="correction-input" value="0">
                     </div>
                     <div class="correction-buttons">
                         <button class="correction-btn" data-key="return" onclick="showParamSettings()">Return</button>
@@ -2788,9 +2802,7 @@
            ========================= */
         function clampCorrection(n) {
             if (!Number.isFinite(n)) return 0;
-            if (n < CORRECTION_MIN) return CORRECTION_MIN;
-            if (n > CORRECTION_MAX) return CORRECTION_MAX;
-            return n;
+            return Math.max(CORRECTION_MIN, Math.min(CORRECTION_MAX, n));
         }
         /* =========================
            UI UTILITIES
@@ -2798,7 +2810,37 @@
            ========================= */
         function formatSignedInt(n) {
             const v = Math.round(n);
-            return (v >= 0 ? '+' : '') + String(v);
+            return String(v);
+        }
+
+        function formatCorrectionText(correction) {
+            return correction === 0 ? '' : ` (${correction > 0 ? '+' : ''}${correction})`;
+        }
+
+        function getCorrectionClassName(correction) {
+            if (correction > 0) return 'correction-positive';
+            if (correction < 0) return 'correction-negative';
+            return '';
+        }
+
+        function setPressureDisplayWithCorrection(valueEl, unitEl, pressure, correction, digits = 0) {
+            if (!valueEl || !unitEl) return;
+
+            valueEl.textContent = Number(pressure).toFixed(digits);
+
+            const correctionText = formatCorrectionText(correction);
+            const correctionClass = getCorrectionClassName(correction);
+            if (!correctionText) {
+                unitEl.textContent = unitPa();
+                return;
+            }
+
+            unitEl.innerHTML = `${unitPa()}<span class="${correctionClass}">${correctionText}</span>`;
+        }
+
+        function formatPressureWithCorrection(pressure, correction, digits = 1) {
+            const baseText = `${Number(pressure).toFixed(digits)} ${unitPa()}`;
+            return `${baseText}${formatCorrectionText(correction)}`;
         }
 
         function setCorrectionInputState(inputEl, isCorrected) {
@@ -2877,8 +2919,7 @@
         };
 
         function parseSignedNumber(value) {
-            const s = String(value || '').replace(',', '.').trim();
-            const n = parseFloat(s);
+            const n = Number(String(value ?? '').replace(',', '.').trim());
             return Number.isFinite(n) ? n : 0;
         }
 
@@ -3068,7 +3109,7 @@
 
         function updatePassboxPressureDisplay() {
             const display = document.getElementById('passboxPressureValue');
-            if (display) display.textContent = formatPressureValue(Passbox_Pressure);
+            if (display) display.textContent = formatPressureWithCorrection(Passbox_Pressure, 0);
             updatePassboxDiagnostics(calculateCurrentLeakPa());
         }
 
@@ -3344,13 +3385,16 @@
             const dp1El = document.getElementById('corrDP1');
             const dp2El = document.getElementById('corrDP2');
 
-            // RU: ставим HTML-ограничения, даже если input=text (не влияет на стили)
-            // EN: set HTML limits even for type=text (no visual change)
-            // CN: 设置HTML限制（不影响样式）
+            // RU: синхронизируем диапазон полей коррекции без изменения макета
+            // EN: keep correction input range in sync without changing layout
+            // CN: 同步修正输入范围且不改变布局
             [filterEl, dp1El, dp2El].forEach(el => {
                 if (!el) return;
                 el.setAttribute('inputmode', 'numeric');
                 el.setAttribute('autocomplete', 'off');
+                el.setAttribute('min', String(CORRECTION_MIN));
+                el.setAttribute('max', String(CORRECTION_MAX));
+                el.setAttribute('step', '1');
             });
 
             function applyClampAndRefresh() {
@@ -3415,14 +3459,17 @@
             const r1 = Number.isFinite(room1?.currentPressure) ? room1.currentPressure : 0;
             const r2 = Number.isFinite(room2?.currentPressure) ? room2.currentPressure : 0;
 
-            // HEPA: базовое 60 Па + коррекция фильтра (как просил)
+            // HEPA: отображаем базовое значение и отдельно показываем знак коррекции
             const hepaValEl = document.querySelector('.pressure-block .pressure-row .p-val'); // первая строка HEPA
-            if (hepaValEl) hepaValEl.textContent = String(Math.round(60 + filterCorrection));
+            const hepaUnitEl = document.querySelector('.pressure-block .pressure-row .p-unit');
+            if (hepaValEl && hepaUnitEl) setPressureDisplayWithCorrection(hepaValEl, hepaUnitEl, 60, filterCorrection);
 
             const dp1El = getPressureValueElByKey('pressureRoom1');
             const dp2El = getPressureValueElByKey('pressureRoom2');
-            if (dp1El) dp1El.textContent = String(Math.round(r1 + dpCorrection1));
-            if (dp2El) dp2El.textContent = String(Math.round(r2 + dpCorrection2));
+            const dp1UnitEl = dp1El?.parentElement?.querySelector('.p-unit');
+            const dp2UnitEl = dp2El?.parentElement?.querySelector('.p-unit');
+            if (dp1El && dp1UnitEl) setPressureDisplayWithCorrection(dp1El, dp1UnitEl, Math.round(r1), dpCorrection1);
+            if (dp2El && dp2UnitEl) setPressureDisplayWithCorrection(dp2El, dp2UnitEl, Math.round(r2), dpCorrection2);
         }
         /* =========================
            SETTINGS SYNCHRONIZATION
@@ -4406,6 +4453,7 @@
                     keyEl.textContent = translations[currentLang].startPrompt;
                 }
             }
+            updatePressurePanel();
             updatePassboxPressureDisplay();
             updateEmulatorChartLocalization();
             updateEmulatorLogLocalization();
