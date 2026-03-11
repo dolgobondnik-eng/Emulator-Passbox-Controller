@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- TEST BRANCH CHANGE -->
 <html lang="ru">
 
 <head>
@@ -10,7 +9,7 @@
         onerror="if(!this.dataset.fallback){this.dataset.fallback='unpkg';this.src='https://unpkg.com/chart.js@4.4.1/dist/chart.umd.min.js';}else if(this.dataset.fallback==='unpkg'){this.dataset.fallback='local';this.src='./chart.umd.min.js';}">
         </script>
     <style>
-        /* ===== ОСНОВНЫЕ СТИЛИ / MAIN STYLES / 主要样式 ===== Тест ветки -----ветка приорити*/
+        /* ===== ОСНОВНЫЕ СТИЛИ / MAIN STYLES / 主要样式 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -2725,16 +2724,33 @@
            Interface language
            ========================= */
         let currentLang = 'ru';  // Текущий язык (по умолчанию русский)
-        function getPressureUnit() {
+        const DEBUG_MODE = false;
+
+        function unitPa() {
             return translations[currentLang]?.pressureUnit || 'Pa';
         }
 
-        function getRoomShort() {
+        function roomShortLabel() {
             return translations[currentLang]?.roomShort || 'Room';
         }
 
+        function translateMessageKey(messageKey) {
+            if (messageKey && translations[currentLang] && translations[currentLang][messageKey]) {
+                return translations[currentLang][messageKey];
+            }
+            return messageKey;
+        }
+
+        function getPressureUnit() {
+            return unitPa();
+        }
+
+        function getRoomShort() {
+            return roomShortLabel();
+        }
+
         function formatPressureValue(value, digits = 1) {
-            return `${Number(value).toFixed(digits)} ${getPressureUnit()}`;
+            return `${Number(value).toFixed(digits)} ${unitPa()}`;
         }
         /* =========================
            DEVICE SETTINGS
@@ -3006,15 +3022,17 @@
                 passboxPressureAlarmActive = false;
             }
 
-            console.log(
-                '[PASSBOX_ALARM_DEBUG]',
-                'targetPassboxPressure=', targetPassboxPressure.toFixed(3),
-                'Passbox_Pressure=', Passbox_Pressure.toFixed(3),
-                'pressureError=', pressureError.toFixed(3),
-                'currentLeakPa=', currentLeakPa.toFixed(3),
-                'passboxPressureAlarmTimer=', passboxPressureAlarmTimer.toFixed(3),
-                'passboxPressureAlarmActive=', passboxPressureAlarmActive
-            );
+            if (DEBUG_MODE) {
+                console.log(
+                    '[PASSBOX_ALARM_DEBUG]',
+                    'targetPassboxPressure=', targetPassboxPressure.toFixed(3),
+                    'Passbox_Pressure=', Passbox_Pressure.toFixed(3),
+                    'pressureError=', pressureError.toFixed(3),
+                    'currentLeakPa=', currentLeakPa.toFixed(3),
+                    'passboxPressureAlarmTimer=', passboxPressureAlarmTimer.toFixed(3),
+                    'passboxPressureAlarmActive=', passboxPressureAlarmActive
+                );
+            }
         }
 
         function getRoomPressureState() {
@@ -3468,12 +3486,7 @@
             }
 
             display.innerHTML = alarmList.map(alarm => {
-                // Получаем переведенное сообщение по ключу
-                let message = alarm.messageKey;
-                if (translations[currentLang] && translations[currentLang][alarm.messageKey]) {
-                    message = translations[currentLang][alarm.messageKey];
-                }
-
+                const message = translateMessageKey(alarm.messageKey);
                 // Определяем класс для типа тревоги
                 let typeClass = '';
                 if (alarm.type === 'doorOpen') typeClass = 'door-open';
@@ -3658,18 +3671,11 @@
             const now = new Date();
             const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-            // Получаем переведенное сообщение или используем ключ как есть
-            let message = messageKey;
-            if (translations[currentLang] && translations[currentLang][messageKey]) {
-                message = translations[currentLang][messageKey];
-            }
-
             const logEntry = document.createElement('div');
             logEntry.className = 'emulator-log-entry';
             logEntry.dataset.roomIndex = String(roomIndex);
             logEntry.dataset.type = type;
             logEntry.dataset.messageKey = messageKey;
-            logEntry.dataset.message = message;
             logEntry.dataset.pressure = pressure !== null ? String(pressure) : '';
             logEntry.innerHTML = `
                 <span class="emulator-log-time">${timeStr}</span>
@@ -3690,7 +3696,6 @@
                 room: roomIndex,
                 type: type,
                 messageKey: messageKey,
-                message: message,
                 pressure: pressure
             });
 
@@ -3733,24 +3738,20 @@
 
             const type = entryEl.dataset.type || 'info';
             const messageKey = entryEl.dataset.messageKey || '';
-            const fallbackMessage = entryEl.dataset.message || messageKey;
             const pressureValue = entryEl.dataset.pressure;
 
             let icon = 'ℹ️';
             if (type === 'high') icon = '⚠️';
             else if (type === 'low') icon = '🔻';
 
-            let message = fallbackMessage;
-            if (messageKey && translations[currentLang] && translations[currentLang][messageKey]) {
-                message = translations[currentLang][messageKey];
-            }
+            const message = translateMessageKey(messageKey);
 
             const pressureText = pressureValue !== ''
-                ? ` (${formatPressureValue(Number(pressureValue))})`
+                ? ` (${Number(pressureValue).toFixed(1)} ${unitPa()})`
                 : '';
             const messageEl = entryEl.querySelector('.emulator-log-message');
             if (messageEl) {
-                messageEl.textContent = `${icon} ${getRoomShort()}${roomIndex}: ${message}${pressureText}`;
+                messageEl.textContent = `${icon} ${roomShortLabel()}${roomIndex}: ${message}${pressureText}`;
             }
         }
 
@@ -3768,9 +3769,10 @@
             }
 
             const csvContent = `Время,Помещение,Тип,Сообщение,Давление (${getPressureUnit()})\n` +
-                emulatorEventLog.map(entry =>
-                    `"${entry.time}","Помещение ${entry.room}","${entry.type}","${entry.message}",${entry.pressure ? entry.pressure.toFixed(2) : ''}`
-                ).join('\n');
+                emulatorEventLog.map(entry => {
+                    const message = translateMessageKey(entry.messageKey);
+                    return `"${entry.time}","${roomShortLabel()}${entry.room}","${entry.type}","${message}",${entry.pressure !== null ? entry.pressure.toFixed(2) : ''}`;
+                }).join('\n');
 
             const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
