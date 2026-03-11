@@ -1706,7 +1706,7 @@
                                 <text x="200" y="292" text-anchor="middle" font-size="22" font-weight="700"
                                     fill="#4a1440" data-key="passboxPressureLabel">Давление в шлюзе</text>
                                 <text id="passboxPressureValue" x="200" y="312" text-anchor="middle" font-size="12"
-                                    font-weight="700" fill="#4a1440">0.0 Pa</text>
+                                    font-weight="700" fill="#4a1440">0.0</text>
                                 <rect x="30" y="290" width="20" height="40" fill="black" />
                                 <rect x="350" y="290" width="20" height="40" fill="black" />
                                 <rect x="40" y="460" width="320" height="200" fill="#f5f5f5" stroke="black"
@@ -1740,6 +1740,27 @@
                                 <div class="fan-sim-row">
                                     <label for="pidDInput" data-key="pidCoefD">Коеф. D</label>
                                     <input id="pidDInput" type="number" step="any" onchange="saveFanPIDParams()">
+                                </div>
+                                <div class="fan-sim-row">
+                                    <label for="passboxLeakRateInput" data-key="leakRateLabel">Утечка</label>
+                                    <input id="passboxLeakRateInput" type="number" step="0.001" min="0"
+                                        onchange="saveLeakParams()" oninput="saveLeakParams()">
+                                </div>
+                                <div class="fan-sim-row">
+                                    <label for="doorLeakMultiplierInput" data-key="doorLeakMultiplierLabel">Множитель
+                                        двери</label>
+                                    <input id="doorLeakMultiplierInput" type="number" step="1" min="1"
+                                        onchange="saveLeakParams()" oninput="saveLeakParams()">
+                                </div>
+                                <div class="fan-sim-row">
+                                    <label data-key="leakValueLabel">Утечка</label>
+                                    <span id="passboxLeakValueText">0.0</span>
+                                </div>
+                                <div class="fan-sim-row">
+                                    <label data-key="passboxCalcLabel">Расчет давления шлюза</label>
+                                </div>
+                                <div class="fan-sim-row">
+                                    <div id="passboxCalcText">0.0</div>
                                 </div>
                                 <div class="fan-sim-row">
                                     <button class="pid-graph-btn" type="button" onclick="openFanPIDGraphModal()"
@@ -2182,15 +2203,18 @@
             <div class="pressure-block">
                 <!-- Исправлено: HEPA теперь 60 Па -->
                 <div class="pressure-row"><span class="p-label">HEPA</span>
-                    <div class="p-value-box"><span class="p-val">60</span><span class="p-unit">Па</span></div>
+                    <div class="p-value-box"><span class="p-val">60</span><span class="p-unit"
+                            data-key="pressureUnit">Па</span></div>
                 </div>
                 <div class="pressure-row"><span class="p-label" data-key="pressureRoom1">Перепад давления к<br>помещению
                         №1</span>
-                    <div class="p-value-box"><span class="p-val">0</span><span class="p-unit">Па</span></div>
+                    <div class="p-value-box"><span class="p-val">0</span><span class="p-unit"
+                            data-key="pressureUnit">Па</span></div>
                 </div>
                 <div class="pressure-row"><span class="p-label" data-key="pressureRoom2">Перепад давления к<br>помещению
                         №2</span>
-                    <div class="p-value-box"><span class="p-val">0</span><span class="p-unit">Па</span></div>
+                    <div class="p-value-box"><span class="p-val">0</span><span class="p-unit"
+                            data-key="pressureUnit">Па</span></div>
                 </div>
             </div>
             <div class="countdown-block">
@@ -2285,6 +2309,8 @@
                 viewAlarms: 'Просмотр тревог',
                 userManagement: 'Управление пользователями',
                 pressureDrop: 'Перепад давления',
+                pressureUnit: 'Па',
+                roomShort: 'Пом.',
                 pressureRoom1: 'Перепад давления к\nпомещению №1',
                 pressureRoom2: 'Перепад давления к\nпомещению №2',
                 countdown: 'Обратный отсчет',
@@ -2350,6 +2376,7 @@
                 alarmRoom1Low: 'Перепад давления помещения №1 ниже рабочего предела',
                 alarmRoom2High: 'Перепад давления помещения №2 превышает верхний рабочий предел',
                 alarmRoom2Low: 'Перепад давления помещения №2 ниже рабочего предела',
+                passboxPressureNotReached: 'Давление в камере шлюза не достигло заданного значения за установленное время',
 
                 // Элементы эмулятора
                 emulatorTitle: '📊 Эмуляция графиков давления в помещениях',
@@ -2387,6 +2414,10 @@
                 emulationStoppedByAlarm: '⏹ Эмуляция остановлена по тревоге',
                 exportedData: '📊 Экспорт данных в CSV',
                 fanSimulatorTitle: 'Имитатор вентилятора',
+                leakRateLabel: 'Утечка',
+                doorLeakMultiplierLabel: 'Множитель двери',
+                leakValueLabel: 'Утечка',
+                passboxCalcLabel: 'Расчет давления шлюза',
                 pidCoefP: 'Коеф. P',
                 pidCoefI: 'Коеф. I',
                 pidCoefD: 'Коеф. D',
@@ -2417,11 +2448,13 @@
                 lightOn: 'Light ON',
                 manualMode: 'Manual Mode',
                 autoMode: 'Auto Mode',
-                pressureAutoMode: 'Maintained differential pressure difference',
+                pressureAutoMode: 'Auto Setup Mode: Differential Pressure (Pa)',
                 settings: 'Settings',
                 viewAlarms: 'View Alarms',
                 userManagement: 'User Management',
                 pressureDrop: 'Pressure difference',
+                pressureUnit: 'Pa',
+                roomShort: 'Room',
                 pressureRoom1: 'High-grade zone pressure difference\nacross the cavity',
                 pressureRoom2: 'Cavity pressure difference\nto low-grade area',
                 countdown: 'Countdown',
@@ -2487,6 +2520,7 @@
                 alarmRoom1Low: 'Room 1 pressure below working minimum',
                 alarmRoom2High: 'Room 2 pressure exceeds working maximum',
                 alarmRoom2Low: 'Room 2 pressure below working minimum',
+                passboxPressureNotReached: 'Passbox pressure did not reach the target value within the allowed time',
 
                 // Элементы эмулятора (английский)
                 emulatorTitle: '📊 Pressure Graphs Emulation',
@@ -2494,12 +2528,12 @@
                 room2: 'Room No.2',
                 pause: '⏸ Pause',
                 play: '▶ Start',
-                boundarySettingsTitle: '⚙️ Pressure Graph Boundaries Settings',
+                boundarySettingsTitle: '⚙️ Pressure Graph Limit Settings',
                 absoluteMin: 'Absolute min:',
                 absoluteMax: 'Absolute max:',
                 workingMin: 'Working min:',
                 workingMax: 'Working max:',
-                colorLegend: 'Absolute boundaries - Working minimum - Working maximum',
+                colorLegend: 'Absolute Limits-Working Min/Max',
                 room1Params: 'Room No.1 - generation parameters',
                 room2Params: 'Room No.2 - generation parameters',
                 speed: 'Speed:',
@@ -2511,7 +2545,7 @@
                 eventLog: '📋 Emulation event log',
                 clear: 'Clear',
                 export: 'Export',
-                startPrompt: '🔔 Start emulation to begin monitoring',
+                startPrompt: '🔔 Start Simulation Monitoring',
                 returnedToNormalAfterExceed: 'Returned to normal after exceed',
                 returnedToNormalAfterDrop: 'Returned to normal after drop',
                 exceedWarning: '⚠️ Working maximum exceeded!',
@@ -2524,6 +2558,10 @@
                 emulationStoppedByAlarm: '⏹ Emulation stopped by alarm',
                 exportedData: '📊 Data exported to CSV',
                 fanSimulatorTitle: 'Fan Simulator',
+                leakRateLabel: 'Leak',
+                doorLeakMultiplierLabel: 'Door Multiplier',
+                leakValueLabel: 'Leak',
+                passboxCalcLabel: 'Passbox pressure calculation',
                 pidCoefP: 'Coef. P',
                 pidCoefI: 'Coef. I',
                 pidCoefD: 'Coef. D',
@@ -2554,11 +2592,13 @@
                 lightOn: '灯光 开',
                 manualMode: '手动模式',
                 autoMode: '自动模式',
-                pressureAutoMode: '维持的差压差值',
+                pressureAutoMode: '自动设定模式: 压差（Pa)',
                 settings: '设定',
                 viewAlarms: '查看警报',
                 userManagement: '用户管理',
                 pressureDrop: '压差',
+                pressureUnit: 'Pa',
+                roomShort: '房',
                 pressureRoom1: '高级区跨腔压差',
                 pressureRoom2: '腔体与低级区压差',
                 countdown: '倒数计时',
@@ -2624,6 +2664,7 @@
                 alarmRoom1Low: '房间1压差低于工作下限',
                 alarmRoom2High: '房间2压差超过工作上限',
                 alarmRoom2Low: '房间2压差低于工作下限',
+                passboxPressureNotReached: '传递窗压力未在规定时间内达到设定值',
 
                 // Элементы эмулятора (китайский)
                 emulatorTitle: '📊 压力图表模拟',
@@ -2631,12 +2672,12 @@
                 room2: '房间 №2',
                 pause: '⏸ 暂停',
                 play: '▶ 开始',
-                boundarySettingsTitle: '⚙️ 压力图表边界设置',
+                boundarySettingsTitle: '⚙️ 压力图表限值设置',
                 absoluteMin: '绝对最小:',
                 absoluteMax: '绝对最大:',
                 workingMin: '工作最小:',
                 workingMax: '工作最大:',
-                colorLegend: '绝对边界 - 工作最小值 - 工作最大值',
+                colorLegend: '绝对限值-工作最小值-工作最大值',
                 room1Params: '房间 №1 - 生成参数',
                 room2Params: '房间 №2 - 生成参数',
                 speed: '速度:',
@@ -2648,7 +2689,7 @@
                 eventLog: '📋 模拟事件日志',
                 clear: '清除',
                 export: '导出',
-                startPrompt: '🔔 开始模拟以监测',
+                startPrompt: '🔔 开始模拟监测',
                 returnedToNormalAfterExceed: '超出后恢复正常',
                 returnedToNormalAfterDrop: '下降后恢复正常',
                 exceedWarning: '⚠️ 超过工作最大值！',
@@ -2661,6 +2702,10 @@
                 emulationStoppedByAlarm: '⏹ 模拟因警报停止',
                 exportedData: '📊 数据导出到 CSV',
                 fanSimulatorTitle: '风扇模拟器',
+                leakRateLabel: '泄漏',
+                doorLeakMultiplierLabel: '门泄漏倍数',
+                leakValueLabel: '泄漏',
+                passboxCalcLabel: '传递窗压力计算',
                 pidCoefP: 'P 系数',
                 pidCoefI: 'I 系数',
                 pidCoefD: 'D 系数',
@@ -2680,6 +2725,17 @@
            Interface language
            ========================= */
         let currentLang = 'ru';  // Текущий язык (по умолчанию русский)
+        function getPressureUnit() {
+            return translations[currentLang]?.pressureUnit || 'Pa';
+        }
+
+        function getRoomShort() {
+            return translations[currentLang]?.roomShort || 'Room';
+        }
+
+        function formatPressureValue(value, digits = 1) {
+            return `${Number(value).toFixed(digits)} ${getPressureUnit()}`;
+        }
         /* =========================
            DEVICE SETTINGS
            Auto-start configuration
@@ -2757,6 +2813,13 @@
         let SetPoint_Fan_dT = 3;
         // Simulated pressure inside passbox chamber (Pa).
         let Passbox_Pressure = 0;
+        // Passbox leak model parameters.
+        let Passbox_LeakRate = 0.02;
+        let DoorLeakMultiplier = 8;
+        const PASSBOX_PRESSURE_TOLERANCE = 1.0;
+        let targetPassboxPressure = 0;
+        let passboxPressureAlarmTimer = 0;
+        let passboxPressureAlarmActive = false;
         // PID coefficients for future fan pressure regulation logic.
         let PID_P = 1.0;
         let PID_I = 0.0;
@@ -2809,6 +2872,7 @@
             SetPoint_Fan_dP = parseSignedNumber(el.value);
             el.value = String(SetPoint_Fan_dP);
             if (fanRunning) initializeFanTargetFromPriority();
+            updatePassboxDiagnostics(calculateCurrentLeakPa());
         }
 
         function saveFanPIDParams() {
@@ -2827,6 +2891,25 @@
                 PID_D = parseSignedNumber(dEl.value);
                 dEl.value = String(PID_D);
             }
+        }
+
+        function saveLeakParams() {
+            const leakRateEl = document.getElementById('passboxLeakRateInput');
+            const doorMultiplierEl = document.getElementById('doorLeakMultiplierInput');
+
+            if (leakRateEl) {
+                const v = parseSignedNumber(leakRateEl.value);
+                Passbox_LeakRate = Math.max(0, v);
+                leakRateEl.value = Passbox_LeakRate.toFixed(3);
+            }
+
+            if (doorMultiplierEl) {
+                const v = parseSignedNumber(doorMultiplierEl.value);
+                DoorLeakMultiplier = Math.max(1, Math.round(v));
+                doorMultiplierEl.value = String(DoorLeakMultiplier);
+            }
+
+            updatePassboxDiagnostics(calculateCurrentLeakPa());
         }
 
         function updateFanSpeedTest(value) {
@@ -2864,6 +2947,76 @@
             return dpPriority === 'dp2' ? roomPressures.room2 : roomPressures.room1;
         }
 
+        function getPassboxLeakRate() {
+            const doorOpen = !!doorState?.door1?.isOpen || !!doorState?.door2?.isOpen;
+            return Passbox_LeakRate * (doorOpen ? DoorLeakMultiplier : 1);
+        }
+
+        function calculateCurrentLeakPa() {
+            return Passbox_Pressure * getPassboxLeakRate();
+        }
+
+        function updatePassboxDiagnostics(currentLeakPa) {
+            const leakValueEl = document.getElementById('passboxLeakValueText');
+            const calcEl = document.getElementById('passboxCalcText');
+            const t = translations[currentLang] || {};
+            const leakLabel = t.leakValueLabel || 'Leak';
+
+            if (leakValueEl) {
+                leakValueEl.textContent = `${leakLabel} = ${formatPressureValue(currentLeakPa)}`;
+            }
+
+            if (!calcEl) return;
+
+            const roomState = getRoomPressureState();
+            const priorityIsDp2 = dpPriority === 'dp2';
+            const priorityRoomPressure = priorityIsDp2 ? roomState.room2 : roomState.room1;
+            const roomLabel = priorityIsDp2 ? 'Room2Pressure' : 'Room1Pressure';
+
+            calcEl.innerHTML =
+                `PassboxPressure (${formatPressureValue(Passbox_Pressure)})<br>` +
+                `= ${roomLabel} (${formatPressureValue(priorityRoomPressure)}) + ` +
+                `SetPoint_Fan_dP (${formatPressureValue(SetPoint_Fan_dP)}) - ` +
+                `Leak (${formatPressureValue(currentLeakPa)})`;
+        }
+
+        function applyPassboxLeak(dt) {
+            const roomState = getRoomPressureState();
+            const ambientPressure = (roomState.room1 + roomState.room2) * 0.5;
+            const leakRate = Math.max(0, getPassboxLeakRate());
+            const decayFactor = Math.exp(-leakRate * Math.max(0, dt));
+            Passbox_Pressure = ambientPressure + (Passbox_Pressure - ambientPressure) * decayFactor;
+        }
+
+        function resetPassboxPressureAlarmMonitoring() {
+            passboxPressureAlarmTimer = 0;
+            passboxPressureAlarmActive = false;
+        }
+
+        function updatePassboxPressureAlarm(dt, pressureError, currentLeakPa) {
+            const absError = Math.abs(pressureError);
+            if (absError > PASSBOX_PRESSURE_TOLERANCE) {
+                passboxPressureAlarmTimer += dt;
+                if (passboxPressureAlarmTimer >= SetPoint_Fan_dT && !passboxPressureAlarmActive) {
+                    addAlarm('passboxPressureNotReached', 'warning');
+                    passboxPressureAlarmActive = true;
+                }
+            } else {
+                passboxPressureAlarmTimer = 0;
+                passboxPressureAlarmActive = false;
+            }
+
+            console.log(
+                '[PASSBOX_ALARM_DEBUG]',
+                'targetPassboxPressure=', targetPassboxPressure.toFixed(3),
+                'Passbox_Pressure=', Passbox_Pressure.toFixed(3),
+                'pressureError=', pressureError.toFixed(3),
+                'currentLeakPa=', currentLeakPa.toFixed(3),
+                'passboxPressureAlarmTimer=', passboxPressureAlarmTimer.toFixed(3),
+                'passboxPressureAlarmActive=', passboxPressureAlarmActive
+            );
+        }
+
         function getRoomPressureState() {
             const room1 = Number.isFinite(emulatorRooms?.[0]?.currentPressure) ? emulatorRooms[0].currentPressure : 0;
             const room2 = Number.isFinite(emulatorRooms?.[1]?.currentPressure) ? emulatorRooms[1].currentPressure : 0;
@@ -2887,7 +3040,8 @@
 
         function initializeFanTargetFromPriority() {
             const priorityPressure = getPriorityPressure();
-            fanTargetPressure = priorityPressure + SetPoint_Fan_dP;
+            targetPassboxPressure = priorityPressure + SetPoint_Fan_dP;
+            fanTargetPressure = targetPassboxPressure;
             fanPidIntegral = 0;
             fanPidPrevError = 0;
             clampPassboxPressureBetweenRooms();
@@ -2896,7 +3050,8 @@
 
         function updatePassboxPressureDisplay() {
             const display = document.getElementById('passboxPressureValue');
-            if (display) display.textContent = `${Passbox_Pressure.toFixed(1)} Pa`;
+            if (display) display.textContent = formatPressureValue(Passbox_Pressure);
+            updatePassboxDiagnostics(calculateCurrentLeakPa());
         }
 
         function updateFanAnimationBySpeed() {
@@ -3025,27 +3180,31 @@
             if (autoModeEnabled && !fanRunning && !fanEmergencyLocked) {
                 startFanControl();
             }
+            const dt = sampleRate;
 
             if (!autoModeEnabled && !fanRunning) {
                 const roomState = getRoomPressureState();
                 const naturalPressure = (roomState.room1 + roomState.room2) * 0.5;
                 Passbox_Pressure += (naturalPressure - Passbox_Pressure) * 0.03;
+                applyPassboxLeak(dt);
                 clampPassboxPressureBetweenRooms();
+                resetPassboxPressureAlarmMonitoring();
                 updatePassboxPressureDisplay();
                 appendFanPIDGraphPoint();
                 updateFanAnimationBySpeed();
                 return;
             }
 
-            fanTargetPressure = getPriorityPressure() + SetPoint_Fan_dP;
+            // 1) calculate targetPassboxPressure
+            targetPassboxPressure = getPriorityPressure() + SetPoint_Fan_dP;
+            fanTargetPressure = targetPassboxPressure;
 
-            const pressureError = fanTargetPressure - Passbox_Pressure;
-            fanPidPrevError = pressureError;
-
+            // 2) update fanSpeed
+            const controlError = targetPassboxPressure - Passbox_Pressure;
             if (autoModeEnabled) {
                 const desiredFanSpeed = Math.max(
                     0,
-                    Math.min(100, FAN_SPEED_NEUTRAL + pressureError * PID_P * 0.8)
+                    Math.min(100, FAN_SPEED_NEUTRAL + controlError * PID_P * 0.8)
                 );
                 fanSpeed += (desiredFanSpeed - fanSpeed) * 0.12;
             } else {
@@ -3054,13 +3213,21 @@
 
             fanSpeed = Math.max(0, Math.min(100, fanSpeed));
 
-            const dt = sampleRate;
+            // 3) update Passbox_Pressure including leak effects
             const fanPressureGain = 0.2;
             const dampingFactor = 0.65;
             const fanDrive = ((fanSpeed - FAN_SPEED_NEUTRAL) / 50) * fanPressureGain;
-            const pressureLoss = (Passbox_Pressure - fanTargetPressure) * dampingFactor;
+            const pressureLoss = (Passbox_Pressure - targetPassboxPressure) * dampingFactor;
             Passbox_Pressure += (fanDrive - pressureLoss) * dt;
+            applyPassboxLeak(dt);
             clampPassboxPressureBetweenRooms();
+
+            // 4) calculate pressure error after actual pressure update
+            const pressureError = targetPassboxPressure - Passbox_Pressure;
+            const currentLeakPa = calculateCurrentLeakPa();
+            fanPidPrevError = pressureError;
+            // 5-6) update timer and trigger alarm if needed
+            updatePassboxPressureAlarm(dt, pressureError, currentLeakPa);
 
             updatePassboxPressureDisplay();
             updateFanAnimationBySpeed();
@@ -3083,6 +3250,7 @@
                 else { b2.classList.add('active'); b1.classList.remove('active'); }
             }
             if (fanRunning) initializeFanTargetFromPriority();
+            updatePassboxDiagnostics(calculateCurrentLeakPa());
         }
         /* =========================
            PRESSURE ALARM SETTINGS
@@ -3092,6 +3260,7 @@
             if (!el) return;
             const v = parseInt(String(el.value).trim(), 10);
             pressureAlarmDelaySeconds = Number.isFinite(v) && v >= 0 ? v : 0;
+            SetPoint_Fan_dT = pressureAlarmDelaySeconds;
             el.value = String(pressureAlarmDelaySeconds);
         }
 
@@ -3478,27 +3647,6 @@
 
         };
 
-        /* =====================================================
-           MODULE: UI
-           Interface updates
-           ===================================================== */
-
-        const UIModule = {
-
-            updatePressurePanel() {
-                updatePressurePanel();
-            },
-
-            updateRoomStatus(roomIndex) {
-                updateEmulatorRoomStatus(roomIndex);
-            },
-
-            updateBoundaries(room, chart, time) {
-                updateEmulatorMinMaxLines(room, chart, time);
-            }
-
-        };
-
         /* =========================
            EMULATOR EVENT LOG
            ========================= */
@@ -3510,27 +3658,24 @@
             const now = new Date();
             const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-            let icon = '';
-            switch (type) {
-                case 'high': icon = '⚠️'; break;
-                case 'low': icon = '🔻'; break;
-                default: icon = 'ℹ️';
-            }
-
             // Получаем переведенное сообщение или используем ключ как есть
             let message = messageKey;
             if (translations[currentLang] && translations[currentLang][messageKey]) {
                 message = translations[currentLang][messageKey];
             }
 
-            const pressureText = pressure !== null ? ` (${pressure.toFixed(1)} Па)` : '';
-
             const logEntry = document.createElement('div');
             logEntry.className = 'emulator-log-entry';
+            logEntry.dataset.roomIndex = String(roomIndex);
+            logEntry.dataset.type = type;
+            logEntry.dataset.messageKey = messageKey;
+            logEntry.dataset.message = message;
+            logEntry.dataset.pressure = pressure !== null ? String(pressure) : '';
             logEntry.innerHTML = `
                 <span class="emulator-log-time">${timeStr}</span>
-                <span>${icon} Пом.${roomIndex}: ${message}${pressureText}</span>
+                <span class="emulator-log-message"></span>
             `;
+            updateEmulatorLogEntryText(logEntry);
 
             const logContainer = document.getElementById('emulatorLogContainer');
             logContainer.appendChild(logEntry);
@@ -3544,6 +3689,7 @@
                 time: timeStr,
                 room: roomIndex,
                 type: type,
+                messageKey: messageKey,
                 message: message,
                 pressure: pressure
             });
@@ -3578,6 +3724,39 @@
                 key.textContent = translations[currentLang].startPrompt;
             }
         }
+
+        function updateEmulatorLogEntryText(entryEl) {
+            if (!entryEl) return;
+
+            const roomIndex = entryEl.dataset.roomIndex;
+            if (!roomIndex) return;
+
+            const type = entryEl.dataset.type || 'info';
+            const messageKey = entryEl.dataset.messageKey || '';
+            const fallbackMessage = entryEl.dataset.message || messageKey;
+            const pressureValue = entryEl.dataset.pressure;
+
+            let icon = 'ℹ️';
+            if (type === 'high') icon = '⚠️';
+            else if (type === 'low') icon = '🔻';
+
+            let message = fallbackMessage;
+            if (messageKey && translations[currentLang] && translations[currentLang][messageKey]) {
+                message = translations[currentLang][messageKey];
+            }
+
+            const pressureText = pressureValue !== ''
+                ? ` (${formatPressureValue(Number(pressureValue))})`
+                : '';
+            const messageEl = entryEl.querySelector('.emulator-log-message');
+            if (messageEl) {
+                messageEl.textContent = `${icon} ${getRoomShort()}${roomIndex}: ${message}${pressureText}`;
+            }
+        }
+
+        function updateEmulatorLogLocalization() {
+            document.querySelectorAll('.emulator-log-entry[data-room-index]').forEach(updateEmulatorLogEntryText);
+        }
         /* =========================
            EMULATOR DATA EXPORT
            ========================= */
@@ -3588,7 +3767,7 @@
                 return;
             }
 
-            const csvContent = 'Время,Помещение,Тип,Сообщение,Давление (Па)\n' +
+            const csvContent = `Время,Помещение,Тип,Сообщение,Давление (${getPressureUnit()})\n` +
                 emulatorEventLog.map(entry =>
                     `"${entry.time}","Помещение ${entry.room}","${entry.type}","${entry.message}",${entry.pressure ? entry.pressure.toFixed(2) : ''}`
                 ).join('\n');
@@ -3649,6 +3828,22 @@
         // (`ensureEmulatorChartsInitialized`) is responsible for filling
         // this array when the DOM is ready and Chart.js is available.
         let emulatorCharts = [];
+        function updateEmulatorChartLocalization() {
+            const charts = Array.isArray(window.emulatorCharts) ? window.emulatorCharts : emulatorCharts;
+            if (!Array.isArray(charts)) return;
+
+            const pressureLabel = `${translations[currentLang]?.pressureDrop || 'Pressure difference'} (${getPressureUnit()})`;
+            const workingMinLabel = translations[currentLang]?.workingMin || 'Working min';
+            const workingMaxLabel = translations[currentLang]?.workingMax || 'Working max';
+
+            charts.forEach(chart => {
+                if (!chart || !chart.data || !Array.isArray(chart.data.datasets)) return;
+                if (chart.data.datasets[0]) chart.data.datasets[0].label = pressureLabel;
+                if (chart.data.datasets[1]) chart.data.datasets[1].label = workingMinLabel;
+                if (chart.data.datasets[2]) chart.data.datasets[2].label = workingMaxLabel;
+                chart.update('none');
+            });
+        }
         /* =========================
            EMULATOR ROOM STATUS
            ========================= */
@@ -3926,9 +4121,9 @@
                             type: 'line',
                             data: {
                                 datasets: [
-                                    { label: 'Давление (Па)', data: [], borderColor: lineStyle.color, backgroundColor: 'rgba(0,0,0,0)', borderWidth: lineStyle.width, pointRadius: 0, fill: false, tension: 0.1 },
-                                    { label: 'Рабочий Min', data: [], borderColor: 'red', borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 1.5 },
-                                    { label: 'Рабочий Max', data: [], borderColor: 'blue', borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 1.5 }
+                                    { label: `${translations[currentLang]?.pressureDrop || 'Pressure difference'} (${getPressureUnit()})`, data: [], borderColor: lineStyle.color, backgroundColor: 'rgba(0,0,0,0)', borderWidth: lineStyle.width, pointRadius: 0, fill: false, tension: 0.1 },
+                                    { label: translations[currentLang]?.workingMin || 'Working min', data: [], borderColor: 'red', borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 1.5 },
+                                    { label: translations[currentLang]?.workingMax || 'Working max', data: [], borderColor: 'blue', borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 1.5 }
                                 ]
                             },
                             options: {
@@ -3947,7 +4142,7 @@
                                     legend: { display: false },
                                     tooltip: {
                                         callbacks: {
-                                            label: (context) => context.parsed.y.toFixed(1) + ' Па',
+                                            label: (context) => formatPressureValue(context.parsed.y),
                                             title: (context) => 'Время: ' + context[0].parsed.x.toFixed(2) + ' мин'
                                         }
                                     }
@@ -3967,6 +4162,7 @@
                     chart.data.datasets[0].borderColor = lineStyle.color;
                     chart.data.datasets[0].borderWidth = lineStyle.width;
                 });
+                updateEmulatorChartLocalization();
                 // проверяем что chart объекты есть
                 if (window.emulatorCharts.some(c => c == null)) {
                     console.warn('Some emulator charts are null (missing canvas?).');
@@ -4005,6 +4201,7 @@
                 updateEmulatorRoomStatus(index + 1);
             });
             resetRoomPressureAlarmMonitoring();
+            resetPassboxPressureAlarmMonitoring();
 
             passboxPressureChartTimeSeconds = 0;
             passboxPressureData = [];
@@ -4102,7 +4299,7 @@
                 return;
             }
 
-            const csvContent = 'Время (мин),Давление (Па)\n' +
+            const csvContent = `Время (мин),Давление (${getPressureUnit()})\n` +
                 room.data.map(row => {
                     const minutes = (row.t * SEC_TO_MIN).toFixed(2);
                     return `${minutes},${row.pressure.toFixed(2)}`;
@@ -4207,6 +4404,9 @@
                     keyEl.textContent = translations[currentLang].startPrompt;
                 }
             }
+            updatePassboxPressureDisplay();
+            updateEmulatorChartLocalization();
+            updateEmulatorLogLocalization();
         }
 
         // Вспомогательная функция для обновления текста конкретного элемента
@@ -4343,6 +4543,7 @@
             fanSpeed = 0;
             fanEmergencyLocked = true;
             resetRoomPressureAlarmMonitoring();
+            resetPassboxPressureAlarmMonitoring();
             updateFanAnimationBySpeed();
             uvRemainingSeconds = 0; blowRemainingSeconds = 0;
             updateUVTimerDisplay(); updateBlowTimerDisplay();
@@ -4843,15 +5044,20 @@
             const pidPInput = document.getElementById('pidPInput');
             const pidIInput = document.getElementById('pidIInput');
             const pidDInput = document.getElementById('pidDInput');
+            const leakRateInput = document.getElementById('passboxLeakRateInput');
+            const doorLeakMultiplierInput = document.getElementById('doorLeakMultiplierInput');
             if (pidPInput) pidPInput.value = String(PID_P);
             if (pidIInput) pidIInput.value = String(PID_I);
             if (pidDInput) pidDInput.value = String(PID_D);
+            if (leakRateInput) leakRateInput.value = Passbox_LeakRate.toFixed(3);
+            if (doorLeakMultiplierInput) doorLeakMultiplierInput.value = String(DoorLeakMultiplier);
             updateFanSpeedTest(0);
             updateFanSpeedTestAvailability();
 
             bindCorrectionInputs();
             saveSetPointFanDP();
             saveFanPIDParams();
+            saveLeakParams();
             savePressureAlarmDelay();
             saveRoomPressureAlarmDelay();
             setDPPriority(dpPriority);
