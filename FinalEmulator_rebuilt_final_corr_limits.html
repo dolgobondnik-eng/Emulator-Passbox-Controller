@@ -1706,7 +1706,7 @@
                                 <text x="200" y="292" text-anchor="middle" font-size="22" font-weight="700"
                                     fill="#4a1440" data-key="passboxPressureLabel">Давление в шлюзе</text>
                                 <text id="passboxPressureValue" x="200" y="312" text-anchor="middle" font-size="12"
-                                    font-weight="700" fill="#4a1440">0.0 Pa</text>
+                                    font-weight="700" fill="#4a1440">0.0</text>
                                 <rect x="30" y="290" width="20" height="40" fill="black" />
                                 <rect x="350" y="290" width="20" height="40" fill="black" />
                                 <rect x="40" y="460" width="320" height="200" fill="#f5f5f5" stroke="black"
@@ -1754,14 +1754,13 @@
                                 </div>
                                 <div class="fan-sim-row">
                                     <label data-key="leakValueLabel">Утечка</label>
-                                    <span id="passboxLeakValueText">Leak = 0.0 Pa</span>
+                                    <span id="passboxLeakValueText">0.0</span>
                                 </div>
                                 <div class="fan-sim-row">
                                     <label data-key="passboxCalcLabel">Расчет давления шлюза</label>
                                 </div>
                                 <div class="fan-sim-row">
-                                    <div id="passboxCalcText">PassboxPressure (0.0 Pa)<br>= Room1Pressure (0.0 Pa) +
-                                        SetPoint_Fan_dP (0.0 Pa) - Leak (0.0 Pa)</div>
+                                    <div id="passboxCalcText">0.0</div>
                                 </div>
                                 <div class="fan-sim-row">
                                     <button class="pid-graph-btn" type="button" onclick="openFanPIDGraphModal()"
@@ -2204,15 +2203,18 @@
             <div class="pressure-block">
                 <!-- Исправлено: HEPA теперь 60 Па -->
                 <div class="pressure-row"><span class="p-label">HEPA</span>
-                    <div class="p-value-box"><span class="p-val">60</span><span class="p-unit">Па</span></div>
+                    <div class="p-value-box"><span class="p-val">60</span><span class="p-unit"
+                            data-key="pressureUnit">Па</span></div>
                 </div>
                 <div class="pressure-row"><span class="p-label" data-key="pressureRoom1">Перепад давления к<br>помещению
                         №1</span>
-                    <div class="p-value-box"><span class="p-val">0</span><span class="p-unit">Па</span></div>
+                    <div class="p-value-box"><span class="p-val">0</span><span class="p-unit"
+                            data-key="pressureUnit">Па</span></div>
                 </div>
                 <div class="pressure-row"><span class="p-label" data-key="pressureRoom2">Перепад давления к<br>помещению
                         №2</span>
-                    <div class="p-value-box"><span class="p-val">0</span><span class="p-unit">Па</span></div>
+                    <div class="p-value-box"><span class="p-val">0</span><span class="p-unit"
+                            data-key="pressureUnit">Па</span></div>
                 </div>
             </div>
             <div class="countdown-block">
@@ -2307,6 +2309,8 @@
                 viewAlarms: 'Просмотр тревог',
                 userManagement: 'Управление пользователями',
                 pressureDrop: 'Перепад давления',
+                pressureUnit: 'Па',
+                roomShort: 'Пом.',
                 pressureRoom1: 'Перепад давления к\nпомещению №1',
                 pressureRoom2: 'Перепад давления к\nпомещению №2',
                 countdown: 'Обратный отсчет',
@@ -2449,6 +2453,8 @@
                 viewAlarms: 'View Alarms',
                 userManagement: 'User Management',
                 pressureDrop: 'Pressure difference',
+                pressureUnit: 'Pa',
+                roomShort: 'Room',
                 pressureRoom1: 'High-grade zone pressure difference\nacross the cavity',
                 pressureRoom2: 'Cavity pressure difference\nto low-grade area',
                 countdown: 'Countdown',
@@ -2591,6 +2597,8 @@
                 viewAlarms: '查看警报',
                 userManagement: '用户管理',
                 pressureDrop: '压差',
+                pressureUnit: 'Pa',
+                roomShort: '房',
                 pressureRoom1: '高级区跨腔压差',
                 pressureRoom2: '腔体与低级区压差',
                 countdown: '倒数计时',
@@ -2717,6 +2725,17 @@
            Interface language
            ========================= */
         let currentLang = 'ru';  // Текущий язык (по умолчанию русский)
+        function getPressureUnit() {
+            return translations[currentLang]?.pressureUnit || 'Pa';
+        }
+
+        function getRoomShort() {
+            return translations[currentLang]?.roomShort || 'Room';
+        }
+
+        function formatPressureValue(value, digits = 1) {
+            return `${Number(value).toFixed(digits)} ${getPressureUnit()}`;
+        }
         /* =========================
            DEVICE SETTINGS
            Auto-start configuration
@@ -2944,7 +2963,7 @@
             const leakLabel = t.leakValueLabel || 'Leak';
 
             if (leakValueEl) {
-                leakValueEl.textContent = `${leakLabel} = ${currentLeakPa.toFixed(1)} Pa`;
+                leakValueEl.textContent = `${leakLabel} = ${formatPressureValue(currentLeakPa)}`;
             }
 
             if (!calcEl) return;
@@ -2955,10 +2974,10 @@
             const roomLabel = priorityIsDp2 ? 'Room2Pressure' : 'Room1Pressure';
 
             calcEl.innerHTML =
-                `PassboxPressure (${Passbox_Pressure.toFixed(1)} Pa)<br>` +
-                `= ${roomLabel} (${priorityRoomPressure.toFixed(1)} Pa) + ` +
-                `SetPoint_Fan_dP (${SetPoint_Fan_dP.toFixed(1)} Pa) - ` +
-                `Leak (${currentLeakPa.toFixed(1)} Pa)`;
+                `PassboxPressure (${formatPressureValue(Passbox_Pressure)})<br>` +
+                `= ${roomLabel} (${formatPressureValue(priorityRoomPressure)}) + ` +
+                `SetPoint_Fan_dP (${formatPressureValue(SetPoint_Fan_dP)}) - ` +
+                `Leak (${formatPressureValue(currentLeakPa)})`;
         }
 
         function applyPassboxLeak(dt) {
@@ -3031,7 +3050,7 @@
 
         function updatePassboxPressureDisplay() {
             const display = document.getElementById('passboxPressureValue');
-            if (display) display.textContent = `${Passbox_Pressure.toFixed(1)} Pa`;
+            if (display) display.textContent = formatPressureValue(Passbox_Pressure);
             updatePassboxDiagnostics(calculateCurrentLeakPa());
         }
 
@@ -3639,27 +3658,24 @@
             const now = new Date();
             const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-            let icon = '';
-            switch (type) {
-                case 'high': icon = '⚠️'; break;
-                case 'low': icon = '🔻'; break;
-                default: icon = 'ℹ️';
-            }
-
             // Получаем переведенное сообщение или используем ключ как есть
             let message = messageKey;
             if (translations[currentLang] && translations[currentLang][messageKey]) {
                 message = translations[currentLang][messageKey];
             }
 
-            const pressureText = pressure !== null ? ` (${pressure.toFixed(1)} Па)` : '';
-
             const logEntry = document.createElement('div');
             logEntry.className = 'emulator-log-entry';
+            logEntry.dataset.roomIndex = String(roomIndex);
+            logEntry.dataset.type = type;
+            logEntry.dataset.messageKey = messageKey;
+            logEntry.dataset.message = message;
+            logEntry.dataset.pressure = pressure !== null ? String(pressure) : '';
             logEntry.innerHTML = `
                 <span class="emulator-log-time">${timeStr}</span>
-                <span>${icon} Пом.${roomIndex}: ${message}${pressureText}</span>
+                <span class="emulator-log-message"></span>
             `;
+            updateEmulatorLogEntryText(logEntry);
 
             const logContainer = document.getElementById('emulatorLogContainer');
             logContainer.appendChild(logEntry);
@@ -3673,6 +3689,7 @@
                 time: timeStr,
                 room: roomIndex,
                 type: type,
+                messageKey: messageKey,
                 message: message,
                 pressure: pressure
             });
@@ -3707,6 +3724,39 @@
                 key.textContent = translations[currentLang].startPrompt;
             }
         }
+
+        function updateEmulatorLogEntryText(entryEl) {
+            if (!entryEl) return;
+
+            const roomIndex = entryEl.dataset.roomIndex;
+            if (!roomIndex) return;
+
+            const type = entryEl.dataset.type || 'info';
+            const messageKey = entryEl.dataset.messageKey || '';
+            const fallbackMessage = entryEl.dataset.message || messageKey;
+            const pressureValue = entryEl.dataset.pressure;
+
+            let icon = 'ℹ️';
+            if (type === 'high') icon = '⚠️';
+            else if (type === 'low') icon = '🔻';
+
+            let message = fallbackMessage;
+            if (messageKey && translations[currentLang] && translations[currentLang][messageKey]) {
+                message = translations[currentLang][messageKey];
+            }
+
+            const pressureText = pressureValue !== ''
+                ? ` (${formatPressureValue(Number(pressureValue))})`
+                : '';
+            const messageEl = entryEl.querySelector('.emulator-log-message');
+            if (messageEl) {
+                messageEl.textContent = `${icon} ${getRoomShort()}${roomIndex}: ${message}${pressureText}`;
+            }
+        }
+
+        function updateEmulatorLogLocalization() {
+            document.querySelectorAll('.emulator-log-entry[data-room-index]').forEach(updateEmulatorLogEntryText);
+        }
         /* =========================
            EMULATOR DATA EXPORT
            ========================= */
@@ -3717,7 +3767,7 @@
                 return;
             }
 
-            const csvContent = 'Время,Помещение,Тип,Сообщение,Давление (Па)\n' +
+            const csvContent = `Время,Помещение,Тип,Сообщение,Давление (${getPressureUnit()})\n` +
                 emulatorEventLog.map(entry =>
                     `"${entry.time}","Помещение ${entry.room}","${entry.type}","${entry.message}",${entry.pressure ? entry.pressure.toFixed(2) : ''}`
                 ).join('\n');
@@ -3778,6 +3828,22 @@
         // (`ensureEmulatorChartsInitialized`) is responsible for filling
         // this array when the DOM is ready and Chart.js is available.
         let emulatorCharts = [];
+        function updateEmulatorChartLocalization() {
+            const charts = Array.isArray(window.emulatorCharts) ? window.emulatorCharts : emulatorCharts;
+            if (!Array.isArray(charts)) return;
+
+            const pressureLabel = `${translations[currentLang]?.pressureDrop || 'Pressure difference'} (${getPressureUnit()})`;
+            const workingMinLabel = translations[currentLang]?.workingMin || 'Working min';
+            const workingMaxLabel = translations[currentLang]?.workingMax || 'Working max';
+
+            charts.forEach(chart => {
+                if (!chart || !chart.data || !Array.isArray(chart.data.datasets)) return;
+                if (chart.data.datasets[0]) chart.data.datasets[0].label = pressureLabel;
+                if (chart.data.datasets[1]) chart.data.datasets[1].label = workingMinLabel;
+                if (chart.data.datasets[2]) chart.data.datasets[2].label = workingMaxLabel;
+                chart.update('none');
+            });
+        }
         /* =========================
            EMULATOR ROOM STATUS
            ========================= */
@@ -4055,9 +4121,9 @@
                             type: 'line',
                             data: {
                                 datasets: [
-                                    { label: 'Давление (Па)', data: [], borderColor: lineStyle.color, backgroundColor: 'rgba(0,0,0,0)', borderWidth: lineStyle.width, pointRadius: 0, fill: false, tension: 0.1 },
-                                    { label: 'Рабочий Min', data: [], borderColor: 'red', borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 1.5 },
-                                    { label: 'Рабочий Max', data: [], borderColor: 'blue', borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 1.5 }
+                                    { label: `${translations[currentLang]?.pressureDrop || 'Pressure difference'} (${getPressureUnit()})`, data: [], borderColor: lineStyle.color, backgroundColor: 'rgba(0,0,0,0)', borderWidth: lineStyle.width, pointRadius: 0, fill: false, tension: 0.1 },
+                                    { label: translations[currentLang]?.workingMin || 'Working min', data: [], borderColor: 'red', borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 1.5 },
+                                    { label: translations[currentLang]?.workingMax || 'Working max', data: [], borderColor: 'blue', borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 1.5 }
                                 ]
                             },
                             options: {
@@ -4076,7 +4142,7 @@
                                     legend: { display: false },
                                     tooltip: {
                                         callbacks: {
-                                            label: (context) => context.parsed.y.toFixed(1) + ' Па',
+                                            label: (context) => formatPressureValue(context.parsed.y),
                                             title: (context) => 'Время: ' + context[0].parsed.x.toFixed(2) + ' мин'
                                         }
                                     }
@@ -4096,6 +4162,7 @@
                     chart.data.datasets[0].borderColor = lineStyle.color;
                     chart.data.datasets[0].borderWidth = lineStyle.width;
                 });
+                updateEmulatorChartLocalization();
                 // проверяем что chart объекты есть
                 if (window.emulatorCharts.some(c => c == null)) {
                     console.warn('Some emulator charts are null (missing canvas?).');
@@ -4232,7 +4299,7 @@
                 return;
             }
 
-            const csvContent = 'Время (мин),Давление (Па)\n' +
+            const csvContent = `Время (мин),Давление (${getPressureUnit()})\n` +
                 room.data.map(row => {
                     const minutes = (row.t * SEC_TO_MIN).toFixed(2);
                     return `${minutes},${row.pressure.toFixed(2)}`;
@@ -4337,7 +4404,9 @@
                     keyEl.textContent = translations[currentLang].startPrompt;
                 }
             }
-            updatePassboxDiagnostics(calculateCurrentLeakPa());
+            updatePassboxPressureDisplay();
+            updateEmulatorChartLocalization();
+            updateEmulatorLogLocalization();
         }
 
         // Вспомогательная функция для обновления текста конкретного элемента
