@@ -667,7 +667,7 @@
             margin-bottom: 5px;
         }
 
-        /* Исправлено: перепад давления теперь под кнопкой Управление пользователями */
+        /* Исправлено: индикатор дифференциального давления теперь под кнопкой Управление пользователями */
         .pressure-drop-position {
             margin-top: 10px;
             margin-bottom: 5px;
@@ -1538,10 +1538,10 @@
             color: white;
         }
 
-        /* ===== CORRECTION VISUAL INDICATION (UI only) =====
-           RU: Индикация скорректированных значений (только отображение)
-           EN: Visual indication for corrected values (display only)
-           CN: 修正值可视化提示（仅显示）
+        /* ===== DIFFERENTIAL PRESSURE CORRECTION VISUAL INDICATION (UI only) =====
+           RU: Индикация скорректированных значений дифференциального давления (только отображение)
+           EN: Visual indication for corrected differential-pressure values (display only)
+           CN: 差压修正值可视化提示（仅显示）
         */
         .pressure-row.corrected .p-value-box {
             border-color: #2e7d32;
@@ -1691,7 +1691,7 @@
                         </div>
                     </div>
 
-                    <!-- ТЕХНИЧЕСКАЯ ДИАГРАММА -->
+                    <!-- ТЕХНИЧЕСКАЯ ДИАГРАММА ДИФФЕРЕНЦИАЛЬНОГО ДАВЛЕНИЯ -->
                     <div class="svg-decoration">
                         <div class="svg-decoration-layout">
                             <svg width="400" height="700" viewBox="0 0 400 700" xmlns="http://www.w3.org/2000/svg">
@@ -1719,7 +1719,7 @@
                                 <rect x="94" y="268" width="212" height="54" rx="6" fill="#f3a1d7" stroke="#b03a89"
                                     stroke-width="2" />
                                 <text x="200" y="292" text-anchor="middle" font-size="22" font-weight="700"
-                                    fill="#4a1440" data-key="passboxPressureLabel">Давление в шлюзе</text>
+                                    fill="#4a1440" data-key="passboxPressureLabel">Целевое дифференциальное давление</text>
                                 <text id="passboxPressureValue" x="200" y="312" text-anchor="middle" font-size="12"
                                     font-weight="700" fill="#4a1440">0.0</text>
                                 <rect x="30" y="290" width="20" height="40" fill="black" />
@@ -1772,7 +1772,7 @@
                                     <span id="passboxLeakValueText">0.0</span>
                                 </div>
                                 <div class="fan-sim-row">
-                                    <label data-key="passboxCalcLabel">Расчет давления шлюза</label>
+                                    <label data-key="passboxCalcLabel">Расчет целевого дифференциального давления</label>
                                 </div>
                                 <div class="fan-sim-row">
                                     <div id="passboxCalcText">0.0</div>
@@ -1798,7 +1798,7 @@
                     <div id="fanPIDGraphModal" class="fan-pid-modal" onclick="closeFanPIDGraphModal(event)">
                         <div class="fan-pid-modal-content" onclick="event.stopPropagation()">
                             <div class="fan-pid-modal-header">
-                                <span data-key="passboxPressureChartTitle">График давления в шлюзе</span>
+                                <span data-key="passboxPressureChartTitle">График целевого дифференциального давления</span>
                                 <button class="fan-pid-close" type="button" onclick="closeFanPIDGraphModal()">×</button>
                             </div>
                             <div class="fan-pid-canvas-wrap">
@@ -1813,11 +1813,11 @@
                             СТОП</button>
                     </div>
 
-                    <!-- ===== СЕКЦИЯ ЭМУЛЯТОРА ГРАФИКОВ ДАВЛЕНИЯ ===== -->
+                    <!-- ===== СЕКЦИЯ ЭМУЛЯТОРА ГРАФИКОВ ДИФФЕРЕНЦИАЛЬНОГО ДАВЛЕНИЯ ===== -->
                     <div class="emulator-section" id="emulatorSection">
                         <!-- Заголовок эмулятора (кликабельный для сворачивания) -->
                         <div class="emulator-header" onclick="toggleEmulator()">
-                            <h3 data-key="emulatorTitle">📊 Эмуляция графиков давления в помещениях</h3>
+                            <h3 data-key="emulatorTitle">📊 Эмуляция графиков дифференциального давления</h3>
                             <span class="emulator-toggle" id="emulatorToggle">▼</span>
                         </div>
 
@@ -2038,23 +2038,23 @@
                 <div id="settingsPage" class="settings-section">
                     <div class="settings-title" data-key="settingsTitle">Настройка параметров</div>
                     <div class="settings-row">
-                        <div class="settings-label" data-key="setting8">Установка верхнего предела разности давлений для
-                            помещения №1 (Па)</div><input type="text" id="settingWorkMax1" class="settings-input"
+                        <div class="settings-label" data-key="setting8">Установка верхнего предела дифференциального
+                            давления для канала Помещение №1 / Шлюз (Па)</div><input type="text" id="settingWorkMax1" class="settings-input"
                             value="35" onchange="syncWorkingLimitsFromSettings(1)">
                     </div>
                     <div class="settings-row">
-                        <div class="settings-label" data-key="setting9">Установка нижнего предела разности давлений для
-                            помещения №1 (Па)</div><input type="text" id="settingWorkMin1" class="settings-input"
+                        <div class="settings-label" data-key="setting9">Установка нижнего предела дифференциального
+                            давления для канала Помещение №1 / Шлюз (Па)</div><input type="text" id="settingWorkMin1" class="settings-input"
                             value="25" onchange="syncWorkingLimitsFromSettings(1)">
                     </div>
                     <div class="settings-row">
-                        <div class="settings-label" data-key="setting1">Установка верхнего предела разности давлений для
-                            помещения №2 (Па)</div><input type="text" id="settingWorkMax2" class="settings-input"
+                        <div class="settings-label" data-key="setting1">Установка верхнего предела дифференциального
+                            давления для канала Помещение №2 / Шлюз (Па)</div><input type="text" id="settingWorkMax2" class="settings-input"
                             value="15" onchange="syncWorkingLimitsFromSettings(2)">
                     </div>
                     <div class="settings-row">
-                        <div class="settings-label" data-key="setting2">Установка нижнего предела разности давлений для
-                            помещения №2 (Па)</div><input type="text" id="settingWorkMin2" class="settings-input"
+                        <div class="settings-label" data-key="setting2">Установка нижнего предела дифференциального
+                            давления для канала Помещение №2 / Шлюз (Па)</div><input type="text" id="settingWorkMin2" class="settings-input"
                             value="5" onchange="syncWorkingLimitsFromSettings(2)">
                     </div>
                     <div class="settings-row">
@@ -2106,8 +2106,8 @@
                             onchange="saveTimeSettings()">
                     </div>
                     <div class="param-row">
-                        <div class="param-label" data-key="dpPriorityLabel">Установить приоритетную разность давления
-                            для поддержания давления в камере шлюза</div>
+                        <div class="param-label" data-key="dpPriorityLabel">Выбрать опорное помещение для целевого
+                            дифференциального давления</div>
                         <div style="display:flex; gap:10px; justify-content:flex-end; min-width: 220px;"><button
                                 class="toggle-btn active" id="dpPriorityDP1" onclick="setDPPriority('dp1')"
                                 data-key="dp1">ΔP1</button><button class="toggle-btn" id="dpPriorityDP2"
@@ -2115,28 +2115,28 @@
                     </div>
                     <div class="param-row">
                         <div class="param-label" data-key="pressureAlarmDelayLabel">Установить время задержки
-                            срабатывания аварии при отклонении давления в камере шлюза (сек)</div><input type="text"
+                            срабатывания аварии при отклонении целевого дифференциального давления (сек)</div><input type="text"
                             id="pressureAlarmDelayInput" class="param-input" value="3"
                             onchange="savePressureAlarmDelay()">
                     </div>
                     <div class="param-row">
                         <div class="param-label" data-key="roomPressureAlarmDelayLabel">Установить время задержки
-                            срабатывания аварии при отклонении перепадов давлений в помещениях (сек)</div><input
+                            срабатывания аварии при отклонении дифференциального давления каналов Помещение / Шлюз (сек)</div><input
                             type="text" id="roomPressureAlarmDelayInput" class="param-input" value="3"
                             onchange="saveRoomPressureAlarmDelay()">
                     </div>
                     <div class="param-row">
-                        <div class="param-label" data-key="param5">Установка верхнего предела перепада давления от зоны
-                            высокого класса к камере (Па)</div><input type="text" class="param-input" value="0.0">
+                        <div class="param-label" data-key="param5">Установка верхнего предела дифференциального
+                            давления для канала Помещение №1 / Шлюз (Па)</div><input type="text" class="param-input" value="0.0">
                     </div>
                     <div class="param-row">
-                        <div class="param-label" data-key="param6">Установка нижнего предела перепада давления от зоны
-                            высокого класса к камере (Па)</div><input type="text" class="param-input" value="0.0">
+                        <div class="param-label" data-key="param6">Установка нижнего предела дифференциального
+                            давления для канала Помещение №1 / Шлюз (Па)</div><input type="text" class="param-input" value="0.0">
                     </div>
                     <div class="param-buttons">
                         <button class="param-btn" data-key="next" onclick="showParamCorrection()">Next</button>
-                        <button class="param-btn" data-key="paramCorrection" onclick="showParamCorrection()">Parameter
-                            correction</button>
+                        <button class="param-btn" data-key="paramCorrection" onclick="showParamCorrection()">Differential
+                            pressure correction</button>
                         <button class="param-btn" data-key="back" onclick="showSettings()">Back</button>
                         <button class="param-btn" data-key="backToMain" onclick="showMainPage()">Return to
                             homepage</button>
@@ -2145,21 +2145,21 @@
 
                 <!-- СЕКЦИЯ PARAMETER CORRECTION -->
                 <div id="paramCorrectionPage" class="param-correction-section">
-                    <div class="correction-title" data-key="paramCorrectionTitle">Parameter correction</div>
-                    <div class="correction-header" data-key="correctionValue">Correction value</div>
+                    <div class="correction-title" data-key="paramCorrectionTitle">Differential pressure correction</div>
+                    <div class="correction-header" data-key="correctionValue">Differential pressure correction value</div>
                     <div class="correction-row">
-                        <div class="correction-label" data-key="correction1">High-efficiency filter pressure difference
+                        <div class="correction-label" data-key="correction1">HEPA differential pressure
                             (Pa)</div><input type="number" min="-20" max="20" step="1" id="corrFilter"
                             class="correction-input" value="0">
                     </div>
                     <div class="correction-row">
-                        <div class="correction-label" data-key="correction2">High-grade zone to cavity pressure
-                            difference (Pa)</div><input type="number" min="-20" max="20" step="1" id="corrDP1"
+                        <div class="correction-label" data-key="correction2">Differential pressure Room 1 / Passbox
+                            (Pa)</div><input type="number" min="-20" max="20" step="1" id="corrDP1"
                             class="correction-input" value="0">
                     </div>
                     <div class="correction-row">
-                        <div class="correction-label" data-key="correction3">Cavity pressure difference to low-grade
-                            area (Pa)</div><input type="number" min="-20" max="20" step="1" id="corrDP2"
+                        <div class="correction-label" data-key="correction3">Differential pressure Room 2 / Passbox
+                            (Pa)</div><input type="number" min="-20" max="20" step="1" id="corrDP2"
                             class="correction-input" value="0">
                     </div>
                     <div class="correction-buttons">
@@ -2204,8 +2204,8 @@
                 </div>
             </div>
             <div class="center-settings">
-                <div class="center-label" data-key="pressureAutoMode">Поддерживаемая разница дифференциального давления
-                </div>
+                <div class="center-label" data-key="pressureAutoMode">Целевое дифференциальное давление относительно
+                    выбранного опорного помещения</div>
                 <input type="number" id="setPointFanDPInput" class="center-input" value="-10" step="any"
                     onchange="saveSetPointFanDP()">
             </div>
@@ -2215,8 +2215,8 @@
                 <div class="menu-item" data-key="userManagement">Управление пользователями</div>
             </div>
 
-            <!-- ИСПРАВЛЕНО: Перепад давления теперь здесь, под кнопкой Управление пользователями -->
-            <div class="pressure-drop-position" data-key="pressureDrop">Перепад давления</div>
+            <!-- ИСПРАВЛЕНО: Индикатор дифференциального давления теперь здесь, под кнопкой Управление пользователями -->
+            <div class="pressure-drop-position" data-key="pressureDrop">Дифференциальное давление</div>
 
             <div class="pressure-block">
                 <!-- Исправлено: HEPA теперь 60 Па -->
@@ -2224,13 +2224,13 @@
                     <div class="p-value-box"><span class="p-val">60</span><span class="p-unit"
                             data-key="pressureUnit">Па</span></div>
                 </div>
-                <div class="pressure-row"><span class="p-label" data-key="pressureRoom1">Перепад давления к<br>помещению
-                        №1</span>
+                <div class="pressure-row"><span class="p-label" data-key="pressureRoom1">Дифференциальное
+                        давление<br>Помещение №1 / Шлюз</span>
                     <div class="p-value-box"><span class="p-val">0</span><span class="p-unit"
                             data-key="pressureUnit">Па</span></div>
                 </div>
-                <div class="pressure-row"><span class="p-label" data-key="pressureRoom2">Перепад давления к<br>помещению
-                        №2</span>
+                <div class="pressure-row"><span class="p-label" data-key="pressureRoom2">Дифференциальное
+                        давление<br>Помещение №2 / Шлюз</span>
                     <div class="p-value-box"><span class="p-val">0</span><span class="p-unit"
                             data-key="pressureUnit">Па</span></div>
                 </div>
@@ -2322,15 +2322,15 @@
                 lightOn: 'Свет вкл.',
                 manualMode: 'Ручной режим',
                 autoMode: 'Авто режим',
-                pressureAutoMode: 'Поддерживаемая разница дифференциального давления',
+                pressureAutoMode: 'Целевое дифференциальное давление\nотносительно выбранного опорного помещения',
                 settings: 'Настройки',
                 viewAlarms: 'Просмотр тревог',
                 userManagement: 'Управление пользователями',
-                pressureDrop: 'Перепад давления',
+                pressureDrop: 'Дифференциальное давление',
                 pressureUnit: 'Па',
-                roomShort: 'Пом.',
-                pressureRoom1: 'Перепад давления к\nпомещению №1',
-                pressureRoom2: 'Перепад давления к\nпомещению №2',
+                roomShort: 'ΔP',
+                pressureRoom1: 'Дифференциальное давление\nПомещение №1 / Шлюз',
+                pressureRoom2: 'Дифференциальное давление\nПомещение №2 / Шлюз',
                 countdown: 'Обратный отсчет',
                 uvSterilization: 'УФ-стерилизация',
                 blowing: 'Обдув',
@@ -2340,20 +2340,20 @@
                 doorOpen: 'Дверь открыта',
                 doorOpenAlarm: 'Тревога: Дверь открыта слишком долго!',
                 settingsTitle: 'Настройка параметров',
-                setting1: 'Установка верхнего предела разности давлений для помещения №2 (Па)',
-                setting2: 'Установка нижнего предела разности давлений для помещения №2 (Па)',
+                setting1: 'Установка верхнего предела дифференциального давления для канала Помещение №2 / Шлюз (Па)',
+                setting2: 'Установка нижнего предела дифференциального давления для канала Помещение №2 / Шлюз (Па)',
                 setting3: 'Лимит времени открытия двери (сек)',
                 setting4: 'Запускать ли стерилизацию автоматически после закрытия двери №1?',
                 setting5: 'Запускать ли обдув автоматически после закрытия двери №1?',
                 setting6: 'Запускать ли стерилизацию автоматически после закрытия двери №2?',
                 setting7: 'Запускать ли обдув автоматически после закрытия двери №2?',
-                setting8: 'Установка верхнего предела разности давлений для помещения №1 (Па)',
-                setting9: 'Установка нижнего предела разности давлений для помещения №1 (Па)',
-                dpPriorityLabel: 'Установить приоритетную разность давления для поддержания давления в камере шлюза',
+                setting8: 'Установка верхнего предела дифференциального давления для канала Помещение №1 / Шлюз (Па)',
+                setting9: 'Установка нижнего предела дифференциального давления для канала Помещение №1 / Шлюз (Па)',
+                dpPriorityLabel: 'Выбрать опорное помещение для целевого дифференциального давления',
                 dp1: 'ΔP1',
                 dp2: 'ΔP2',
-                pressureAlarmDelayLabel: 'Установить время задержки срабатывания аварии при отклонении давления в камере шлюза (сек)',
-                roomPressureAlarmDelayLabel: 'Установить время задержки срабатывания аварии при отклонении перепадов давлений в помещениях (сек)',
+                pressureAlarmDelayLabel: 'Установить время задержки срабатывания аварии при отклонении целевого дифференциального давления (сек)',
+                roomPressureAlarmDelayLabel: 'Установить время задержки срабатывания аварии при отклонении дифференциального давления каналов Помещение / Шлюз (сек)',
                 modbusLabel: 'Адрес ведомого устройства Modbus TCP',
                 no: 'НЕТ',
                 yes: 'ДА',
@@ -2365,14 +2365,14 @@
                 param2: 'Установка времени воздушного душа (сек)',
                 param3: 'Установка верхнего предела перепада давления высокой эффективности (Па)',
                 param4: 'Установка нижнего предела перепада давления высокой эффективности (Па)',
-                param5: 'Установка верхнего предела перепада давления от зоны высокого класса к камере (Па)',
-                param6: 'Установка нижнего предела перепада давления от зоны высокого класса к камере (Па)',
-                paramCorrection: 'Коррекция параметров',
-                paramCorrectionTitle: 'Коррекция параметров',
-                correctionValue: 'Корректирующее значение',
-                correction1: 'Перепад давления фильтра высокой эффективности (Па)',
-                correction2: 'Перепад давления от зоны высокого класса к камере (Па)',
-                correction3: 'Перепад давления камеры к зоне низкого класса (Па)',
+                param5: 'Установка верхнего предела дифференциального давления для канала Помещение №1 / Шлюз (Па)',
+                param6: 'Установка нижнего предела дифференциального давления для канала Помещение №1 / Шлюз (Па)',
+                paramCorrection: 'Коррекция дифференциального давления',
+                paramCorrectionTitle: 'Коррекция дифференциального давления',
+                correctionValue: 'Коррекция дифференциального давления',
+                correction1: 'Дифференциальное давление HEPA (Па)',
+                correction2: 'Дифференциальное давление Помещение №1 / Шлюз (Па)',
+                correction3: 'Дифференциальное давление Помещение №2 / Шлюз (Па)',
                 return: 'Назад',
                 alarmTitle: 'Тревоги',
                 clearAlarm: 'Очистить буфер тревог',
@@ -2382,34 +2382,34 @@
 
                 // Ключи для тревог
                 alarm1: 'Вторичная дверь не была закрыта в отведенное время',
-                alarm2: 'Перепад давления от зоны высокого класса к камере превышает установленное верхнее предельное значение',
-                alarm3: 'Перепад давления от зоны высокого класса к камере ниже нижнего предела',
+                alarm2: 'Дифференциальное давление Помещение №1 / Шлюз превышает установленное верхнее предельное значение',
+                alarm3: 'Дифференциальное давление Помещение №1 / Шлюз ниже нижнего предела',
                 alarm4: 'Перепад давления HEPA превышает установленное верхнее предельное значение',
                 alarm5: 'Перепад давления HEPA ниже нижнего предела',
                 alarm6: 'Зафиксирована аварийная остановка',
-                alarm7: 'Перепад давления камеры к зоне низкого класса ниже нижнего предела',
-                alarm8: 'Перепад давления камеры к зоне низкого класса превышает установленное верхнее предельное значение',
+                alarm7: 'Дифференциальное давление Помещение №2 / Шлюз ниже нижнего предела',
+                alarm8: 'Дифференциальное давление Помещение №2 / Шлюз превышает установленное верхнее предельное значение',
                 alarm9: 'Основная дверь не была закрыта в отведенное время',
-                alarmRoom1High: 'Перепад давления помещения №1 превышает верхний рабочий предел',
-                alarmRoom1Low: 'Перепад давления помещения №1 ниже рабочего предела',
-                alarmRoom2High: 'Перепад давления помещения №2 превышает верхний рабочий предел',
-                alarmRoom2Low: 'Перепад давления помещения №2 ниже рабочего предела',
-                passboxPressureNotReached: 'Давление в камере шлюза не достигло заданного значения за установленное время',
+                alarmRoom1High: 'Дифференциальное давление Помещение №1 / Шлюз превышает верхний рабочий предел',
+                alarmRoom1Low: 'Дифференциальное давление Помещение №1 / Шлюз ниже рабочего предела',
+                alarmRoom2High: 'Дифференциальное давление Помещение №2 / Шлюз превышает верхний рабочий предел',
+                alarmRoom2Low: 'Дифференциальное давление Помещение №2 / Шлюз ниже рабочего предела',
+                passboxPressureNotReached: 'Целевое дифференциальное давление относительно выбранного опорного помещения не достигло заданного значения за установленное время',
 
                 // Элементы эмулятора
-                emulatorTitle: '📊 Эмуляция графиков давления в помещениях',
-                room1: 'Помещение №1',
-                room2: 'Помещение №2',
+                emulatorTitle: '📊 Эмуляция графиков дифференциального давления',
+                room1: 'ΔP Помещение №1 / Шлюз',
+                room2: 'ΔP Помещение №2 / Шлюз',
                 pause: '⏸ Пауза',
                 play: '▶ Пуск',
-                boundarySettingsTitle: '⚙️ Настройка границ графиков давления',
+                boundarySettingsTitle: '⚙️ Настройка границ графиков дифференциального давления',
                 absoluteMin: 'Абсолютный мин:',
                 absoluteMax: 'Абсолютный макс:',
                 workingMin: 'Рабочий мин:',
                 workingMax: 'Рабочий макс:',
                 colorLegend: 'Абсолютные границы - Рабочий минимум - Рабочий максимум',
-                room1Params: 'Помещение №1 - параметры генерации',
-                room2Params: 'Помещение №2 - параметры генерации',
+                room1Params: 'ΔP Помещение №1 / Шлюз - параметры генерации',
+                room2Params: 'ΔP Помещение №2 / Шлюз - параметры генерации',
                 speed: 'Скорость:',
                 smoothness: 'Плавность:',
                 overshoot: 'Выход:',
@@ -2422,8 +2422,8 @@
                 startPrompt: '🔔 Запустите эмуляцию для начала мониторинга',
                 returnedToNormalAfterExceed: 'Вернулся в норму после превышения',
                 returnedToNormalAfterDrop: 'Вернулся в норму после падения',
-                exceedWarning: '⚠️ Превышение рабочего максимума!',
-                belowWarning: '🔻 Давление ниже рабочего минимума!',
+                exceedWarning: '⚠️ Дифференциальное давление превышает рабочий максимум!',
+                belowWarning: '🔻 Дифференциальное давление ниже рабочего минимума!',
                 monitoringResumed: '▶ Мониторинг возобновлен',
                 monitoringPaused: '⏸ Мониторинг приостановлен',
                 boundariesChanged: 'Изменены рабочие границы',
@@ -2435,18 +2435,18 @@
                 leakRateLabel: 'Утечка',
                 doorLeakMultiplierLabel: 'Множитель двери',
                 leakValueLabel: 'Утечка',
-                passboxCalcLabel: 'Расчет давления шлюза',
+                passboxCalcLabel: 'Расчет целевого дифференциального давления',
                 pidCoefP: 'Коеф. P',
                 pidCoefI: 'Коеф. I',
                 pidCoefD: 'Коеф. D',
                 pidGraphButton: 'График ПИД',
-                pidGraphTitle: 'График ПИД: Давление в шлюзе',
-                passboxPressureChartTitle: 'График давления в шлюзе',
+                pidGraphTitle: 'График ПИД: Целевое дифференциальное давление',
+                passboxPressureChartTitle: 'График целевого дифференциального давления',
                 fanSpeedTest: 'Тест скорости вентилятора',
-                passboxPressureLabel: 'Давление в шлюзе',
+                passboxPressureLabel: 'Целевое дифференциальное давление',
                 timeAxis: 'Время',
-                passboxPressureAxis: 'Давление в шлюзе',
-                pressureAxis: 'Давление в шлюзе',
+                passboxPressureAxis: 'Целевое дифференциальное давление',
+                pressureAxis: 'Целевое дифференциальное давление',
                 pidGraphUnavailable: 'Chart.js недоступен для графика ПИД.'
             },
             en: {
@@ -2466,15 +2466,15 @@
                 lightOn: 'Light ON',
                 manualMode: 'Manual Mode',
                 autoMode: 'Auto Mode',
-                pressureAutoMode: 'Auto Setup Mode: Differential Pressure (Pa)',
+                pressureAutoMode: 'Target differential pressure\nrelative to selected reference room',
                 settings: 'Settings',
                 viewAlarms: 'View Alarms',
                 userManagement: 'User Management',
-                pressureDrop: 'Pressure difference',
+                pressureDrop: 'Differential pressure',
                 pressureUnit: 'Pa',
-                roomShort: 'Room',
-                pressureRoom1: 'High-grade zone pressure difference\nacross the cavity',
-                pressureRoom2: 'Cavity pressure difference\nto low-grade area',
+                roomShort: 'ΔP',
+                pressureRoom1: 'Differential pressure\nRoom 1 / Passbox',
+                pressureRoom2: 'Differential pressure\nRoom 2 / Passbox',
                 countdown: 'Countdown',
                 uvSterilization: 'Sterilization',
                 blowing: 'Air shower',
@@ -2484,20 +2484,20 @@
                 doorOpen: 'Door open',
                 doorOpenAlarm: 'Alarm: Door open too long!',
                 settingsTitle: 'Parameter Settings',
-                setting1: 'Setting upper pressure difference limit for Room No.2 (Pa)',
-                setting2: 'Setting lower pressure difference limit for Room No.2 (Pa)',
+                setting1: 'Set upper differential pressure limit for Room No.2 / Passbox (Pa)',
+                setting2: 'Set lower differential pressure limit for Room No.2 / Passbox (Pa)',
                 setting3: 'Door open time limit (sec)',
                 setting4: 'Automatically start sterilization after closing Door No.1?',
                 setting5: 'Automatically start blowing after closing Door No.1?',
                 setting6: 'Automatically start sterilization after closing Door No.2?',
                 setting7: 'Automatically start blowing after closing Door No.2?',
-                setting8: 'Setting upper pressure difference limit for Room No.1 (Pa)',
-                setting9: 'Setting lower pressure difference limit for Room No.1 (Pa)',
-                dpPriorityLabel: 'Set the priority pressure difference to maintain pressure in the airlock chamber',
+                setting8: 'Set upper differential pressure limit for Room No.1 / Passbox (Pa)',
+                setting9: 'Set lower differential pressure limit for Room No.1 / Passbox (Pa)',
+                dpPriorityLabel: 'Select the reference room for the target differential pressure',
                 dp1: 'ΔP1',
                 dp2: 'ΔP2',
-                pressureAlarmDelayLabel: 'Set alarm activation delay time for pressure deviation in the airlock chamber (sec)',
-                roomPressureAlarmDelayLabel: 'Room pressure deviation alarm delay (sec)',
+                pressureAlarmDelayLabel: 'Set alarm delay for target differential pressure deviation (sec)',
+                roomPressureAlarmDelayLabel: 'Differential pressure deviation alarm delay for Room / Passbox channels (sec)',
                 modbusLabel: 'Modbus TCP Slave Device Address',
                 no: 'NO',
                 yes: 'YES',
@@ -2509,14 +2509,14 @@
                 param2: 'Air shower time setting (sec)',
                 param3: 'High-efficiency pressure difference upper limit setting (Pa)',
                 param4: 'High-efficiency pressure difference lower limit setting (Pa)',
-                param5: 'Upper limit setting of High-grade zone to cavity pressure difference (Pa)',
-                param6: 'Lower limit setting of High-grade zone to cavity pressure difference (Pa)',
-                paramCorrection: 'Parameter correction',
-                paramCorrectionTitle: 'Parameter correction',
-                correctionValue: 'Correction value',
-                correction1: 'High-efficiency filter pressure difference (Pa)',
-                correction2: 'High-grade zone to cavity pressure difference (Pa)',
-                correction3: 'Cavity pressure difference to low-grade area (Pa)',
+                param5: 'Set upper differential pressure limit for Room No.1 / Passbox (Pa)',
+                param6: 'Set lower differential pressure limit for Room No.1 / Passbox (Pa)',
+                paramCorrection: 'Differential pressure correction',
+                paramCorrectionTitle: 'Differential pressure correction',
+                correctionValue: 'Differential pressure correction value',
+                correction1: 'HEPA differential pressure (Pa)',
+                correction2: 'Differential pressure Room 1 / Passbox (Pa)',
+                correction3: 'Differential pressure Room 2 / Passbox (Pa)',
                 return: 'Return',
                 alarmTitle: 'Alarm',
                 clearAlarm: 'Clear alarm buffer',
@@ -2526,34 +2526,34 @@
 
                 // Ключи для тревог
                 alarm1: 'The secondary door has not been closed within the allotted time',
-                alarm2: 'High-grade zone to cavity pressure difference exceeds the upper limit set value',
-                alarm3: 'High-grade zone to cavity pressure difference is below the lower limit',
+                alarm2: 'Differential pressure Room 1 / Passbox exceeds the upper limit set value',
+                alarm3: 'Differential pressure Room 1 / Passbox is below the lower limit',
                 alarm4: 'The pressure difference of HEPA exceeds the upper limit set value',
                 alarm5: 'The pressure difference of HEPA is below the lower limit',
                 alarm6: 'Emergency stop has been captured',
-                alarm7: 'Cavity pressure difference to low-grade area is below the lower limit',
-                alarm8: 'Cavity pressure difference to low-grade area exceeds the upper limit set value',
+                alarm7: 'Differential pressure Room 2 / Passbox is below the lower limit',
+                alarm8: 'Differential pressure Room 2 / Passbox exceeds the upper limit set value',
                 alarm9: 'The main door has not been closed within the allotted time',
-                alarmRoom1High: 'Room 1 pressure exceeds working maximum',
-                alarmRoom1Low: 'Room 1 pressure below working minimum',
-                alarmRoom2High: 'Room 2 pressure exceeds working maximum',
-                alarmRoom2Low: 'Room 2 pressure below working minimum',
-                passboxPressureNotReached: 'Passbox pressure did not reach the target value within the allowed time',
+                alarmRoom1High: 'Differential pressure Room 1 / Passbox exceeds working maximum',
+                alarmRoom1Low: 'Differential pressure Room 1 / Passbox is below working minimum',
+                alarmRoom2High: 'Differential pressure Room 2 / Passbox exceeds working maximum',
+                alarmRoom2Low: 'Differential pressure Room 2 / Passbox is below working minimum',
+                passboxPressureNotReached: 'Target differential pressure relative to the selected reference room did not reach the set value within the allowed time',
 
                 // Элементы эмулятора (английский)
-                emulatorTitle: '📊 Pressure Graphs Emulation',
-                room1: 'Room No.1',
-                room2: 'Room No.2',
+                emulatorTitle: '📊 Differential Pressure Graphs Emulation',
+                room1: 'ΔP Room 1 / Passbox',
+                room2: 'ΔP Room 2 / Passbox',
                 pause: '⏸ Pause',
                 play: '▶ Start',
-                boundarySettingsTitle: '⚙️ Pressure Graph Limit Settings',
+                boundarySettingsTitle: '⚙️ Differential Pressure Graph Limit Settings',
                 absoluteMin: 'Absolute min:',
                 absoluteMax: 'Absolute max:',
                 workingMin: 'Working min:',
                 workingMax: 'Working max:',
                 colorLegend: 'Absolute Limits-Working Min/Max',
-                room1Params: 'Room No.1 - generation parameters',
-                room2Params: 'Room No.2 - generation parameters',
+                room1Params: 'ΔP Room 1 / Passbox - generation parameters',
+                room2Params: 'ΔP Room 2 / Passbox - generation parameters',
                 speed: 'Speed:',
                 smoothness: 'Smoothness:',
                 overshoot: 'Overshoot:',
@@ -2566,8 +2566,8 @@
                 startPrompt: '🔔 Start Simulation Monitoring',
                 returnedToNormalAfterExceed: 'Returned to normal after exceed',
                 returnedToNormalAfterDrop: 'Returned to normal after drop',
-                exceedWarning: '⚠️ Working maximum exceeded!',
-                belowWarning: '🔻 Pressure below working minimum!',
+                exceedWarning: '⚠️ Differential pressure exceeded working maximum!',
+                belowWarning: '🔻 Differential pressure below working minimum!',
                 monitoringResumed: '▶ Monitoring resumed',
                 monitoringPaused: '⏸ Monitoring paused',
                 boundariesChanged: 'Working boundaries changed',
@@ -2579,18 +2579,18 @@
                 leakRateLabel: 'Leak',
                 doorLeakMultiplierLabel: 'Door Multiplier',
                 leakValueLabel: 'Leak',
-                passboxCalcLabel: 'Passbox pressure calculation',
+                passboxCalcLabel: 'Target differential pressure calculation',
                 pidCoefP: 'Coef. P',
                 pidCoefI: 'Coef. I',
                 pidCoefD: 'Coef. D',
                 pidGraphButton: 'PID Graph',
-                pidGraphTitle: 'PID Graph: Passbox Pressure',
-                passboxPressureChartTitle: 'Passbox Pressure Chart',
+                pidGraphTitle: 'PID Graph: Target Differential Pressure',
+                passboxPressureChartTitle: 'Target Differential Pressure Chart',
                 fanSpeedTest: 'Fan Speed Test',
-                passboxPressureLabel: 'Passbox Pressure',
+                passboxPressureLabel: 'Target Differential Pressure',
                 timeAxis: 'Time',
-                passboxPressureAxis: 'Passbox Pressure',
-                pressureAxis: 'Passbox Pressure',
+                passboxPressureAxis: 'Target Differential Pressure',
+                pressureAxis: 'Target Differential Pressure',
                 pidGraphUnavailable: 'Chart.js is unavailable for PID Graph.'
             },
             zh: {
@@ -2610,15 +2610,15 @@
                 lightOn: '灯光 开',
                 manualMode: '手动模式',
                 autoMode: '自动模式',
-                pressureAutoMode: '自动设定模式: 压差（Pa)',
+                pressureAutoMode: '相对所选参考房间的目标压差',
                 settings: '设定',
                 viewAlarms: '查看警报',
                 userManagement: '用户管理',
                 pressureDrop: '压差',
                 pressureUnit: 'Pa',
-                roomShort: '房',
-                pressureRoom1: '高级区跨腔压差',
-                pressureRoom2: '腔体与低级区压差',
+                roomShort: 'ΔP',
+                pressureRoom1: '房间1 / 传递窗压差',
+                pressureRoom2: '房间2 / 传递窗压差',
                 countdown: '倒数计时',
                 uvSterilization: '灭菌',
                 blowing: '风淋',
@@ -2628,20 +2628,20 @@
                 doorOpen: '门已打开',
                 doorOpenAlarm: '警报：门开启时间过长！',
                 settingsTitle: '参数设定',
-                setting1: '设定房间 №2 的压差上限 (Pa)',
-                setting2: '设定房间 №2 的压差下限 (Pa)',
+                setting1: '设定房间 №2 / 传递窗差压上限 (Pa)',
+                setting2: '设定房间 №2 / 传递窗差压下限 (Pa)',
                 setting3: '门开启时间限制 (秒)',
                 setting4: '关闭门 №1 后是否自动启动灭菌？',
                 setting5: '关闭门 №1 后是否自动启动鼓风？',
                 setting6: '关闭门 №2 后是否自动启动灭菌？',
                 setting7: '关闭门 №2 后是否自动启动鼓风？',
-                setting8: '设定房间 №1 的压差上限 (Pa)',
-                setting9: '设定房间 №1 的压差下限 (Pa)',
-                dpPriorityLabel: '设定维持闸室压力的优先压差',
+                setting8: '设定房间 №1 / 传递窗差压上限 (Pa)',
+                setting9: '设定房间 №1 / 传递窗差压下限 (Pa)',
+                dpPriorityLabel: '选择目标差压的参考房间',
                 dp1: 'ΔP1',
                 dp2: 'ΔP2',
-                pressureAlarmDelayLabel: '设定闸室压力偏差警报延迟时间 (秒)',
-                roomPressureAlarmDelayLabel: '房间压差报警延迟时间（秒）',
+                pressureAlarmDelayLabel: '设定目标差压偏差警报延迟时间 (秒)',
+                roomPressureAlarmDelayLabel: '房间 / 传递窗差压偏差报警延迟时间（秒）',
                 modbusLabel: 'Modbus TCP 从站设备地址',
                 no: '否',
                 yes: '是',
@@ -2653,14 +2653,14 @@
                 param2: '风淋时间设定 (秒)',
                 param3: '高效压差上限设定 (Pa)',
                 param4: '高效压差下限设定 (Pa)',
-                param5: '高级区至腔体压差上限设定 (Pa)',
-                param6: '高级区至腔体压差下限设定 (Pa)',
-                paramCorrection: '参数校正',
-                paramCorrectionTitle: '参数校正',
-                correctionValue: '校正值',
-                correction1: '高效过滤器压差 (Pa)',
-                correction2: '高级区至腔体压差 (Pa)',
-                correction3: '腔体至低级区压差 (Pa)',
+                param5: '设定房间 №1 / 传递窗差压上限 (Pa)',
+                param6: '设定房间 №1 / 传递窗差压下限 (Pa)',
+                paramCorrection: '差压修正',
+                paramCorrectionTitle: '差压修正',
+                correctionValue: '差压修正值',
+                correction1: 'HEPA 差压 (Pa)',
+                correction2: '房间1 / 传递窗差压 (Pa)',
+                correction3: '房间2 / 传递窗差压 (Pa)',
                 return: '返回',
                 alarmTitle: '警报',
                 clearAlarm: '清除警报缓冲',
@@ -2670,34 +2670,34 @@
 
                 // Ключи для тревог
                 alarm1: '辅助门未在规定时间内关闭',
-                alarm2: '高级区至腔体压差超过设定上限值',
-                alarm3: '高级区至腔体压差低于下限',
+                alarm2: '房间1 / 传递窗差压超过设定上限值',
+                alarm3: '房间1 / 传递窗差压低于下限',
                 alarm4: 'HEPA 压差超过设定上限值',
                 alarm5: 'HEPA 压差低于下限',
                 alarm6: '已触发紧急停止',
-                alarm7: '腔体至低级区压差低于下限',
-                alarm8: '腔体至低级区压差超过设定上限值',
+                alarm7: '房间2 / 传递窗差压低于下限',
+                alarm8: '房间2 / 传递窗差压超过设定上限值',
                 alarm9: '主门未在规定时间内关闭',
-                alarmRoom1High: '房间1压差超过工作上限',
-                alarmRoom1Low: '房间1压差低于工作下限',
-                alarmRoom2High: '房间2压差超过工作上限',
-                alarmRoom2Low: '房间2压差低于工作下限',
-                passboxPressureNotReached: '传递窗压力未在规定时间内达到设定值',
+                alarmRoom1High: '房间1 / 传递窗差压超过工作上限',
+                alarmRoom1Low: '房间1 / 传递窗差压低于工作下限',
+                alarmRoom2High: '房间2 / 传递窗差压超过工作上限',
+                alarmRoom2Low: '房间2 / 传递窗差压低于工作下限',
+                passboxPressureNotReached: '相对所选参考房间的目标差压未在规定时间内达到设定值',
 
                 // Элементы эмулятора (китайский)
-                emulatorTitle: '📊 压力图表模拟',
-                room1: '房间 №1',
-                room2: '房间 №2',
+                emulatorTitle: '📊 差压图表模拟',
+                room1: 'ΔP 房间1 / 传递窗',
+                room2: 'ΔP 房间2 / 传递窗',
                 pause: '⏸ 暂停',
                 play: '▶ 开始',
-                boundarySettingsTitle: '⚙️ 压力图表限值设置',
+                boundarySettingsTitle: '⚙️ 差压图表限值设置',
                 absoluteMin: '绝对最小:',
                 absoluteMax: '绝对最大:',
                 workingMin: '工作最小:',
                 workingMax: '工作最大:',
                 colorLegend: '绝对限值-工作最小值-工作最大值',
-                room1Params: '房间 №1 - 生成参数',
-                room2Params: '房间 №2 - 生成参数',
+                room1Params: 'ΔP 房间1 / 传递窗 - 生成参数',
+                room2Params: 'ΔP 房间2 / 传递窗 - 生成参数',
                 speed: '速度:',
                 smoothness: '平滑度:',
                 overshoot: '超出:',
@@ -2710,8 +2710,8 @@
                 startPrompt: '🔔 开始模拟监测',
                 returnedToNormalAfterExceed: '超出后恢复正常',
                 returnedToNormalAfterDrop: '下降后恢复正常',
-                exceedWarning: '⚠️ 超过工作最大值！',
-                belowWarning: '🔻 压力低于工作最小值！',
+                exceedWarning: '⚠️ 差压超过工作上限！',
+                belowWarning: '🔻 差压低于工作下限！',
                 monitoringResumed: '▶ 监测恢复',
                 monitoringPaused: '⏸ 监测暂停',
                 boundariesChanged: '工作边界已更改',
@@ -2723,18 +2723,18 @@
                 leakRateLabel: '泄漏',
                 doorLeakMultiplierLabel: '门泄漏倍数',
                 leakValueLabel: '泄漏',
-                passboxCalcLabel: '传递窗压力计算',
+                passboxCalcLabel: '目标差压计算',
                 pidCoefP: 'P 系数',
                 pidCoefI: 'I 系数',
                 pidCoefD: 'D 系数',
                 pidGraphButton: 'PID 图表',
-                pidGraphTitle: 'PID 图表：传递窗压力',
-                passboxPressureChartTitle: '传递窗压力图',
+                pidGraphTitle: 'PID 图表：目标差压',
+                passboxPressureChartTitle: '目标差压图',
                 fanSpeedTest: '风扇速度测试',
-                passboxPressureLabel: '传递窗压力',
+                passboxPressureLabel: '目标差压',
                 timeAxis: '时间',
-                passboxPressureAxis: '传递窗压力',
-                pressureAxis: '传递窗压力',
+                passboxPressureAxis: '目标差压',
+                pressureAxis: '目标差压',
                 pidGraphUnavailable: 'PID 图表不可用：Chart.js 未加载。'
             }
         };
@@ -2760,7 +2760,7 @@
             passbox: {
                 defaultLeakRate: 0.02,          // Базовая скорость утечки
                 defaultDoorLeakMultiplier: 8,   // Множитель утечки при открытой двери
-                pressureTolerance: 1.0,         // Допустимое отклонение давления (Па)
+                pressureTolerance: 1.0,         // Допустимое отклонение дифференциального давления (Па)
             },
             correction: {
                 min: -20,   // Минимальная коррекция отображения (Па)
@@ -2782,7 +2782,7 @@
         }
 
         function roomShortLabel() {
-            return translations[currentLang]?.roomShort || 'Room';
+            return translations[currentLang]?.roomShort || 'ΔP';
         }
 
         function translateMessageKey(messageKey) {
@@ -2832,7 +2832,7 @@
         const CORRECTION_MAX = CONFIG.correction.max;
         /* =========================
            UI UTILITIES
-           Display correction helpers
+           Differential-pressure display correction helpers
            ========================= */
         function clampCorrection(n) {
             if (!Number.isFinite(n)) return 0;
@@ -2896,17 +2896,17 @@
             hepaRow.classList.toggle('corrected', !!isCorrected);
         }
         /* =========================
-           PRESSURE CONTROL PARAMETERS
+           DIFFERENTIAL PRESSURE CONTROL PARAMETERS
            ========================= */
 
-        // Target pressure difference for fan control relative to selected priority room (ΔP1/ΔP2).
+        // Target differential pressure for fan control relative to the selected reference room (ΔP1/ΔP2).
         let SetPoint_Fan_dP = -10;
-        // Delay before fan control reaction to transient pressure deviation (seconds).
+        // Delay before fan control reaction to transient differential-pressure deviation (seconds).
         let SetPoint_Fan_dT = 3;
 
         // --- Passbox state (сгруппировано) ---
         const PassboxState = {
-            pressure: 0,                                            // Текущее давление в шлюзе (Па)
+            pressure: 0,                                            // Текущее управляющее значение дифференциального давления (Па)
             leakRate: CONFIG.passbox.defaultLeakRate,               // Скорость утечки
             doorLeakMultiplier: CONFIG.passbox.defaultDoorLeakMultiplier, // Множитель двери
             targetPressure: 0,
@@ -3100,12 +3100,22 @@
             const roomState = getRoomPressureState();
             const priorityIsDp2 = dpPriority === 'dp2';
             const priorityRoomPressure = priorityIsDp2 ? roomState.room2 : roomState.room1;
-            const roomLabel = priorityIsDp2 ? 'Room2Pressure' : 'Room1Pressure';
+            const controlledDpLabel = currentLang === 'ru'
+                ? 'Управляемое ΔP'
+                : currentLang === 'zh'
+                    ? '控制差压'
+                    : 'Controlled ΔP';
+            const roomLabel = ((priorityIsDp2 ? t.pressureRoom2 : t.pressureRoom1) || '').replace(/\n/g, ' ');
+            const targetLabel = currentLang === 'ru'
+                ? 'Целевое ΔP'
+                : currentLang === 'zh'
+                    ? '目标差压'
+                    : 'Target ΔP';
 
             calcEl.innerHTML =
-                `PassboxPressure (${formatPressureValue(Passbox_Pressure)})<br>` +
+                `${controlledDpLabel} (${formatPressureValue(Passbox_Pressure)})<br>` +
                 `= ${roomLabel} (${formatPressureValue(priorityRoomPressure)}) + ` +
-                `SetPoint_Fan_dP (${formatPressureValue(SetPoint_Fan_dP)}) - ` +
+                `${targetLabel} (${formatPressureValue(SetPoint_Fan_dP)}) - ` +
                 `Leak (${formatPressureValue(currentLeakPa)})`;
         }
 
@@ -3245,7 +3255,7 @@
                 type: 'line',
                 data: {
                     datasets: [{
-                        label: translations[currentLang]?.passboxPressureAxis || 'Passbox Pressure',
+                        label: translations[currentLang]?.passboxPressureAxis || 'Target Differential Pressure',
                         data: passboxPressureData.slice(),
                         borderColor: '#d81b60',
                         backgroundColor: 'rgba(216, 27, 96, 0.14)',
@@ -3265,7 +3275,7 @@
                             title: { display: true, text: translations[currentLang]?.timeAxis || 'Time' }
                         },
                         y: {
-                            title: { display: true, text: translations[currentLang]?.passboxPressureAxis || 'Passbox Pressure' }
+                            title: { display: true, text: translations[currentLang]?.passboxPressureAxis || 'Target Differential Pressure' }
                         }
                     }
                 }
@@ -3276,9 +3286,9 @@
         function updateFanPIDGraphLocalization() {
             if (!passboxPressureChart) return;
             const t = translations[currentLang] || {};
-            passboxPressureChart.data.datasets[0].label = t.passboxPressureAxis || 'Passbox Pressure';
+            passboxPressureChart.data.datasets[0].label = t.passboxPressureAxis || 'Target Differential Pressure';
             passboxPressureChart.options.scales.x.title.text = t.timeAxis || 'Time';
-            passboxPressureChart.options.scales.y.title.text = t.passboxPressureAxis || 'Passbox Pressure';
+            passboxPressureChart.options.scales.y.title.text = t.passboxPressureAxis || 'Target Differential Pressure';
             passboxPressureChart.update('none');
         }
 
@@ -3326,7 +3336,7 @@
                 return;
             }
 
-            // 1) calculate targetPassboxPressure
+            // 1) calculate the target differential-pressure control value
             targetPassboxPressure = getPriorityPressure() + SetPoint_Fan_dP;
             fanTargetPressure = targetPassboxPressure;
 
@@ -3344,7 +3354,7 @@
 
             fanSpeed = Math.max(0, Math.min(100, fanSpeed));
 
-            // 3) update Passbox_Pressure including leak effects
+            // 3) update the controlled passbox-side differential-pressure value including leak effects
             const fanPressureGain = 0.2;
             const dampingFactor = 0.65;
             const fanDrive = ((fanSpeed - FAN_SPEED_NEUTRAL) / 50) * fanPressureGain;
@@ -3353,7 +3363,7 @@
             applyPassboxLeak(dt);
             clampPassboxPressureBetweenRooms();
 
-            // 4) calculate pressure error after actual pressure update
+            // 4) calculate the differential-pressure error after the actual update
             const pressureError = targetPassboxPressure - Passbox_Pressure;
             const currentLeakPa = calculateCurrentLeakPa();
             fanPidPrevError = pressureError;
@@ -3366,7 +3376,7 @@
         }
 
         function startFanSimulationLoop() {
-            // Passbox pressure simulation is integrated into the main emulator loop.
+            // Passbox differential-pressure simulation is integrated into the main emulator loop.
             fanSimulationIntervalId = null;
         }
         /* =========================
@@ -3519,12 +3529,12 @@
             return row.querySelector('.p-val');
         }
         /* =========================
-           PRESSURE DISPLAY UPDATE
+           DIFFERENTIAL PRESSURE DISPLAY UPDATE
            ========================= */
         function updatePressurePanel() {
-            // RU: берём "реальные" значения из эмулятора и применяем коррекции только к отображению
-            // EN: take emulator "real" values and apply corrections to display only
-            // CN: 从模拟器获取“真实”值，仅对显示应用修正
+            // RU: берём "реальные" значения дифференциального давления из эмулятора и применяем коррекции только к отображению
+            // EN: take emulator differential-pressure values and apply corrections to display only
+            // CN: 从模拟器获取差压真实值，仅对显示应用修正
             const room1 = emulatorRooms[0];
             const room2 = emulatorRooms[1];
 
@@ -3703,7 +3713,7 @@
         };
         /* =====================================================
            MODULE: SIMULATION
-           Pressure simulation logic
+           Differential-pressure simulation logic
            ===================================================== */
 
         const Simulation = {
@@ -3901,9 +3911,9 @@
             setTimeout(() => URL.revokeObjectURL(link.href), 100);
         }
         /* =========================
-           PRESSURE STATUS ANALYSIS
+           DIFFERENTIAL PRESSURE STATUS ANALYSIS
            ========================= */
-        // Проверка статуса давления для эмулятора
+        // Проверка статуса дифференциального давления для эмулятора
         function checkEmulatorPressureStatus(room, pressure, currentTimeSeconds) {
             let newStatus = 'normal';
 
@@ -3941,7 +3951,7 @@
         }
         /* =====================================================
            CHART SYSTEM
-           Pressure chart management
+           Differential-pressure chart management
            ===================================================== */
         // Инициализация графиков эмулятора
         // chart instances will be created lazily; the helper below
@@ -3952,7 +3962,7 @@
             const charts = Array.isArray(window.emulatorCharts) ? window.emulatorCharts : emulatorCharts;
             if (!Array.isArray(charts)) return;
 
-            const pressureLabel = `${translations[currentLang]?.pressureDrop || 'Pressure difference'} (${getPressureUnit()})`;
+            const pressureLabel = `${translations[currentLang]?.pressureDrop || 'Differential pressure'} (${getPressureUnit()})`;
             const workingMinLabel = translations[currentLang]?.workingMin || 'Working min';
             const workingMaxLabel = translations[currentLang]?.workingMax || 'Working max';
 
@@ -4028,7 +4038,7 @@
             document.getElementById(`emulatorOverValue${roomIndex}`).textContent = parseFloat(value).toFixed(2);
         }
         /* =========================
-           PRESSURE BOUNDARY CONTROLLER
+           DIFFERENTIAL PRESSURE BOUNDARY CONTROLLER
            ========================= */
         // Обновление настроек помещения эмулятора (границы)
         function updateEmulatorRoomSettings(roomIndex) {
@@ -4042,9 +4052,9 @@
 
             /*
             ===========================================================
-            Pressure Boundary Validation
-            Проверка границ давления
-            压力边界校验
+            Differential Pressure Boundary Validation
+            Проверка границ дифференциального давления
+            差压边界校验
             ===========================================================
             */
             const absMinInput = document.getElementById(`min${roomIndex}`);
@@ -4136,10 +4146,10 @@
             chart.data.datasets[2].data = maxLineData;
         }
         /* =====================================================
-           PRESSURE GENERATION ENGINE
-           Core pressure simulation algorithm
+           DIFFERENTIAL PRESSURE GENERATION ENGINE
+           Core differential-pressure simulation algorithm
            ===================================================== */
-        // Функция генерации нового значения давления для эмулятора
+        // Функция генерации нового значения дифференциального давления для эмулятора
         function generateEmulatorPressure(room) {
             if (!room.isRunning) return null;
 
@@ -4241,7 +4251,7 @@
                             type: 'line',
                             data: {
                                 datasets: [
-                                    { label: `${translations[currentLang]?.pressureDrop || 'Pressure difference'} (${getPressureUnit()})`, data: [], borderColor: lineStyle.color, backgroundColor: 'rgba(0,0,0,0)', borderWidth: lineStyle.width, pointRadius: 0, fill: false, tension: 0.1 },
+                                    { label: `${translations[currentLang]?.pressureDrop || 'Differential pressure'} (${getPressureUnit()})`, data: [], borderColor: lineStyle.color, backgroundColor: 'rgba(0,0,0,0)', borderWidth: lineStyle.width, pointRadius: 0, fill: false, tension: 0.1 },
                                     { label: translations[currentLang]?.workingMin || 'Working min', data: [], borderColor: 'red', borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 1.5 },
                                     { label: translations[currentLang]?.workingMax || 'Working max', data: [], borderColor: 'blue', borderDash: [5, 5], pointRadius: 0, fill: false, borderWidth: 1.5 }
                                 ]
